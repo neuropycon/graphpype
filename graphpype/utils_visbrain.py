@@ -72,7 +72,7 @@ def visu_graph_modules_roles(net_file, lol_file, coords_file, labels_file,node_r
     corres_coords = coords[node_corres,:]
     newLabels = npLabels[node_corres]
 
-    c_colval = {0:"red",1:"orange",2:"blue",3:"green",4:"yellow",5:"darksalmon"}
+    c_colval = {0:"red",1:"darksalmon",2:"blue",3:"green",4:"yellow",5:"orange"}
 
     if inter_modules:
         c_colval[-1] = "grey"
@@ -90,15 +90,15 @@ def visu_graph_modules_roles(net_file, lol_file, coords_file, labels_file,node_r
 
     #s_text=newLabels, s_textsize = 2,s_textcolor="white" # 
 
-    hub_size = 10.0
+    hub_size = 15.0
     non_hub_size = 5.0
     
-    vb = Brain()
+    vb = Brain(s_xyz=corres_coords,  s_text=newLabels, s_textsize = 2, s_textcolor="white", s_textshift=(1.5, 1.8, 3), s_opacity=0.,s_radiusmin=0., s_radiusmax=0.1)
     
     if coords_prov_hubs.shape[0] != 0:
         vb.add_sources('coords_prov_hubs', s_xyz=coords_prov_hubs, s_symbol='disc',
-                s_color='#ab4642', s_edgecolor='black',
-                s_data=np.ones(shape = (coords_prov_hubs.shape[0]))*hub_size,s_radiusmin=hub_size, s_radiusmax=hub_size+1.0,s_opacity=.5,)
+                s_color='orange', s_edgecolor='black',
+                s_data=np.ones(shape = (coords_prov_hubs.shape[0]))*hub_size,s_radiusmin=hub_size, s_radiusmax=hub_size+1.0,s_opacity=1.,)
 
     if coords_prov_no_hubs.shape[0] != 0:
         vb.add_sources('coords_prov_no_hubs', s_xyz=coords_prov_no_hubs, s_symbol='disc',
@@ -107,8 +107,8 @@ def visu_graph_modules_roles(net_file, lol_file, coords_file, labels_file,node_r
 
     if coords_connec_hubs.shape[0] != 0:
         vb.add_sources('coords_connec_hubs', s_xyz=coords_connec_hubs, s_symbol='square',
-                s_color='#ab4642', s_edgecolor='black',
-                s_data=np.ones(shape = (coords_connec_hubs.shape[0]))*hub_size,s_radiusmin=hub_size, s_radiusmax=hub_size+1.0,s_opacity=.5,)
+                s_color='orange', s_edgecolor='black',
+                s_data=np.ones(shape = (coords_connec_hubs.shape[0]))*hub_size,s_radiusmin=hub_size, s_radiusmax=hub_size+1.0,s_opacity=1.,)
         
     if coords_connec_no_hubs.shape[0] != 0:
         vb.add_sources('coords_connec_no_hubs', s_xyz=coords_connec_no_hubs, s_symbol='square',
@@ -118,7 +118,7 @@ def visu_graph_modules_roles(net_file, lol_file, coords_file, labels_file,node_r
     # ================ ADD CONNECTIVITY OBJECTS ================
 
     vb.add_connect('connect_L', c_xyz=corres_coords, c_connect=c_connect,
-                c_cmap=c_cmap, c_linewidth=10., c_colval = c_colval,
+                c_cmap=c_cmap, c_linewidth=4., c_colval = c_colval,
                 c_dynamic=(.1, 1.))
 
     vb.show()
