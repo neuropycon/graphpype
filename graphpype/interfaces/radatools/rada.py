@@ -142,7 +142,7 @@ class NetPropRada(CommandLine):
         
         #+ ' > '+ rada_res_file
         
-        print "defining command " + cmd
+        print("defining command " + cmd)
     
         os.system(cmd)
     
