@@ -172,8 +172,8 @@ def create_pipeline_intmat_to_graph_threshold(main_path,analysis_name = "int_gra
         
         plot = False
         
-    print "########################### plot = " + str(plot) + " #####################################################"
-    print "can_plot_igraph = " + str(can_plot_igraph)
+    print("########################### plot = " + str(plot) + " #####################################################")
+    print("can_plot_igraph = " + str(can_plot_igraph))
     
     ### compute Z_list from coclass matrix
     compute_net_list = pe.Node(interface = ComputeIntNetList(),name='compute_net_list')

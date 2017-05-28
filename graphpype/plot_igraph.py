@@ -22,21 +22,21 @@ def plot_3D_igraph_int_mat_modules(plot_nbs_adj_mat_file,int_matrix,coords = np.
     
     g = return_base_weighted_graph(int_matrix)
     
-    print labels
+    print(labels)
     
     if len(labels) == len(g.vs):
     
         add_non_null_labels(g,labels)
         
     
-    print np.unique(int_matrix)
+    print(np.unique(int_matrix))
     
-    print int_matrix
+    print(int_matrix)
     
     
     if len(edge_colors) < len(np.unique(int_matrix)[1:]):
         
-        print "Warning, edge_colors {} < np.unique(int_matrix)[1:] {}".format(len(edge_colors), len(np.unique(int_matrix)[1:]))
+        print("Warning, edge_colors {} < np.unique(int_matrix)[1:] {}".format(len(edge_colors), len(np.unique(int_matrix)[1:])))
     
         0/0
         
@@ -44,13 +44,13 @@ def plot_3D_igraph_int_mat_modules(plot_nbs_adj_mat_file,int_matrix,coords = np.
     
         colored_egde_list = g.es.select(weight_eq = index)
         
-        print len(colored_egde_list),np.sum(int_matrix == index)
+        print(len(colored_egde_list),np.sum(int_matrix == index))
         
         colored_egde_list["color"] = edge_colors[i]
     
-        print i,index,len(colored_egde_list)
+        print(i,index,len(colored_egde_list))
         
-    print g.es['color']
+    print(g.es['color'])
     
     if node_col_labels.size == len(g.vs) and nodes_sizes.size == len(g.vs):
         
@@ -58,7 +58,7 @@ def plot_3D_igraph_int_mat_modules(plot_nbs_adj_mat_file,int_matrix,coords = np.
             
             if node_col_labels[i] != 0:
                 
-                print node_col_labels[i]
+                print(node_col_labels[i])
                 
                 v["color"] = edge_colors[node_col_labels[i]-1]
                 
@@ -72,9 +72,9 @@ def plot_3D_igraph_int_mat_modules(plot_nbs_adj_mat_file,int_matrix,coords = np.
                 v["size"] = 0.1
             
                 
-        print g.vs["size"]
+        print(g.vs["size"])
         
-        print g.vs["color"]
+        print(g.vs["color"])
         
     else:
         
@@ -113,7 +113,7 @@ def plot_3D_igraph_bin_mat(plot_nbs_adj_mat_file,int_matrix,coords = np.array([]
     
     g = return_base_weighted_graph(int_matrix)
     
-    print labels
+    print(labels)
     
     if len(labels) == len(g.vs):
     
@@ -135,7 +135,7 @@ def plot_3D_igraph_bin_mat(plot_nbs_adj_mat_file,int_matrix,coords = np.array([]
         
         
         
-    print len(g.es)
+    print(len(g.es))
     
     if len(g.es) > 0 :
         
@@ -161,28 +161,28 @@ def plot_3D_igraph_int_mat(plot_nbs_adj_mat_file,int_matrix,coords = np.array([]
     
     g = return_base_weighted_graph(int_matrix)
     
-    print g
+    print(g)
     
-    print labels
+    print(labels)
     
     if len(labels) == len(g.vs):
     
         add_non_null_labels(g,labels)
         
     
-    print np.unique(int_matrix)
+    print(np.unique(int_matrix))
     
     for i,index in enumerate(np.unique(int_matrix)[1:]):
     
         colored_egde_list = g.es.select(weight_eq = index)
         
-        print len(colored_egde_list),np.sum(int_matrix == index)
+        print(len(colored_egde_list),np.sum(int_matrix == index))
         
         colored_egde_list["color"] = edge_colors[i]
     
-        print i,index,len(colored_egde_list)
+        print(i,index,len(colored_egde_list))
         
-        print g.es['color']
+        print(g.es['color'])
     
     if node_col_labels.size == len(g.vs) and nodes_sizes.size == len(g.vs):
         
@@ -190,7 +190,7 @@ def plot_3D_igraph_int_mat(plot_nbs_adj_mat_file,int_matrix,coords = np.array([]
             
             if node_col_labels[i] != 0:
                 
-                print node_col_labels[i]
+                print(node_col_labels[i])
                 
                 v["color"] = edge_colors[node_col_labels[i]-1]
                 
@@ -204,9 +204,9 @@ def plot_3D_igraph_int_mat(plot_nbs_adj_mat_file,int_matrix,coords = np.array([]
                 v["size"] = 0.1
             
                 
-        print g.vs["size"]
+        print(g.vs["size"])
         
-        print g.vs["color"]
+        print(g.vs["color"])
         
     else:
         
@@ -243,15 +243,15 @@ def plot_3D_igraph_int_mat(plot_nbs_adj_mat_file,int_matrix,coords = np.array([]
     
 def plot_3D_igraph_signed_int_mat(plot_nbs_adj_mat_file,int_matrix,coords = np.array([]),labels = []):
     
-    print np.sum(int_matrix == 1)
-    print np.sum(int_matrix == 0)
-    print np.sum(int_matrix == -1)
+    print(np.sum(int_matrix == 1))
+    print(np.sum(int_matrix == 0))
+    print(np.sum(int_matrix == -1))
     
     g = return_base_weighted_graph(int_matrix)
     
-    print g.es['weight']
+    print(g.es['weight'])
     
-    print labels
+    print(labels)
     
     if len(labels) == len(g.vs):
     
@@ -273,7 +273,7 @@ def plot_3D_igraph_signed_int_mat(plot_nbs_adj_mat_file,int_matrix,coords = np.a
         
         
         
-    print len(g.es)
+    print(len(g.es))
     
     if len(g.es) > 0 :
         
@@ -307,7 +307,7 @@ def plot_3D_igraph_signed_int_mat(plot_nbs_adj_mat_file,int_matrix,coords = np.a
             elif int(w) == 4:
                 edge_col.append('red')
                 
-            print w,int(w)
+            print(w,int(w))
             
         
         #g_all.es['names'] = edge_list_names
@@ -327,18 +327,18 @@ from graphpype.utils_plot import plot_colorbar
 def plot_3D_igraph_all_modules(community_vect,Z_list,node_coords = np.array([]),node_labels = [], layout = '', node_roles = np.array([]), plot_color_bar = True):
 
     if (community_vect.shape[0] != Z_list.shape[0] or community_vect.shape[0] != Z_list.shape[1]):
-        print "Warning, community_vect {} != Z_list {}".format(community_vect.shape[0], Z_list.shape)
+        print("Warning, community_vect {} != Z_list {}".format(community_vect.shape[0], Z_list.shape))
     
     ######### creating from coomatrix and community_vect
     g_all,used_colors = create_module_edge_list(Z_list,community_vect,list_colors = static_igraph_colors)
     
-    print used_colors
+    print(used_colors)
     
     ######### vertex colors
     
     used_colors = add_vertex_colors(g_all,community_vect,list_colors = static_igraph_colors)
     
-    print used_colors
+    print(used_colors)
     
     
     if plot_color_bar == True:
@@ -352,13 +352,13 @@ def plot_3D_igraph_all_modules(community_vect,Z_list,node_coords = np.array([]),
     #print g_all
     
     if len(node_labels) != 0:
-        print "non void labels found"
+        print("non void labels found")
         add_non_null_labels(g_all,node_labels)
         
         #print g_all.vs['label']
         
     else :
-        print "empty labels"
+        print("empty labels")
         
     if node_roles.size != 0:
     
@@ -368,14 +368,14 @@ def plot_3D_igraph_all_modules(community_vect,Z_list,node_coords = np.array([]),
         #print g_all.vs["shape"]
             
     else :
-        print "no shapes"
+        print("no shapes")
       
       
       
       
     if layout == 'FR':
     
-        print "plotting with Fruchterman-Reingold layout"
+        print("plotting with Fruchterman-Reingold layout")
     
         g_all['layout'] = g_all.layout_fruchterman_reingold()
     
@@ -389,7 +389,7 @@ def plot_3D_igraph_all_modules(community_vect,Z_list,node_coords = np.array([]),
             
         if node_coords.size != 0:
             
-            print "non void coords found"
+            print("non void coords found")
             
             views = [[0.0,0.0],[0.,90.0],[90.,0.0],[0.,-90.0]]
             
@@ -399,7 +399,7 @@ def plot_3D_igraph_all_modules(community_vect,Z_list,node_coords = np.array([]),
             
             for i,view in enumerate(views):
             
-                print view
+                print(view)
                 
                 Z_list_all_modules_file = os.path.abspath("All_modules_3D" + suf[i] + ".eps")
 
@@ -415,25 +415,25 @@ def plot_3D_igraph_all_modules(community_vect,Z_list,node_coords = np.array([]),
                     
         else :
             
-            print "Warning, should have coordinates, or specify layout = 'FR' (Fruchterman-Reingold layout) in options"
+            print("Warning, should have coordinates, or specify layout = 'FR' (Fruchterman-Reingold layout) in options")
 
 from graphpype.utils_igraph import select_edge_list_outside_module
 
 def plot_3D_igraph_single_modules(community_vect,Z_list,node_coords = np.array([]),node_labels = [], layout = '', node_roles = np.array([]), plot_color_bar = True, nb_min_nodes_by_module = 5):
 
     if (community_vect.shape[0] != Z_list.shape[0] or community_vect.shape[0] != Z_list.shape[1]):
-        print "Warning, community_vect {} != Z_list {}".format(community_vect.shape[0], Z_list.shape)
+        print("Warning, community_vect {} != Z_list {}".format(community_vect.shape[0], Z_list.shape))
     
     ######### creating from coomatrix and community_vect
     g_all,used_colors = create_module_edge_list(Z_list,community_vect,list_colors = static_igraph_colors)
     
-    print used_colors
+    print(used_colors)
     
     ######### vertex colors
     
     used_colors = add_vertex_colors(g_all,community_vect,list_colors = static_igraph_colors)
     
-    print used_colors
+    print(used_colors)
     
     
     if plot_color_bar == True:
@@ -447,13 +447,13 @@ def plot_3D_igraph_single_modules(community_vect,Z_list,node_coords = np.array([
     #print g_all
     
     if len(node_labels) != 0:
-        print "non void labels found"
+        print("non void labels found")
         add_non_null_labels(g_all,node_labels)
         
         #print g_all.vs['label']
         
     else :
-        print "empty labels"
+        print("empty labels")
         
     if node_roles.size != 0:
     
@@ -463,18 +463,18 @@ def plot_3D_igraph_single_modules(community_vect,Z_list,node_coords = np.array([
         #print g_all.vs["shape"]
             
     else :
-        print "no shapes"
+        print("no shapes")
       
       ##################
     Z_list_all_modules_files = []
     
     for mod_index in np.unique(community_vect):
     
-        print "Module index %d has %d nodes"%(mod_index,np.sum(community_vect == mod_index))
+        print("Module index %d has %d nodes"%(mod_index,np.sum(community_vect == mod_index)))
         
         if np.sum(community_vect == mod_index) < nb_min_nodes_by_module:
             
-            print "Not enough nodes (%d), skipping plot"%(np.sum(community_vect == mod_index))
+            print("Not enough nodes (%d), skipping plot"%(np.sum(community_vect == mod_index)))
             continue
         
         g_sel = g_all.copy()
@@ -482,7 +482,7 @@ def plot_3D_igraph_single_modules(community_vect,Z_list,node_coords = np.array([
         ### delete edges that are not within module
         select_edge_list_outside_module(g_sel,Z_list,community_vect,mod_index)
         
-        print g_sel
+        print(g_sel)
         
         ### change size and colors of nodes
         vertex_col = []
@@ -492,7 +492,7 @@ def plot_3D_igraph_single_modules(community_vect,Z_list,node_coords = np.array([
         for i,v in enumerate(g_sel.vs):
             cur_mod_index = community_vect[i]
             
-            print v
+            print(v)
             
             if (mod_index == cur_mod_index):
                 vertex_col.append(v["color"])
@@ -676,39 +676,39 @@ def plot_3D_igraph_single_modules_coomatrix_rel_coords(community_vect,node_rel_c
     
     dist_com = collections.Counter(community_vect)
     
-    print dist_com
+    print(dist_com)
     
     if (community_vect.shape[0] != node_rel_coords.shape[0]):
-        print "Warning, community_vect {} != node_rel_coords {}".format(community_vect.shape[0], node_rel_coords.shape[0])
+        print("Warning, community_vect {} != node_rel_coords {}".format(community_vect.shape[0], node_rel_coords.shape[0]))
         
-    print community_vect.shape
-    print node_rel_coords.shape
-    print coomatrix.shape
+    print(community_vect.shape)
+    print(node_rel_coords.shape)
+    print(coomatrix.shape)
     
     ########### threshoding the number of dictictly displayed modules with the number of igraph colors
     
     community_vect[community_vect > len(igraph_colors)-1] = len(igraph_colors)-1
         
-    print np.unique(community_vect)
+    print(np.unique(community_vect))
     
     Z_list_all_modules_files = []
     
     ########### extract edge list (with coords belonging to )
     
-    g_all = ig.Graph(zip(coomatrix.row, coomatrix.col), directed=False, edge_attrs={'weight': coomatrix.data})
+    g_all = ig.Graph(list(zip(coomatrix.row, coomatrix.col)), directed=False, edge_attrs={'weight': coomatrix.data})
     
     #### node_labels 
     add_non_null_labels(g_all,node_labels)
     
-    print g_all
+    print(g_all)
     
     for mod_index in np.unique(community_vect):
     
-        print "Module index %d has %d nodes"%(mod_index,np.sum(community_vect == mod_index))
+        print("Module index %d has %d nodes"%(mod_index,np.sum(community_vect == mod_index)))
         
         if np.sum(community_vect == mod_index) < nb_min_nodes_by_module:
             
-            print "Not enough nodes (%d), skipping plot"%(np.sum(community_vect == mod_index))
+            print("Not enough nodes (%d), skipping plot"%(np.sum(community_vect == mod_index)))
             continue
         
         g_sel = g_all.copy()
@@ -716,7 +716,7 @@ def plot_3D_igraph_single_modules_coomatrix_rel_coords(community_vect,node_rel_c
         edge_mod_id = []
         edge_col_intra = []
         
-        print g_sel
+        print(g_sel)
         
         for u,v,w in zip(coomatrix.row,coomatrix.col,coomatrix.data):
             

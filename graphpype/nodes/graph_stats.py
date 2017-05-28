@@ -45,26 +45,26 @@ class StatsPairBinomial(BaseInterface):
 
     def _run_interface(self, runtime):
                 
-        print 'in plot_coclass'
+        print('in plot_coclass')
         
         group_coclass_matrix_file1 = self.inputs.group_coclass_matrix_file1
         group_coclass_matrix_file2 = self.inputs.group_coclass_matrix_file2
         conf_interval_binom_fdr = self.inputs.conf_interval_binom_fdr
             
 
-        print "loading group_coclass_matrix1"
+        print("loading group_coclass_matrix1")
         
         group_coclass_matrix1 = np.array(np.load(group_coclass_matrix_file1),dtype = float)
-        print group_coclass_matrix1.shape
+        print(group_coclass_matrix1.shape)
         
         
-        print "loading group_coclass_matrix2"
+        print("loading group_coclass_matrix2")
         
         group_coclass_matrix2 = np.array(np.load(group_coclass_matrix_file2),dtype = float)
-        print group_coclass_matrix2.shape
+        print(group_coclass_matrix2.shape)
         
         
-        print "compute NBS stats"
+        print("compute NBS stats")
         
         
         # check input matrices
@@ -78,7 +78,7 @@ class StatsPairBinomial(BaseInterface):
         
         signif_signed_adj_mat  = stats.compute_pairwise_binom_fdr(group_coclass_matrix1,group_coclass_matrix2,conf_interval_binom_fdr)
         
-        print 'save pairwise signed stat file'
+        print('save pairwise signed stat file')
         
         signif_signed_adj_fdr_mat_file  = os.path.abspath('signif_signed_adj_fdr_'+ str(conf_interval_binom_fdr) +'.npy')
         np.save(signif_signed_adj_fdr_mat_file,signif_signed_adj_mat)
@@ -126,26 +126,26 @@ class StatsPairTTest(BaseInterface):
 
     def _run_interface(self, runtime):
                 
-        print 'in plot_cormat'
+        print('in plot_cormat')
         
         group_cormat_file1 = self.inputs.group_cormat_file1
         group_cormat_file2 = self.inputs.group_cormat_file2
         t_test_thresh_fdr = self.inputs.t_test_thresh_fdr
             
         paired = self.inputs.paired
-        print "loading group_cormat1"
+        print("loading group_cormat1")
         
         group_cormat1 = np.array(np.load(group_cormat_file1),dtype = float)
-        print group_cormat1.shape
+        print(group_cormat1.shape)
         
         
-        print "loading group_cormat2"
+        print("loading group_cormat2")
         
         group_cormat2 = np.array(np.load(group_cormat_file2),dtype = float)
-        print group_cormat2.shape
+        print(group_cormat2.shape)
         
         
-        print "compute NBS stats"
+        print("compute NBS stats")
         
         
         # check input matrices
@@ -159,7 +159,7 @@ class StatsPairTTest(BaseInterface):
         
         signif_signed_adj_mat  = stats.compute_pairwise_ttest_fdr(group_cormat1,group_cormat2,t_test_thresh_fdr,paired)
         
-        print 'save pairwise signed stat file'
+        print('save pairwise signed stat file')
         
         signif_signed_adj_fdr_mat_file  = os.path.abspath('signif_signed_adj_fdr_'+ str(t_test_thresh_fdr) +'.npy')
         np.save(signif_signed_adj_fdr_mat_file,signif_signed_adj_mat)
@@ -239,7 +239,7 @@ class PrepareCormat(BaseInterface):
 
     def _run_interface(self, runtime):
                 
-        print 'in prepare_cormat'
+        print('in prepare_cormat')
         
         cor_mat_files = self.inputs.cor_mat_files
         
@@ -249,41 +249,41 @@ class PrepareCormat(BaseInterface):
             
             gm_mask_coords_file = self.inputs.gm_mask_coords_file
         
-            print 'loading gm mask corres'
+            print('loading gm mask corres')
             
             gm_mask_coords = np.array(np.loadtxt(gm_mask_coords_file), dtype = 'int')
             
-            print gm_mask_coords.shape
+            print(gm_mask_coords.shape)
                 
             #### read matrix from the first group
             #print Z_cor_mat_files
             
             sum_cormat = np.zeros((gm_mask_coords.shape[0],gm_mask_coords.shape[0]),dtype = float)
-            print sum_cormat.shape
+            print(sum_cormat.shape)
             
                     
             group_cormat = np.zeros((gm_mask_coords.shape[0],gm_mask_coords.shape[0],len(cor_mat_files)),dtype = float)
-            print group_cormat.shape
+            print(group_cormat.shape)
             
             
             group_vect = np.zeros((gm_mask_coords.shape[0],len(cor_mat_files)),dtype = float)
-            print group_vect.shape
+            print(group_vect.shape)
             
             if len(cor_mat_files) != len(coords_files):
-                print "warning, length of cor_mat_files, coords_files are imcompatible {} {} {}".format(len(cor_mat_files),len(coords_files))
+                print("warning, length of cor_mat_files, coords_files are imcompatible {} {} {}".format(len(cor_mat_files),len(coords_files)))
             
             for index_file in range(len(cor_mat_files)):
                 
-                print cor_mat_files[index_file]
+                print(cor_mat_files[index_file])
                 
                 if os.path.exists(cor_mat_files[index_file]) and os.path.exists(coords_files[index_file]):
                 
                     Z_cor_mat = np.load(cor_mat_files[index_file])
-                    print Z_cor_mat.shape
+                    print(Z_cor_mat.shape)
                     
                     
                     coords = np.array(np.loadtxt(coords_files[index_file]),dtype = 'int')
-                    print coords.shape
+                    print(coords.shape)
                     
                     
                     
@@ -291,8 +291,8 @@ class PrepareCormat(BaseInterface):
                     
                     corres_cor_mat = corres_cor_mat + np.transpose(corres_cor_mat)
                     
-                    print corres_cor_mat.shape
-                    print group_cormat.shape
+                    print(corres_cor_mat.shape)
+                    print(group_cormat.shape)
                     
                     sum_cormat += corres_cor_mat
                     
@@ -302,7 +302,7 @@ class PrepareCormat(BaseInterface):
                     
                     
                 else:
-                    print "Warning, one or more files between " + cor_mat_files[index_file] + ', ' + coords_files[index_file] + " do not exists"
+                    print("Warning, one or more files between " + cor_mat_files[index_file] + ', ' + coords_files[index_file] + " do not exists")
                 
                 
         
@@ -313,7 +313,7 @@ class PrepareCormat(BaseInterface):
             gm_mask_labels_file = self.inputs.gm_mask_labels_file
             
             
-            print 'loading gm mask labels'
+            print('loading gm mask labels')
             
             #gm_mask_labels = [line.strip() for line in open(gm_mask_labels_file)]
             
@@ -321,7 +321,7 @@ class PrepareCormat(BaseInterface):
                 
             gm_mask_labels = np.array([line.strip() for line in open(gm_mask_labels_file)],dtype = 'str')
             
-            print gm_mask_labels.shape
+            print(gm_mask_labels.shape)
             
             
             
@@ -330,42 +330,42 @@ class PrepareCormat(BaseInterface):
             #print Z_cor_mat_files
             
             sum_cormat = np.zeros((gm_mask_labels.shape[0],gm_mask_labels.shape[0]),dtype = float)
-            print sum_cormat.shape
+            print(sum_cormat.shape)
             
                     
             group_cormat = np.zeros((gm_mask_labels.shape[0],gm_mask_labels.shape[0],len(cor_mat_files)),dtype = float)
-            print group_cormat.shape
+            print(group_cormat.shape)
             
             
             group_vect = np.zeros((gm_mask_labels.shape[0],len(cor_mat_files)),dtype = float)
-            print group_vect.shape
+            print(group_vect.shape)
             
             if len(cor_mat_files) != len(labels_files):
-                print "warning, length of cor_mat_files, labels_files are imcompatible {} {} {}".format(len(cor_mat_files),len(labels_files))
+                print("warning, length of cor_mat_files, labels_files are imcompatible {} {} {}".format(len(cor_mat_files),len(labels_files)))
             
-            print cor_mat_files
+            print(cor_mat_files)
             
             for index_file in range(len(cor_mat_files)):
                 
-                print cor_mat_files[index_file]
+                print(cor_mat_files[index_file])
                 
                 if os.path.exists(cor_mat_files[index_file]) and os.path.exists(labels_files[index_file]):
                 
                     Z_cor_mat = np.load(cor_mat_files[index_file])
-                    print Z_cor_mat
-                    print Z_cor_mat.shape
+                    print(Z_cor_mat)
+                    print(Z_cor_mat.shape)
                     
                     labels = np.array([line.strip() for line in open(labels_files[index_file])],dtype = 'str')
-                    print "labels_subj:"
-                    print labels.shape
+                    print("labels_subj:")
+                    print(labels.shape)
                     
                     
                     corres_cor_mat,possible_edge_mat = return_corres_correl_mat_labels(Z_cor_mat,labels,gm_mask_labels)
                     
                     corres_cor_mat = corres_cor_mat + np.transpose(corres_cor_mat)
                     
-                    print corres_cor_mat
-                    print group_cormat.shape
+                    print(corres_cor_mat)
+                    print(group_cormat.shape)
                     
                     sum_cormat += corres_cor_mat
                     
@@ -375,17 +375,17 @@ class PrepareCormat(BaseInterface):
                     
                     
                 else:
-                    print "Warning, one or more files between " + cor_mat_files[index_file] + ', ' + coords_files[index_file] + " do not exists"
+                    print("Warning, one or more files between " + cor_mat_files[index_file] + ', ' + coords_files[index_file] + " do not exists")
                 
                 
-            print group_cormat
+            print(group_cormat)
             
         else:
-            print "Error, neither coords nor labels are defined properly"
+            print("Error, neither coords nor labels are defined properly")
             
-            print self.inputs.gm_mask_coords_file
-            print self.inputs.gm_mask_labels_file
-            print self.inputs.coords_files
+            print(self.inputs.gm_mask_coords_file)
+            print(self.inputs.gm_mask_labels_file)
+            print(self.inputs.coords_files)
             
             0/0
             
@@ -400,7 +400,7 @@ class PrepareCormat(BaseInterface):
         np.save(group_vect_file,group_vect)
         
             
-        print 'saving cor_mat matrix'
+        print('saving cor_mat matrix')
         
         avg_cormat_file = os.path.abspath('avg_cormat.npy')
         
@@ -473,15 +473,15 @@ class SwapLists(BaseInterface):
 
     def _run_interface(self, runtime):
                 
-        print 'in SwapLists'
+        print('in SwapLists')
         list_of_lists = self.inputs.list_of_lists
         seed = self.inputs.seed
         unbalanced = self.inputs.unbalanced
         
         ######## checking lists homogeneity
-        print len(list_of_lists)
+        print(len(list_of_lists))
         
-        print len(list_of_lists[0][0])
+        print(len(list_of_lists[0][0]))
     
         if unbalanced:
             nb_files_per_list = []
@@ -499,9 +499,9 @@ class SwapLists(BaseInterface):
         
         for i in range(nb_set_to_shuffle):
                                 
-            print i
+            print(i)
             
-            print len(list_of_lists[i])
+            print(len(list_of_lists[i]))
             
             if nb_args_per_list == -1:
                 nb_args_per_list =len(list_of_lists[i])
@@ -517,7 +517,7 @@ class SwapLists(BaseInterface):
                 else:
                     assert nb_files_per_list == len(list_of_lists[i][0]),"Error list length {} != than list {} length {}".format(nb_files_per_list,i,len(list_of_lists[i][0]))
                     
-        print nb_files_per_list
+        print(nb_files_per_list)
         
             
         
@@ -534,11 +534,11 @@ class SwapLists(BaseInterface):
             
             def prod(x, y): return x * y
         
-            print sum(nb_files_per_list)
+            print(sum(nb_files_per_list))
             
             is_permut = np.array(np.random.randint(nb_set_to_shuffle, size=sum(nb_files_per_list)),dtype = int)
         
-            print is_permut
+            print(is_permut)
         
         else:
             
@@ -549,7 +549,7 @@ class SwapLists(BaseInterface):
             is_permut = np.array(np.random.randint(nb_set_to_shuffle, size=nb_files_per_list),dtype = int)
             
                 
-            print is_permut
+            print(is_permut)
                 
         np.savetxt(os.path.abspath("is_permut.txt"),is_permut, fmt = "%d")
         
@@ -557,9 +557,9 @@ class SwapLists(BaseInterface):
         
         self.permut_lists_of_lists = [[[] for i in range(nb_args_per_list)] for j in range(nb_set_to_shuffle)]
     
-        print len(self.permut_lists_of_lists)
-        print len(self.permut_lists_of_lists[0])
-        print len(self.permut_lists_of_lists[0][0])
+        print(len(self.permut_lists_of_lists))
+        print(len(self.permut_lists_of_lists[0]))
+        print(len(self.permut_lists_of_lists[0][0]))
         
         if unbalanced:
             
@@ -580,59 +580,59 @@ class SwapLists(BaseInterface):
             
                 merged_group_lists.append(merged_group_list)
                 
-            print len(merged_group_lists)
-            print len(merged_group_lists[0])
+            print(len(merged_group_lists))
+            print(len(merged_group_lists[0]))
             
             for index_file,permut in enumerate(is_permut):
                 
-                print "index_file:",
-                print index_file
+                print("index_file:", end=' ')
+                print(index_file)
                 
-                print "permut:",
-                print permut
+                print("permut:", end=' ')
+                print(permut)
                 
                 for i in range(nb_args_per_list):
                     
                     self.permut_lists_of_lists[permut][i].append(merged_group_lists[i][index_file])
                     
                 
-            print len(self.permut_lists_of_lists)
-            print len(self.permut_lists_of_lists[0])
-            print len(self.permut_lists_of_lists[0][0])
-            print len(self.permut_lists_of_lists[1][0])
+            print(len(self.permut_lists_of_lists))
+            print(len(self.permut_lists_of_lists[0]))
+            print(len(self.permut_lists_of_lists[0][0]))
+            print(len(self.permut_lists_of_lists[1][0]))
             
-            print self.permut_lists_of_lists[0][0]
+            print(self.permut_lists_of_lists[0][0])
             
         else:
             
             for index_file,permut in enumerate(is_permut):
                 
-                print "index_file:",
-                print index_file
+                print("index_file:", end=' ')
+                print(index_file)
                 
-                print "permut:",
-                print permut
+                print("permut:", end=' ')
+                print(permut)
                 
-                print "nb_set_to_shuffle:",
-                print nb_set_to_shuffle
+                print("nb_set_to_shuffle:", end=' ')
+                print(nb_set_to_shuffle)
                 
                 for j in range(nb_set_to_shuffle):
                     
-                    print j,permut
+                    print(j,permut)
                     
                     shift = j + permut
                     
                     rel_shift = shift % nb_set_to_shuffle
                     
-                    print shift,rel_shift
+                    print(shift,rel_shift)
                     
                     for i in range(nb_args_per_list):
                         self.permut_lists_of_lists[j][i].append(list_of_lists[rel_shift][i][index_file])
                     
             #print self.permut_lists_of_lists
             
-            print len(self.permut_lists_of_lists)
-            print len(self.permut_lists_of_lists[0])
+            print(len(self.permut_lists_of_lists))
+            print(len(self.permut_lists_of_lists[0]))
             
         return runtime
         
@@ -689,7 +689,7 @@ class ShuffleMatrix(BaseInterface):
 
     def _run_interface(self, runtime):
                 
-        print 'in prepare_coclass'
+        print('in prepare_coclass')
         original_matrix_file = self.inputs.original_matrix_file
         seed = self.inputs.seed
         
@@ -697,23 +697,23 @@ class ShuffleMatrix(BaseInterface):
         
         original_matrix = np.load(original_matrix_file)
         
-        print original_matrix
-        print original_matrix.shape
+        print(original_matrix)
+        print(original_matrix.shape)
         
         if seed == -1:
-            print "keeping original matrix"
+            print("keeping original matrix")
             shuffled_matrix = original_matrix
             
         else:
             
-            print "randomizing " + str(seed)
+            print("randomizing " + str(seed))
             np.random.seed(seed)
             
             np.fill_diagonal(original_matrix,np.nan)
         
             shuffled_matrix = np.zeros(shape = original_matrix.shape,dtype = original_matrix.dtype)
         
-            for i,j in iter.combinations(range(original_matrix.shape[0]),2):
+            for i,j in iter.combinations(list(range(original_matrix.shape[0])),2):
                 #print i,j
                 
                 bool_ok = False
@@ -740,8 +740,8 @@ class ShuffleMatrix(BaseInterface):
                 
                 
             
-        print original_matrix
-        print shuffled_matrix
+        print(original_matrix)
+        print(shuffled_matrix)
         
         shuffled_matrix_file = os.path.abspath("shuffled_matrix.npy")
         
@@ -781,7 +781,7 @@ class ShuffleNetList(BaseInterface):
 
     def _run_interface(self, runtime):
                 
-        print 'in prepare_coclass'
+        print('in prepare_coclass')
         orig_net_list_file= self.inputs.orig_net_list_file
         seed = self.inputs.seed
         
@@ -789,14 +789,14 @@ class ShuffleNetList(BaseInterface):
         
         original_net_list = np.loadtxt(orig_net_list_file)
         
-        print original_net_list
+        print(original_net_list)
         
         if seed == -1:
-            print "keeping original matrix"
+            print("keeping original matrix")
             
         else:
             
-            print "randomizing " + str(seed)
+            print("randomizing " + str(seed))
             np.random.seed(seed)
             
             np.random.shuffle(original_net_list[:,0])
@@ -809,7 +809,7 @@ class ShuffleNetList(BaseInterface):
             #print original_net_list[:,2].shape
             
             
-        print original_net_list
+        print(original_net_list)
         
         shuffled_net_list_file = os.path.abspath("shuffled_net_list.txt")
         

@@ -23,7 +23,7 @@ def return_all_iter_cormats(cormat_path ,iterables ,iternames, gm_mask_coords_fi
     """
     gm_mask_coords_file is the coords commun to all analyses before Inteersectmask
     """
-    print zip(*iterables)
+    print(list(zip(*iterables)))
     
     all_iter_cormats = []
     all_descriptors = []
@@ -38,19 +38,19 @@ def return_all_iter_cormats(cormat_path ,iterables ,iternames, gm_mask_coords_fi
         
     for iter_obj in product(*iterables):
         
-        print iter_obj
+        print(iter_obj)
         
         assert len(iter_obj) == len(iternames), "Error, different number of iternames and iterables"
         
         iter_dir = "".join(["_" + zip_iter[0].strip() + "_" + zip_iter[1].strip() for zip_iter in zip(iternames,iter_obj)])
                             
-        print iter_dir
+        print(iter_dir)
         
         cormat_file = os.path.join(cormat_path,iter_dir,"compute_conf_cor_mat","Z_cor_mat_resid_ts.npy")
         
         if os.path.exists(cormat_file):
             cormat = np.load(cormat_file)
-            print cormat.shape
+            print(cormat.shape)
             
             if gm_mask_coords_file != 0:
                 coords_file = os.path.join(cormat_path,iter_dir,"filter_ROI_mask_with_GM","filtered_coords_rois.txt")
@@ -62,10 +62,10 @@ def return_all_iter_cormats(cormat_path ,iterables ,iternames, gm_mask_coords_fi
                 if gm_mask_labels_file:
                     labels = [line.strip() for line in open(gm_mask_labels_file)]
                 else: 
-                    labels = range(cormat.shape[0])
+                    labels = list(range(cormat.shape[0]))
                     
                 df = pd.DataFrame(cormat, columns = labels,index = labels)
-                print df
+                print(df)
                 
                 df.to_excel(writer, "_".join(iter_obj))
                 
@@ -73,12 +73,12 @@ def return_all_iter_cormats(cormat_path ,iterables ,iternames, gm_mask_coords_fi
             all_descriptors.append(iter_obj)
             
         else:
-            print "Warning, file {}  could not be found".format(cormat_file)
+            print("Warning, file {}  could not be found".format(cormat_file))
         
     if export_df:
         writer.save()
         
-    print np.array(all_iter_cormats).shape
+    print(np.array(all_iter_cormats).shape)
     
     pd_all_descriptors = pd.DataFrame(all_descriptors,columns = iternames)
     
@@ -90,7 +90,7 @@ def return_all_iter_cormats(cormat_path ,iterables ,iternames, gm_mask_coords_fi
 
 def compute_mean_cormats(all_cormats,all_descriptors,descript_columns):
 
-    print "In compute_mean_cormats"
+    print("In compute_mean_cormats")
     
     dict_mean = {}
     
@@ -108,19 +108,19 @@ def compute_mean_cormats(all_cormats,all_descriptors,descript_columns):
 
         for elem, lines in all_descriptors.groupby(by = descript_columns):
         
-            print elem
+            print(elem)
             #print lines
-            print lines.index
+            print(lines.index)
             
-            print all_cormats.shape
+            print(all_cormats.shape)
             
             elem_cormats = all_cormats[lines.index,:,:]
             
-            print elem_cormats.shape
+            print(elem_cormats.shape)
             
             mean_elem = np.mean(elem_cormats,axis = 0)
             
-            print mean_elem.shape
+            print(mean_elem.shape)
             
             dict_mean[elem] = mean_elem
             
@@ -131,7 +131,7 @@ def compute_mean_cormats(all_cormats,all_descriptors,descript_columns):
 
 def compute_stats_cormats(all_cormats,all_descriptors,descript_columns, groups = [], keep_intracon = False):
 
-    print all_cormats.shape
+    print(all_cormats.shape)
     
     for column in descript_columns:
     
@@ -143,7 +143,7 @@ def compute_stats_cormats(all_cormats,all_descriptors,descript_columns, groups =
     
     for column in descript_columns:
         
-        print column
+        print(column)
         
         if len(groups) == 0:
             groups = all_descriptors[column].unique().tolist()
@@ -152,9 +152,9 @@ def compute_stats_cormats(all_cormats,all_descriptors,descript_columns, groups =
         
         list_of_list_matrices = [all_cormats[all_descriptors[all_descriptors[column] == cond_name].index,:,:] for cond_name in groups]
         
-        print list_of_list_matrices
-        print len(list_of_list_matrices)
-        print np.array(list_of_list_matrices).shape
+        print(list_of_list_matrices)
+        print(len(list_of_list_matrices))
+        print(np.array(list_of_list_matrices).shape)
         
         
         signif_adj_mat, p_val_mat, F_stat_mat = compute_oneway_anova_fwe(list_of_list_matrices,cor_alpha = 0.05, uncor_alpha = 0.01, keep_intracon = keep_intracon)
@@ -169,16 +169,16 @@ def compute_stats_cormats(all_cormats,all_descriptors,descript_columns, groups =
         
         for combi_pair in combinations(groups,2):
             pair_name = "-".join(combi_pair)
-            print pair_name
+            print(pair_name)
             
-            print combi_pair[0]
+            print(combi_pair[0])
             
             try:
                 signif_adj_mat,p_val_mat,T_stat_mat = compute_pairwise_ttest_fdr(X = list_of_list_matrices[groups.index(combi_pair[0])],
                                                                Y = list_of_list_matrices[groups.index(combi_pair[1])],
                                                                cor_alpha = 0.05, uncor_alpha = 0.01,paired = True,old_order = False, keep_intracon = keep_intracon)
                 
-                print T_stat_mat
+                print(T_stat_mat)
                 
                 dict_signif["T-test_" + pair_name] = signif_adj_mat
                 dict_p_val["T-test_" + pair_name] = p_val_mat
@@ -186,10 +186,10 @@ def compute_stats_cormats(all_cormats,all_descriptors,descript_columns, groups =
         
                 
             except AssertionError:
-                print "Stop running after {} was wrong".format(pair_name)
+                print("Stop running after {} was wrong".format(pair_name))
                 
-        print column
-        print dict_signif.keys()
+        print(column)
+        print(list(dict_signif.keys()))
         
     return dict_signif,dict_p_val,dict_stats
 
@@ -198,8 +198,8 @@ def compute_stats_cormats(all_cormats,all_descriptors,descript_columns, groups =
 if __name__ =='__main__':
 	
 	test1 = isInAlphabeticalOrder(["a","b","c"])
-	print test1
+	print(test1)
 	
 	test2 = isInAlphabeticalOrder(["ab","ba","ca"])
-	print test2
+	print(test2)
 	
