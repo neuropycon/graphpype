@@ -1,4 +1,4 @@
-import radatools
+from . import radatools
 
 import imp
 try:
