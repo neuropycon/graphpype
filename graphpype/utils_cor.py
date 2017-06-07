@@ -197,10 +197,10 @@ def mean_select_mask_data(data_img,data_mask):
         masked_data_matrix = data_img[data_mask == 1,:]
         print masked_data_matrix.shape
         
-        masked_data_matrix = masked_data_matrix[~np.isnan(masked_data_matrix)]
-        mean_mask_data_matrix = np.mean(masked_data_matrix,axis = 0)
+        #masked_data_matrix = masked_data_matrix[~np.isnan(masked_data_matrix)]
+        #mean_mask_data_matrix = np.mean(masked_data_matrix,axis = 0)
         
-        #mean_mask_data_matrix = np.nanmean(masked_data_matrix,axis = 0)
+        mean_mask_data_matrix = np.nanmean(masked_data_matrix,axis = 0)
         
         print mean_mask_data_matrix.shape
         
