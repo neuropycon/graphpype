@@ -35,63 +35,134 @@ def glob_natural_sorted(reg_exp):
 
 ######################################## gather rada ######################################
 
-def compute_rada_df(iter_path,df):
+def compute_rada_df(iter_path,df,radatools_version = "3.2", mapflow = [],mapflow_name = ""):
 
     from graphpype.utils_mod import get_modularity_value_from_lol_file
     from graphpype.utils_mod import get_values_from_global_info_file
     from graphpype.utils_mod import get_path_length_from_info_dists_file
         
+    if radatools_version == 3.2:
+        
+        net_prop_dir = "net_prop"
+        
+    elif radatools_version == 4.0:
+        
+        net_prop_dir = "prep_rada"
+        
     ########### modularity
     
-    modularity_file = os.path.join(iter_path,"community_rada","Z_List.lol")
-
-    print modularity_file
-    
-    if os.path.exists(modularity_file):
-    
-        mod_val = get_modularity_value_from_lol_file(modularity_file)
-    #else:
-        #mod_val = np.nan
+    if len(mapflow) == 0:
             
-        print mod_val
+        modularity_file = os.path.join(iter_path,"community_rada","Z_List.lol")
+
+        print modularity_file
         
-        df['Modularity'] = mod_val
+        if os.path.exists(modularity_file):
         
-    print df
-    
-    #################### info_global 
-    
-    global_info_file = os.path.join(iter_path,"net_prop","Z_List-info_global.txt")
-    
-    print global_info_file
-    
-    if os.path.exists(global_info_file):
-    
-    
-        global_info_values = get_values_from_global_info_file(global_info_file)
-        
-        print global_info_values
-        
-        df.update(global_info_values)
-        
+            mod_val = get_modularity_value_from_lol_file(modularity_file)
+        #else:
+            #mod_val = np.nan
+                
+            print mod_val
+            
+            df['Modularity'] = mod_val
+            
         print df
         
-    ##################### info_dists
-    
-    path_length_file = os.path.join(iter_path,"net_prop","Z_List-info_dists.txt")
+        #################### info_global 
+        
+        global_info_file = os.path.join(iter_path,net_prop_dir,"Z_List-info_global.txt")
+        
+        print global_info_file
+        
+        if os.path.exists(global_info_file):
+        
+        
+            global_info_values = get_values_from_global_info_file(global_info_file)
+            
+            print global_info_values
+            
+            df.update(global_info_values)
+            
+            print df
+            
+        ##################### info_dists
+        
+        path_length_file = os.path.join(iter_path,net_prop_dir,"Z_List-info_dists.txt")
 
-    print path_length_file
-    
-    if os.path.exists(path_length_file):
-    
-        mean_path_length,diameter,global_efficiency = get_path_length_from_info_dists_file(path_length_file)
+        print path_length_file
         
-        print mean_path_length,diameter
+        if os.path.exists(path_length_file):
         
-        df['Mean_path_length'] = str(mean_path_length)
-        df['Diameter'] = str(diameter)
-        df['Global_efficiency'] = str(global_efficiency)
-    
+            mean_path_length,diameter,global_efficiency = get_path_length_from_info_dists_file(path_length_file)
+            
+            print mean_path_length,diameter
+            
+            df['Mean_path_length'] = str(mean_path_length)
+            df['Diameter'] = str(diameter)
+            df['Global_efficiency'] = str(global_efficiency)
+        
+    else:
+        
+        df['Modularity'] = []
+        df[mapflow_name] = []
+        
+        
+        for i,cond in enumerate(mapflow):
+                
+            df[mapflow_name].append(cond)
+            
+            modularity_file = os.path.join(iter_path,"community_rada","mapflow","community_rada"+str(i),"Z_List.lol")
+
+            print modularity_file
+            
+            if os.path.exists(modularity_file):
+            
+                mod_val = get_modularity_value_from_lol_file(modularity_file)
+            #else:
+                #mod_val = np.nan
+                    
+                print mod_val
+                
+                df['Modularity'].append(mod_val)
+                
+            print df
+            
+            ##################### info_global 
+            
+            #global_info_file = os.path.join(iter_path,net_prop_dir,"mapflow",net_prop_dir+str(i),"Z_List-info_global.txt")
+            
+            #print global_info_file
+            
+            #if os.path.exists(global_info_file):
+            
+            
+                #global_info_values = get_values_from_global_info_file(global_info_file)
+                
+                #print global_info_values
+                
+                #0/0
+                #df.update(global_info_values)
+                
+                #print df
+                
+            ###################### info_dists
+            
+            #path_length_file = os.path.join(iter_path,net_prop_dir,"Z_List-info_dists.txt")
+
+            #print path_length_file
+            
+            #if os.path.exists(path_length_file):
+            
+                #mean_path_length,diameter,global_efficiency = get_path_length_from_info_dists_file(path_length_file)
+                
+                #print mean_path_length,diameter
+                
+                #df['Mean_path_length'] = str(mean_path_length)
+                #df['Diameter'] = str(diameter)
+                #df['Global_efficiency'] = str(global_efficiency)
+            
+            
     print df
             
 
