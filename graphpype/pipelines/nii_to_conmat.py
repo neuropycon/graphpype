@@ -430,14 +430,18 @@ def create_pipeline_nii_to_weighted_conmat(main_path, pipeline_name = "nii_to_we
             
             pipeline.connect(inputnode, 'ROI_labels_file', compute_conf_cor_mat, 'labels_file')
     else:
-        
-            compute_conf_cor_mat = pe.Node(interface = ComputeConfCorMat(), name='compute_conf_cor_mat')
-            
-            compute_conf_cor_mat.inputs.conf_interval_prob = conf_interval_prob
-            
-            pipeline.connect(inputnode, 'resid_ts_file', compute_conf_cor_mat, 'ts_file')
-            pipeline.connect(inputnode, 'reg_txt', compute_conf_cor_mat, 'weight_file')
-            
-            pipeline.connect(inputnode, 'ROI_labels_file', compute_conf_cor_mat, 'labels_file')
-            
+		if mult_regnames:
+			compute_conf_cor_mat = pe.MapNode(interface = ComputeConfCorMat(), name='compute_conf_cor_mat', iterfield = ["weight_file"])
+			compute_conf_cor_mat.inputs.conf_interval_prob = conf_interval_prob
+			pipeline.connect(inputnode, 'resid_ts_file', compute_conf_cor_mat, 'ts_file')
+			pipeline.connect(inputnode, 'reg_txt', compute_conf_cor_mat, 'weight_file')
+			pipeline.connect(inputnode, 'ROI_labels_file', compute_conf_cor_mat, 'labels_file')
+			
+		else:
+			compute_conf_cor_mat = pe.Node(interface = ComputeConfCorMat(), name='compute_conf_cor_mat')
+			compute_conf_cor_mat.inputs.conf_interval_prob = conf_interval_prob
+			pipeline.connect(inputnode, 'resid_ts_file', compute_conf_cor_mat, 'ts_file')
+			pipeline.connect(inputnode, 'reg_txt', compute_conf_cor_mat, 'weight_file')
+			pipeline.connect(inputnode, 'ROI_labels_file', compute_conf_cor_mat, 'labels_file')
+			
     return pipeline
