@@ -107,12 +107,15 @@ def compute_rada_df(iter_path,df,radatools_version = "3.2", mapflow = [],mapflow
         df['Modularity'] = []
         df[mapflow_name] = []
         
+        df['Mean_path_length'] = []
+        df['Diameter'] = []
+        df['Global_efficiency'] = []
         
         for i,cond in enumerate(mapflow):
                 
             df[mapflow_name].append(cond)
             
-            modularity_file = os.path.join(iter_path,"community_rada","mapflow","community_rada"+str(i),"Z_List.lol")
+            modularity_file = os.path.join(iter_path,"community_rada","mapflow","_community_rada"+str(i),"Z_List.lol")
 
             print modularity_file
             
@@ -128,39 +131,45 @@ def compute_rada_df(iter_path,df,radatools_version = "3.2", mapflow = [],mapflow
                 
             print df
             
-            ##################### info_global 
+            #################### info_global 
             
-            #global_info_file = os.path.join(iter_path,net_prop_dir,"mapflow",net_prop_dir+str(i),"Z_List-info_global.txt")
+            global_info_file = os.path.join(iter_path,net_prop_dir,"mapflow","_" + net_prop_dir+str(i),"Z_List-info_global.txt")
             
-            #print global_info_file
+            print global_info_file
             
-            #if os.path.exists(global_info_file):
+            if os.path.exists(global_info_file):
             
             
-                #global_info_values = get_values_from_global_info_file(global_info_file)
+                global_info_values = get_values_from_global_info_file(global_info_file)
                 
-                #print global_info_values
+                print global_info_values
                 
-                #0/0
-                #df.update(global_info_values)
+                for key,value in global_info_values.iteritems():
+                     
+                    print key,value
+                    
+                    if not key in df.keys():
+                        df[key] = []
+                       
+                    df[key].append(value)
+                    
+                print df
                 
-                #print df
-                
-            ###################### info_dists
+            ##################### info_dists
             
-            #path_length_file = os.path.join(iter_path,net_prop_dir,"Z_List-info_dists.txt")
+            path_length_file = os.path.join(iter_path,net_prop_dir,"mapflow","_" + net_prop_dir+str(i),"Z_List-info_dists.txt")
 
-            #print path_length_file
+            print path_length_file
             
-            #if os.path.exists(path_length_file):
+            if os.path.exists(path_length_file):
             
-                #mean_path_length,diameter,global_efficiency = get_path_length_from_info_dists_file(path_length_file)
+                mean_path_length,diameter,global_efficiency = get_path_length_from_info_dists_file(path_length_file)
                 
-                #print mean_path_length,diameter
+                print mean_path_length,diameter
                 
-                #df['Mean_path_length'] = str(mean_path_length)
-                #df['Diameter'] = str(diameter)
-                #df['Global_efficiency'] = str(global_efficiency)
+                df['Mean_path_length'].append(str(mean_path_length))
+                df['Diameter'].append(str(diameter))
+                df['Global_efficiency'].append(str(global_efficiency))
             
             
     print df
