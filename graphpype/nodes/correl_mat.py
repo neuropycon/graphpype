@@ -1813,7 +1813,7 @@ class PrepareMeanCorrel(BaseInterface):
             
                 print 'loading gm mask corres'
                 
-                gm_mask_coords = np.loadtxt(gm_mask_coords_file)
+                gm_mask_coords = np.array(np.loadtxt(gm_mask_coords_file),dtype = int)
                 
                 print gm_mask_coords.shape
                     
@@ -1845,8 +1845,12 @@ class PrepareMeanCorrel(BaseInterface):
                         print coords
                         print coords.shape
                                             
+                        print Z_cor_mat
+                        
                         corres_cor_mat,possible_edge_mat = return_corres_correl_mat(Z_cor_mat,coords,gm_mask_coords)
                         
+                        print corres_cor_mat
+                        print possible_edge_mat
                         
                         np.fill_diagonal(corres_cor_mat,0)
                         
@@ -1912,7 +1916,6 @@ class PrepareMeanCorrel(BaseInterface):
                                             
                         corres_cor_mat,possible_edge_mat = return_corres_correl_mat_labels(Z_cor_mat,np_labels,gm_mask_labels)
                         
-                        print corres_cor_mat
                         
                         np.fill_diagonal(corres_cor_mat,0)
                         
