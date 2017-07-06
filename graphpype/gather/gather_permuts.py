@@ -41,11 +41,11 @@ def compute_rada_df(iter_path,df,radatools_version = "3.2", mapflow = [],mapflow
     from graphpype.utils_mod import get_values_from_global_info_file
     from graphpype.utils_mod import get_path_length_from_info_dists_file
         
-    if radatools_version == 3.2:
+    if radatools_version == "3.2":
         
         net_prop_dir = "net_prop"
         
-    elif radatools_version == 4.0:
+    elif radatools_version == "4.0":
         
         net_prop_dir = "prep_rada"
         
