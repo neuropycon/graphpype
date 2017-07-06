@@ -1979,16 +1979,36 @@ class PrepareMeanCorrel(BaseInterface):
                 
             
             else:
-                    print "!!!!!!!!!!!!!!!!!!!!!!Breaking!!!!!!!!!!!!!!!!!!!!!!!!, found 0 elements in sum_cor_mat_matrix"
+                
+                    #print "!!!!!!!!!!!!!!!!!!!!!!Breaking!!!!!!!!!!!!!!!!!!!!!!!!, found 0 elements in sum_cor_mat_matrix"
                     
-                    print sum_possible_edge_matrix
-                    print np.array(sum_possible_edge_matrix == 0)
-                    print np.array(sum_possible_edge_matrix == 0)
-                    print np.sum(np.array(sum_possible_edge_matrix == 0))
+                    #print sum_possible_edge_matrix
+                    #print np.array(sum_possible_edge_matrix == 0)
+                    #print np.array(sum_possible_edge_matrix == 0)
+                    #print np.sum(np.array(sum_possible_edge_matrix == 0))
                     
-                    print np.unique(sum_possible_edge_matrix)
+                    #print np.unique(sum_possible_edge_matrix)
                     
-                    return
+                    #return
+                    
+                    
+                    avg_cor_mat_matrix = np.divide(np.array(sum_cor_mat_matrix,dtype = float),np.array(sum_possible_edge_matrix,dtype = float))
+                            
+                    avg_cor_mat_matrix[np.isnan(avg_cor_mat_matrix)] = 0.0
+                    
+                    print np.amin(avg_cor_mat_matrix),np.amax(avg_cor_mat_matrix)
+                    
+                    np.save(self.avg_cor_mat_matrix_file,avg_cor_mat_matrix)
+                    
+                    
+                    if export_csv:
+                        
+                        csv_avg_cor_mat_matrix_file  = os.path.abspath('avg_cor_mat_matrix.csv')
+                        
+                        df = pd.DataFrame(avg_cor_mat_matrix, index = labels, columns = labels)
+                        
+                        df.to_csv(csv_avg_cor_mat_matrix_file)
+                        
                 
                 
             if plot_mat == True:
