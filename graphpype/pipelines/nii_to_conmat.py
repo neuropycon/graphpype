@@ -238,7 +238,7 @@ def create_pipeline_nii_to_conmat_seg_template(main_path, pipeline_name = "nii_t
 
 
 
-def create_pipeline_nii_to_conmat(main_path, ROI_mask_file,filter_gm_threshold = 0.9, pipeline_name = "nii_to_conmat",conf_interval_prob = 0.05):
+def create_pipeline_nii_to_conmat(main_path, ROI_mask_file,filter_gm_threshold = 0.9, pipeline_name = "nii_to_conmat",conf_interval_prob = 0.05, background_val = -1.0):
 
     """
     Description:
@@ -284,6 +284,7 @@ def create_pipeline_nii_to_conmat(main_path, ROI_mask_file,filter_gm_threshold =
     #### Nodes version: use min_BOLD_intensity and return coords where signal is strong enough 
     extract_mean_ROI_ts = pe.Node(interface = ExtractTS(plot_fig = False),name = 'extract_mean_ROI_ts')
     
+    extract_mean_ROI_ts.inputs.background_val = background_val
     
     #extract_mean_ROI_ts.inputs.indexed_rois_file = ROI_mask_file
     #extract_mean_ROI_ts.inputs.coord_rois_file = ROI_coords_file
