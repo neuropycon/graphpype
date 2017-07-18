@@ -206,20 +206,21 @@ def mean_select_mask_data(data_img,data_mask):
         except AttributeError:
                 
             print "no nanmean"
-            print np.isnan(masked_data_matrix).shape
-            print np.isnan(masked_data_matrix).reshape(masked_data_matrix.shape)
+            #print np.isnan(masked_data_matrix).shape
+            #print np.logical_not(np.isnan(masked_data_matrix)).shape
+            ##.reshape(masked_data_matrix.shape)
             
-            0/0
+            #0/0
             
-            non_nan_masked_data_matrix = masked_data_matrix[~np.isnan(masked_data_matrix)]
+            #non_nan_masked_data_matrix = masked_data_matrix[~np.isnan(masked_data_matrix)]
             
-            print non_nan_masked_data_matrix.shape
+            #print non_nan_masked_data_matrix.shape
             
             mean_mask_data_matrix = np.mean(non_nan_masked_data_matrix,axis = 0)
             
         print mean_mask_data_matrix.shape
             
-        0/0
+        #0/0
         
     else:
         print "Warning, Image and mask are incompatible"
