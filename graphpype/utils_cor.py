@@ -272,8 +272,13 @@ def mean_select_indexed_mask_data(orig_ts,indexed_mask_rois_data,min_BOLD_intens
                 #all_voxel_roi_ts = all_voxel_roi_ts[~np.isnan(all_voxel_roi_ts)]
                 #mean_all_voxel_roi_ts = np.mean(all_voxel_roi_ts,axis = 0)
             
-                mean_all_voxel_roi_ts = np.nanmean(all_voxel_roi_ts,axis = 0)
-                
+                try:
+                    mean_all_voxel_roi_ts = np.nanmean(all_voxel_roi_ts,axis = 0)
+                    
+                except AttributeError:
+                    
+                    mean_all_voxel_roi_ts = np.mean(all_voxel_roi_ts,axis = 0)
+                    
                 print mean_all_voxel_roi_ts
                 print mean_all_voxel_roi_ts.shape
                 
