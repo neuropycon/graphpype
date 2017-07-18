@@ -12,6 +12,7 @@ setup(
     description = "Graph analysis for neuropycon (using nipype, and ephypype); based on previous packages dmgraphanalysis and then dmgraphanalysis_nodes and graphpype"   , 
     lisence='BSD 3',
     install_requires=['numpy',
+                      'nipype',
                       'configparser',
                       "pandas",
                       "statsmodels",
