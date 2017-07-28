@@ -43,6 +43,8 @@ def visu_graph_modules_roles(net_file, lol_file, coords_file, labels_file,node_r
 
     print community_vect
 
+    print np.unique(community_vect)
+    
     c_connect = np.array(compute_modular_network(sparse_matrix,community_vect),dtype = 'float64')
     print c_connect.shape
 
@@ -54,7 +56,7 @@ def visu_graph_modules_roles(net_file, lol_file, coords_file, labels_file,node_r
     ############ node roles:
     node_roles = np.array(np.loadtxt(node_roles_file),dtype = 'int64')
            
-    print node_roles
+    #print node_roles
     
     umin = 0.0
 
