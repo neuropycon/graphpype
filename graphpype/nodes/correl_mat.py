@@ -303,7 +303,7 @@ class IntersectMask(BaseInterface):
         coords_rois_file = self.inputs.coords_rois_file
         labels_rois_file = self.inputs.labels_rois_file
         MNI_coords_rois_file = self.inputs.MNI_coords_rois_file
-        background_value = self.inputs.background_value
+        background_val = self.inputs.background_val
         
         filter_thr = self.inputs.filter_thr 
         
@@ -351,11 +351,11 @@ class IntersectMask(BaseInterface):
         print np.unique(indexed_rois_data)        
         print len(np.unique(indexed_rois_data))
         
-        if background_value == -1.0:
+        if background_val == -1.0:
                 
             filtered_indexed_rois_data = np.array(filter_mask_data * (indexed_rois_data.copy()+1) -1,dtype = 'int64')
         
-        elif background_value == 0.0:
+        elif background_val == 0.0:
             
             filtered_indexed_rois_data = np.array(filter_mask_data * indexed_rois_data,dtype = 'int64')
         
