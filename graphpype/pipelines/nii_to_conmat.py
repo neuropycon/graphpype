@@ -274,6 +274,8 @@ def create_pipeline_nii_to_conmat(main_path, ROI_mask_file,filter_gm_threshold =
     
     filter_ROI_mask_with_GM.inputs.indexed_rois_file = ROI_mask_file
     filter_ROI_mask_with_GM.inputs.filter_thr = filter_gm_threshold
+    filter_ROI_mask_with_GM.inputs.background_val = background_val
+    
     
     pipeline.connect(inputnode, 'ROI_coords_file', filter_ROI_mask_with_GM, 'coords_rois_file')
     pipeline.connect(inputnode, 'ROI_MNI_coords_file', filter_ROI_mask_with_GM, 'MNI_coords_rois_file')

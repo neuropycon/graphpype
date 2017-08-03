@@ -114,6 +114,8 @@ class ExtractTS(BaseInterface):
         
         plot_fig = self.inputs.plot_fig
         
+        print indexed_rois_file
+        
         ## loading ROI indexed mask
         indexed_rois_img = nib.load(indexed_rois_file)
         indexed_mask_rois_data = indexed_rois_img.get_data()
@@ -221,6 +223,8 @@ class IntersectMaskInputSpec(BaseInterfaceInputSpec):
     
     filter_thr = traits.Float(0.99, usedefault = True, desc='Value to threshold filter_mask')
                           
+    background_val = traits.Float( -1.0, desc='value for background (i.e. outside brain)',usedefault = True)
+    
 class IntersectMaskOutputSpec(TraitedSpec):
     
     filtered_indexed_rois_file = File(exists=True, desc='nii file with indexed mask where all voxels belonging to the same ROI have the same value (! starting from 0)')
@@ -261,7 +265,10 @@ class IntersectMask(BaseInterface):
         
         filter_thr:
             type = Float, default = 0.99, usedefault = True, desc='Value to threshold filter_mask'
-                        
+        
+        background_val:
+            type = Float, -1.0, desc='value for background (i.e. outside brain)',usedefault = True
+    
     Outputs:
     
         filtered_indexed_rois_file:
@@ -296,6 +303,8 @@ class IntersectMask(BaseInterface):
         coords_rois_file = self.inputs.coords_rois_file
         labels_rois_file = self.inputs.labels_rois_file
         MNI_coords_rois_file = self.inputs.MNI_coords_rois_file
+        background_value = self.inputs.background_value
+        
         filter_thr = self.inputs.filter_thr 
         
         print filter_thr
@@ -342,7 +351,13 @@ class IntersectMask(BaseInterface):
         print np.unique(indexed_rois_data)        
         print len(np.unique(indexed_rois_data))
         
-        filtered_indexed_rois_data = np.array(filter_mask_data * (indexed_rois_data.copy()+1) -1,dtype = 'int64')
+        if background_value == -1.0:
+                
+            filtered_indexed_rois_data = np.array(filter_mask_data * (indexed_rois_data.copy()+1) -1,dtype = 'int64')
+        
+        elif background_value == 0.0:
+            
+            filtered_indexed_rois_data = np.array(filter_mask_data * indexed_rois_data,dtype = 'int64')
         
         print "filtered_indexed_rois_data:"
         print np.unique(filtered_indexed_rois_data)
