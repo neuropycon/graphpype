@@ -367,9 +367,14 @@ class IntersectMask(BaseInterface):
         nib.save(nib.Nifti1Image(filtered_indexed_rois_data,indexed_rois_img.get_affine(),indexed_rois_img.get_header()),filtered_indexed_rois_img_file)
     
         print "index_corres:"
-        #index_corres = np.unique(filtered_indexed_rois_data)[:-1]
-        index_corres = np.unique(filtered_indexed_rois_data)[1:]
+        if background_val == -1.0:
+            #index_corres = np.unique(filtered_indexed_rois_data)[:-1]
+            index_corres = np.unique(filtered_indexed_rois_data)[1:]
         
+        elif background_val == 0.0:
+            index_corres = np.arange(np.unique(filtered_indexed_rois_data)[1:].shape[0])
+            
+            
         print index_corres
         print len(index_corres)
         
