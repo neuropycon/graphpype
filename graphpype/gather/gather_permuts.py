@@ -174,12 +174,6 @@ def compute_rada_df(iter_path,df,radatools_version = "3.2", mapflow = [],mapflow
             
     print df
             
-, mapflow = [],mapflow_name = ""):
-
-    from graphpype.utils_mod import get_modularity_value_from_lol_file
-    from graphpype.utils_mod import get_values_from_global_info_file
-    from graphpype.utils_mod import get_path_length_from_info_dists_file
-        
 def compute_nodes_rada_df(local_dir,gm_coords,coords_file,labels_file,radatools_version = "3.2"):
 
     from graphpype.utils_net import read_lol_file,read_Pajek_corres_nodes
