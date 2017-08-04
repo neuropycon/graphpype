@@ -244,12 +244,14 @@ def compute_nodes_rada_df(local_dir,gm_coords,coords_file,labels_file,radatools_
         print "Missing {},{} or {}".format(Pajek_file,coords_file,labels_file)
         
     #### info nodes
-    info_nodes_files = glob.glob(os.path.join(local_dir,net_prop_dir,"*-info_nodes.txt"))
+    #info_nodes_files = glob.glob(os.path.join(local_dir,net_prop_dir,"*-info_nodes.txt"))
     
-    if len(info_nodes_files) == 1:
+    #if len(info_nodes_files) == 1:
         
-        info_nodes_file = info_nodes_files[0]
-     
+        #info_nodes_file = info_nodes_files[0]
+    
+    info_nodes_file = os.path.join(local_dir,net_prop_dir,"Z_List-info_nodes.txt")
+    
     if os.path.exists(info_nodes_file) :
         
         ## loading info_nodes
