@@ -174,16 +174,29 @@ def compute_rada_df(iter_path,df,radatools_version = "3.2", mapflow = [],mapflow
             
     print df
             
+, mapflow = [],mapflow_name = ""):
 
-def compute_nodes_rada_df(local_dir,gm_coords,coords_file,labels_file):
+    from graphpype.utils_mod import get_modularity_value_from_lol_file
+    from graphpype.utils_mod import get_values_from_global_info_file
+    from graphpype.utils_mod import get_path_length_from_info_dists_file
+        
+def compute_nodes_rada_df(local_dir,gm_coords,coords_file,labels_file,radatools_version = "3.2"):
 
     from graphpype.utils_net import read_lol_file,read_Pajek_corres_nodes
     from graphpype.utils_dtype_coord import where_in_coords
     
     import glob
     
+    if radatools_version == "3.2":
+        
+        net_prop_dir = "net_prop"
+        
+    elif radatools_version == "4.0":
+        
+        net_prop_dir = "prep_rada"
+        
     #### Z_List
-    Pajek_files = glob.glob(os.path.join(local_dir,"prep_rada","*.net"))
+    Pajek_files = glob.glob(os.path.join(local_dir,net_prop_dir,"*.net"))
     
     assert len(Pajek_files) == 1, "Error, no .net file found in {} prep_rada".format(local_dir)
     
@@ -235,7 +248,7 @@ def compute_nodes_rada_df(local_dir,gm_coords,coords_file,labels_file):
         print "Missing {},{} or {}".format(Pajek_file,coords_file,labels_file)
         
     #### info nodes
-    info_nodes_files = glob.glob(os.path.join(local_dir,"net_prop","*-info_nodes.txt"))
+    info_nodes_files = glob.glob(os.path.join(local_dir,net_prop_dir,"*-info_nodes.txt"))
     
     if len(info_nodes_files) == 1:
         
