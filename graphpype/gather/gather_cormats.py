@@ -14,6 +14,7 @@ from itertools import product,combinations
 from numpy import isnan, nan, logical_not, logical_or
 
 from graphpype.utils_stats import compute_oneway_anova_fwe,compute_pairwise_ttest_fdr
+from graphpype.utils_cor import return_corres_correl_mat
 
 def isInAlphabeticalOrder(word):
     return list(word) == sorted(word)
@@ -33,6 +34,8 @@ def return_all_iter_cormats(cormat_path ,iterables ,iternames, gm_mask_coords_fi
     if gm_mask_coords_file != 0:
         gm_mask_coords = np.loadtxt(gm_mask_coords_file)
     
+        print gm_mask_coords
+        
     if export_df:
         writer = pd.ExcelWriter(os.path.join(cormat_path,"all_cormats.xls"))
         
@@ -53,7 +56,8 @@ def return_all_iter_cormats(cormat_path ,iterables ,iternames, gm_mask_coords_fi
             print cormat.shape
             
             if gm_mask_coords_file != 0:
-                coords_file = os.path.join(cormat_path,iter_dir,"filter_ROI_mask_with_GM","filtered_coords_rois.txt")
+                coords_file = os.path.join(cormat_path,iter_dir,"extract_mean_ROI_ts","subj_coord_rois.txt")
+                #coords_file = os.path.join(cormat_path,iter_dir,"filter_ROI_mask_with_GM","filtered_coords_rois.txt")
                 coords = np.loadtxt(coords_file)
             
                 cormat,_ = return_corres_correl_mat(cormat,coords,gm_mask_coords)
@@ -69,6 +73,8 @@ def return_all_iter_cormats(cormat_path ,iterables ,iternames, gm_mask_coords_fi
                 
                 df.to_excel(writer, "_".join(iter_obj))
                 
+            print cormat.shape
+            
             all_iter_cormats.append(cormat)
             all_descriptors.append(iter_obj)
             
@@ -82,7 +88,8 @@ def return_all_iter_cormats(cormat_path ,iterables ,iternames, gm_mask_coords_fi
     
     pd_all_descriptors = pd.DataFrame(all_descriptors,columns = iternames)
     
-    pd_all_descriptors.to_excel(os.path.join(cormat_path,"all_descriptors.xls"))
+    if export_df:
+        pd_all_descriptors.to_excel(os.path.join(cormat_path,"all_descriptors.xls"))
                             
     return np.array(all_iter_cormats),pd_all_descriptors
 
@@ -109,7 +116,7 @@ def compute_mean_cormats(all_cormats,all_descriptors,descript_columns):
         for elem, lines in all_descriptors.groupby(by = descript_columns):
         
             print elem
-            #print lines
+            print lines
             print lines.index
             
             print all_cormats.shape

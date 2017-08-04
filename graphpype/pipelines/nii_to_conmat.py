@@ -295,6 +295,7 @@ def create_pipeline_nii_to_conmat(main_path, ROI_mask_file,filter_gm_threshold =
     pipeline.connect(inputnode,'nii_4D_file', extract_mean_ROI_ts, 'file_4D')
     pipeline.connect(filter_ROI_mask_with_GM, 'filtered_indexed_rois_file', extract_mean_ROI_ts, 'indexed_rois_file')
     pipeline.connect(filter_ROI_mask_with_GM, 'filtered_coords_rois_file', extract_mean_ROI_ts, 'coord_rois_file')
+    pipeline.connect(filter_ROI_mask_with_GM, 'filtered_labels_rois_file', extract_mean_ROI_ts, 'label_rois_file')
     
     
     #### reslice white_matter_signal
@@ -346,7 +347,7 @@ def create_pipeline_nii_to_conmat(main_path, ROI_mask_file,filter_gm_threshold =
     compute_conf_cor_mat.inputs.conf_interval_prob = conf_interval_prob
     
     pipeline.connect(regress_covar, 'resid_ts_file', compute_conf_cor_mat, 'ts_file')
-    pipeline.connect(filter_ROI_mask_with_GM, 'filtered_labels_rois_file', compute_conf_cor_mat, 'labels_file')
+    pipeline.connect(extract_mean_ROI_ts, 'subj_label_rois_file', compute_conf_cor_mat, 'labels_file')
     
     return pipeline
 
