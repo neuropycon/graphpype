@@ -190,13 +190,15 @@ def compute_nodes_rada_df(local_dir,gm_coords,coords_file,labels_file,radatools_
         net_prop_dir = "prep_rada"
         
     #### Z_List
-    Pajek_files = glob.glob(os.path.join(local_dir,net_prop_dir,"*.net"))
+    Pajek_file = os.path.join(local_dir,net_prop_dir,"Z_List.net")
     
-    assert len(Pajek_files) == 1, "Error, no .net file found in {} prep_rada".format(local_dir)
+    #Pajek_files = glob.glob(os.path.join(local_dir,net_prop_dir,"*.net"))
     
-    if len(Pajek_files) == 1:
+    #assert len(Pajek_files) == 1, "Error, no .net file found in {} prep_rada".format(local_dir)
+    
+    #if len(Pajek_files) == 1:
         
-        Pajek_file = Pajek_files[0]
+        #Pajek_file = Pajek_files[0]
         
     list_df = []
             
