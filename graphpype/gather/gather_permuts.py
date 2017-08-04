@@ -267,11 +267,13 @@ def compute_nodes_rada_df(local_dir,gm_coords,coords_file,labels_file,radatools_
         print info_nodes_file
     
     #### modules /community_vect    
-    partition_files = glob.glob(os.path.join(local_dir,"community_rada","*.lol"))
+    #partition_files = glob.glob(os.path.join(local_dir,"community_rada","*.lol"))
     
-    if len(partition_files) == 1:
+    #if len(partition_files) == 1:
         
-        partition_file = partition_files[0]
+        #partition_file = partition_files[0]
+    partition_file = os.path.join(local_dir,"community_rada","Z_List.lol")
+     
      
     if os.path.exists(partition_file) :
         
