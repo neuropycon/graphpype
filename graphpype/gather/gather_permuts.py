@@ -200,7 +200,7 @@ def compute_nodes_rada_df(local_dir,gm_coords,coords_file,labels_file,radatools_
         
     list_df = []
             
-    Pajek_file = os.path.join(local_dir,net_prop_dir,"Z_List.net")
+    Pajek_file = os.path.join(local_dir,"prep_rada","Z_List.net")
     
     if os.path.exists(coords_file) and os.path.exists(Pajek_file) and os.path.exists(labels_file):
                         
