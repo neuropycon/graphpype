@@ -190,8 +190,6 @@ def compute_nodes_rada_df(local_dir,gm_coords,coords_file,labels_file,radatools_
         net_prop_dir = "prep_rada"
         
     #### Z_List
-    Pajek_file = os.path.join(local_dir,net_prop_dir,"Z_List.net")
-    
     #Pajek_files = glob.glob(os.path.join(local_dir,net_prop_dir,"*.net"))
     
     #assert len(Pajek_files) == 1, "Error, no .net file found in {} prep_rada".format(local_dir)
@@ -202,6 +200,8 @@ def compute_nodes_rada_df(local_dir,gm_coords,coords_file,labels_file,radatools_
         
     list_df = []
             
+    Pajek_file = os.path.join(local_dir,net_prop_dir,"Z_List.net")
+    
     if os.path.exists(coords_file) and os.path.exists(Pajek_file) and os.path.exists(labels_file):
                         
         #### labels
@@ -241,7 +241,20 @@ def compute_nodes_rada_df(local_dir,gm_coords,coords_file,labels_file,radatools_
         
         list_df.append(pd.DataFrame(np.concatenate((where_in_gm_mask,node_labels,node_coords),axis = 1),columns = ['Where_in_GM_mask','labels','MNI_x','MNI_y','MNI_z']))
     else:
-        print "Missing {},{} or {}".format(Pajek_file,coords_file,labels_file)
+        #print "Missing {},{} or {}".format(Pajek_file,coords_file,labels_file)
+        
+        if not os.path.exists(coords_file):
+            print "Missing {}".format(coords_file)
+        
+        if not os.path.exists(Pajek_file):
+            print "Missing {}".format(Pajek_file)
+            
+        
+        if not os.path.exists(labels_file):
+            print "Missing {}".format(labels_file)
+            
+            
+        #and os.path.exists(Pajek_file) and os.path.exists(labels_file):
         
     #### info nodes
     #info_nodes_files = glob.glob(os.path.join(local_dir,net_prop_dir,"*-info_nodes.txt"))
