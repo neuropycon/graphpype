@@ -7,7 +7,7 @@ from graphpype.utils_net import read_Pajek_corres_nodes_and_sparse_matrix
 
 from graphpype.utils_net import read_lol_file,compute_modular_network
 
-def visu_graph_modules_roles(net_file, lol_file, coords_file, labels_file,node_roles_file,modality_type = "",inter_modules = True,  c_colval = {0:"red",1:"lightblue",2:"yellow",3:"green",4:"purple"},s_textcolor = "black"):
+def visu_graph_modules_roles(net_file, lol_file, coords_file, labels_file,node_roles_file,modality_type = "",inter_modules = True,  c_colval = {0:"red",1:"lightblue",2:"yellow",3:"green",4:"purple"},s_textcolor = "black", only_right = False):
 
     ########## coords
     #coord_file = os.path.abspath("data/MEG/label_coords.txt")
@@ -73,17 +73,20 @@ def visu_graph_modules_roles(net_file, lol_file, coords_file, labels_file,node_r
     corres_coords = coords[node_corres,:]
     newLabels = npLabels[node_corres]
 
-    only_R_labels = []
-    
-    for lab in newLabels.tolist():
-        if lab.endswith("_R") and not lab.split("_")[0] in ["amygdala","Precuneus", "vPCC", "dPCC", "Ip"]:
-            only_R_labels.append(lab)
-        else:
-            only_R_labels.append("")
+
+    if only_right:
             
-    newLabels = np.array(only_R_labels,dtype = "str")
-    print newLabels
-    
+        only_R_labels = []
+        
+        for lab in newLabels.tolist():
+            if lab.endswith("_R") and not lab.split("_")[0] in ["amygdala","Precuneus", "vPCC", "dPCC", "Ip"]:
+                only_R_labels.append(lab)
+            else:
+                only_R_labels.append("")
+                
+        newLabels = np.array(only_R_labels,dtype = "str")
+        print newLabels
+        
     
     
     #c_colval = {0:"red",1:"darksalmon",2:"blue",3:"green",4:"yellow",5:"orange"}
