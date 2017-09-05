@@ -7,7 +7,7 @@ from graphpype.utils_net import read_Pajek_corres_nodes_and_sparse_matrix
 
 from graphpype.utils_net import read_lol_file,compute_modular_network
 
-def visu_graph_modules_roles(net_file, lol_file, coords_file, labels_file,node_roles_file,modality_type = "",inter_modules = True,  c_colval = {0:"red",1:"lightblue",2:"yellow",3:"green",4:"purple"}):
+def visu_graph_modules_roles(net_file, lol_file, coords_file, labels_file,node_roles_file,modality_type = "",inter_modules = True,  c_colval = {0:"red",1:"lightblue",2:"yellow",3:"green",4:"purple"},s_textcolor = "black"):
 
     ########## coords
     #coord_file = os.path.abspath("data/MEG/label_coords.txt")
@@ -73,6 +73,18 @@ def visu_graph_modules_roles(net_file, lol_file, coords_file, labels_file,node_r
     corres_coords = coords[node_corres,:]
     newLabels = npLabels[node_corres]
 
+    only_R_labels = []
+    
+    for lab in newLabels.tolist():
+        if lab.endswith("_R") and not lab.split("_")[0] in ["amygdala","Precuneus", "vPCC", "dPCC", "Ip"]:
+            only_R_labels.append(lab)
+        else:
+            only_R_labels.append("")
+            
+    newLabels = np.array(only_R_labels,dtype = "str")
+    print newLabels
+    
+    
     
     #c_colval = {0:"red",1:"darksalmon",2:"blue",3:"green",4:"yellow",5:"orange"}
 
@@ -97,7 +109,7 @@ def visu_graph_modules_roles(net_file, lol_file, coords_file, labels_file,node_r
     hub_size = 15.0
     non_hub_size = 5.0
     
-    vb = Brain(s_xyz=corres_coords,  s_text=newLabels, s_textsize = 2, s_textcolor="white", s_textshift=(1.5, 1.8, 3), s_opacity=0.,s_radiusmin=0., s_radiusmax=0.1)
+    vb = Brain(s_xyz=corres_coords,  s_text=newLabels, s_textsize = 2, s_textcolor= s_textcolor, s_textshift=(1.5, 1.8, 3), s_opacity=0.,s_radiusmin=0., s_radiusmax=0.1)
     
     if coords_prov_hubs.shape[0] != 0:
         vb.add_sources('coords_prov_hubs', s_xyz=coords_prov_hubs, s_symbol='disc',
@@ -127,7 +139,7 @@ def visu_graph_modules_roles(net_file, lol_file, coords_file, labels_file,node_r
 
     vb.show()
 
-def visu_graph_modules(net_file, lol_file, coords_file, labels_file,inter_modules = True, modality_type = ""):
+def visu_graph_modules(net_file, lol_file, coords_file, labels_file,inter_modules = True, modality_type = "",s_textcolor="black", c_colval = {0:"red",1:"orange",2:"blue",3:"green",4:"yellow",5:"darksalmon"}):
     
 
     ########## coords
@@ -187,17 +199,17 @@ def visu_graph_modules(net_file, lol_file, coords_file, labels_file,inter_module
     corres_coords = coords[node_corres,:]
     newLabels = npLabels[node_corres]
 
-    c_colval = {0:"red",1:"orange",2:"blue",3:"green",4:"yellow",5:"darksalmon"}
+    
     #c_colval = {-1:"grey",0:"red",1:"orange",2:"blue",3:"green",4:"yellow",5:"purple"}
 
     if inter_modules:
         c_colval[-1] = "grey"
         
-    vb = Brain(s_xyz=corres_coords, s_text=newLabels, s_textsize = 2,s_textcolor="white", c_map=c_cmap, c_connect = c_connect, c_colval = c_colval)
+    vb = Brain(s_xyz=corres_coords, s_text=newLabels, s_textsize = 2,s_textcolor=s_textcolor, c_map=c_cmap, c_connect = c_connect, c_colval = c_colval)
     vb.show()
 
 
-def visu_graph(conmat_file,coords_file, labels_file):
+def visu_graph_signif(conmat_file,coords_file, labels_file):
     
     ########## coords
     #coord_file = os.path.abspath("data/MEG/label_coords.txt")
@@ -230,4 +242,68 @@ def visu_graph(conmat_file,coords_file, labels_file):
     #c_colval = {-1:"grey",0:"red",1:"orange",2:"blue",3:"green",4:"yellow",5:"purple"}
 
     vb = Brain(s_xyz=coords, s_text=npLabels, s_textsize = 1,s_textcolor="white", c_connect = c_connect, c_colval = c_colval)
+    vb.show()
+
+
+def visu_graph(net_file, coords_file, labels_file, modality_type = "fMRI", s_textcolor="black"):
+    
+
+    ########## coords
+    #coord_file = os.path.abspath("data/MEG/label_coords.txt")
+
+    coords = np.loadtxt(coords_file)
+    
+    if modality_type == "MEG":
+        coords = 1000*coords
+
+    print "coords: ",
+    print coords
+
+    ########## labels 
+    #label_file = os.path.abspath("data/MEG/label_names.txt")
+
+
+    labels = [line.strip() for line in open(labels_file)]
+    npLabels = np.array(labels)
+    print npLabels
+
+    ##########  net file
+
+    node_corres,sparse_matrix = read_Pajek_corres_nodes_and_sparse_matrix(net_file)
+
+    print sparse_matrix.shape
+    print sparse_matrix.todense()
+
+    c_connect = np.array(sparse_matrix.todense())
+    #0/0
+    
+    print node_corres.shape
+
+    #data = np.load('RealDataExample.npz')
+
+    #s_data = data['beta']
+    #s_xyz = data['xyz']
+
+    umin = 0
+
+    umax = 50
+
+    #c_connect = np.ma.masked_array(sparse_matrix.todense(), mask=True)
+    ##print c_connect
+    
+    #c_connect.mask[np.where((c_connect > umin) & (c_connect < umax))] = False
+    c_connect[c_connect != 0]= 1
+    ##c_connect[c_connect < umax]= 0
+    ##print c_connect
+    #print c_connect
+    
+    corres_coords = coords[node_corres,:]
+    newLabels = npLabels[node_corres]
+    
+    print corres_coords.shape
+    print newLabels.shape
+    
+    c_colval = {1:"orange"}
+    
+    vb = Brain(s_xyz=corres_coords, s_text=newLabels, s_textsize = 2,s_textcolor=s_textcolor, c_connect = c_connect, c_colval = c_colval)
     vb.show()
