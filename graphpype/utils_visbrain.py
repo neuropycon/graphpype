@@ -212,7 +212,7 @@ def visu_graph_modules(net_file, lol_file, coords_file, labels_file,inter_module
     vb.show()
 
 
-def visu_graph_signif(conmat_file,coords_file, labels_file):
+def visu_graph_signif(conmat_file,coords_file, labels_file, s_textcolor="white",c_colval = {4:"darkred",3:"red",2:"orange",1:"yellow",-1:"cyan",-2:"cornflowerblue",-3:"blue",-4:"navy"}):
     
     ########## coords
     #coord_file = os.path.abspath("data/MEG/label_coords.txt")
@@ -237,14 +237,11 @@ def visu_graph_signif(conmat_file,coords_file, labels_file):
 
     print c_connect
 
-    c_colval = {4:"darkred",3:"red",2:"orange",1:"yellow",-1:"cyan",-2:"cornflowerblue",-3:"blue",-4:"navy"}
-    
-    
     #c_colval = {4:"darkred",3:"red",2:"orange",1:"yellow",-1:"cyan",-2:"cornflowerblue",-3:"blue",-4:"navy"}
     
     #c_colval = {-1:"grey",0:"red",1:"orange",2:"blue",3:"green",4:"yellow",5:"purple"}
 
-    vb = Brain(s_xyz=coords, s_text=npLabels, s_textsize = 1,s_textcolor="white", c_connect = c_connect, c_colval = c_colval)
+    vb = Brain(s_xyz=coords, s_text=npLabels, s_textsize = 2,s_textcolor = s_textcolor, c_connect = c_connect, c_colval = c_colval)
     vb.show()
 
 
