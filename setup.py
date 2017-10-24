@@ -15,7 +15,6 @@ setup(
                       'nipype',
                       'configparser',
                       "pandas",
-                      "statsmodels",
                       "matplotlib"]
 )
 
