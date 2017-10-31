@@ -20,11 +20,11 @@ def isInAlphabeticalOrder(word):
     return list(word) == sorted(word)
     #return word==''.join(sorted(word))
 
-def return_all_iter_cormats(cormat_path ,iterables ,iternames, gm_mask_coords_file = 0, gm_mask_labels_file = 0,export_df = False):
+def return_all_iter_cormats(cormat_path ,iterables ,iternames, gm_mask_coords_file = 0, gm_mask_labels_file = 0,mapflow_iterables = 0, mapflow_iternames = 0,export_df = False):
     """
     gm_mask_coords_file is the coords commun to all analyses before Inteersectmask
     """
-    print zip(*iterables)
+    print product(*iterables)
     
     all_iter_cormats = []
     all_descriptors = []
@@ -49,43 +49,93 @@ def return_all_iter_cormats(cormat_path ,iterables ,iternames, gm_mask_coords_fi
                             
         print iter_dir
         
-        cormat_file = os.path.join(cormat_path,iter_dir,"compute_conf_cor_mat","Z_cor_mat_resid_ts.npy")
-        
-        if os.path.exists(cormat_file):
-            cormat = np.load(cormat_file)
-            print cormat.shape
+        if mapflow_iterables == 0:
             
-            if gm_mask_coords_file != 0:
-                coords_file = os.path.join(cormat_path,iter_dir,"extract_mean_ROI_ts","subj_coord_rois.txt")
-                #coords_file = os.path.join(cormat_path,iter_dir,"filter_ROI_mask_with_GM","filtered_coords_rois.txt")
-                coords = np.loadtxt(coords_file)
-            
-                cormat,_ = return_corres_correl_mat(cormat,coords,gm_mask_coords)
+            cormat_file = os.path.join(cormat_path,iter_dir,"compute_conf_cor_mat","Z_cor_mat_resid_ts.npy")
                 
-            if export_df:
-                if gm_mask_labels_file:
-                    labels = [line.strip() for line in open(gm_mask_labels_file)]
-                else: 
-                    labels = range(cormat.shape[0])
+            if os.path.exists(cormat_file):
+                cormat = np.load(cormat_file)
+                print cormat.shape
+                
+                if gm_mask_coords_file != 0:
+                    coords_file = os.path.join(cormat_path,iter_dir,"extract_mean_ROI_ts","subj_coord_rois.txt")
+                    #coords_file = os.path.join(cormat_path,iter_dir,"filter_ROI_mask_with_GM","filtered_coords_rois.txt")
+                    coords = np.loadtxt(coords_file)
+                
+                    cormat,_ = return_corres_correl_mat(cormat,coords,gm_mask_coords)
                     
-                df = pd.DataFrame(cormat, columns = labels,index = labels)
-                print df
+                if export_df:
+                    if gm_mask_labels_file:
+                        labels = [line.strip() for line in open(gm_mask_labels_file)]
+                    else: 
+                        labels = range(cormat.shape[0])
+                        
+                    df = pd.DataFrame(cormat, columns = labels,index = labels)
+                    print df
+                    
+                    df.to_excel(writer, "_".join(iter_obj))
+                    
+                print cormat.shape
                 
-                df.to_excel(writer, "_".join(iter_obj))
-                
-            print cormat.shape
+                all_iter_cormats.append(cormat)
+                all_descriptors.append(iter_obj)
             
-            all_iter_cormats.append(cormat)
-            all_descriptors.append(iter_obj)
+            else:
+                print "Warning, file {}  could not be found".format(cormat_file)
             
         else:
-            print "Warning, file {}  could not be found".format(cormat_file)
-        
-    if export_df:
-        writer.save()
+            for i,map_iter in enumerate(mapflow_iterables):
+                
+                print map_iter
+                
+                cormat_file = os.path.join(cormat_path,iter_dir,"compute_conf_cor_mat","mapflow","_compute_conf_cor_mat"+str(i),"Z_cor_mat_resid_ts.npy")
+             
+                new_iter_obj = list(iter_obj)
+                
+                print new_iter_obj
+                
+                new_iter_obj.append(str(map_iter))
+                
+                print new_iter_obj
+                
+                if os.path.exists(cormat_file):
+                    cormat = np.load(cormat_file)
+                    print cormat.shape
+                    
+                    if gm_mask_coords_file != 0:
+                        coords_file = os.path.join(cormat_path,iter_dir,"extract_mean_ROI_ts","subj_coord_rois.txt")
+                        #coords_file = os.path.join(cormat_path,iter_dir,"filter_ROI_mask_with_GM","filtered_coords_rois.txt")
+                        coords = np.loadtxt(coords_file)
+                    
+                        cormat,_ = return_corres_correl_mat(cormat,coords,gm_mask_coords)
+                        
+                    if export_df:
+                        if gm_mask_labels_file:
+                            labels = [line.strip() for line in open(gm_mask_labels_file)]
+                        else: 
+                            labels = range(cormat.shape[0])
+                            
+                        df = pd.DataFrame(cormat, columns = labels,index = labels)
+                        print df
+                        
+                        df.to_excel(writer, "_".join(new_iter_obj))
+                        
+                    print cormat.shape
+                    
+                    all_iter_cormats.append(cormat)
+                    all_descriptors.append(new_iter_obj)
+                    
+                else:
+                    print "Warning, file {}  could not be found".format(cormat_file)
+                
+    
+    #if export_df:
+        #writer.save()
         
     print np.array(all_iter_cormats).shape
     
+    if mapflow_iternames != 0:
+        iternames .append( mapflow_iternames)
     pd_all_descriptors = pd.DataFrame(all_descriptors,columns = iternames)
     
     if export_df:
