@@ -211,37 +211,54 @@ def visu_graph_modules(net_file, lol_file, coords_file, labels_file,inter_module
     vb = Brain(s_xyz=corres_coords, s_text=newLabels, s_textsize = 2,s_textcolor=s_textcolor, c_map=c_cmap, c_connect = c_connect, c_colval = c_colval)
     vb.show()
 
-
-def visu_graph_signif(conmat_file,coords_file, labels_file, s_textcolor="white",c_colval = {4:"darkred",3:"red",2:"orange",1:"yellow",-1:"cyan",-2:"cornflowerblue",-3:"blue",-4:"navy"}):
+def visu_graph_signif(conmat_file,coords_file , labels_file ,c_colval = {4:"darkred",3:"red",2:"orange",1:"yellow",-1:"cyan",-2:"cornflowerblue",-3:"blue",-4:"navy"}):
     
-    ########## coords
+    ########### coords
+        
     #coord_file = os.path.abspath("data/MEG/label_coords.txt")
 
     coords = np.loadtxt(coords_file)
 
-    print "coords: ",
-    print coords
-
+    #print("coords: ", end=' ')
+    print("coords: ")
+    
+    print(coords)
+        
     ########## labels
+
     labels = [line.strip() for line in open(labels_file)]
     npLabels = np.array(labels)
-    print npLabels
+    print(npLabels)
 
     ##########  net file
-    signif_mat = np.load(conmat_file)
-    print signif_mat
+    
+    if conmat_file.endswith(".csv"):
+        
+        signif_mat = pd.read_csv(conmat_file,index_col = 0).values
+        
+        print(signif_mat)
+        
+    elif conmat_file.endswith(".npy"):
+        
+        signif_mat = np.load(conmat_file)
+        print(signif_mat)
+        
+    print(signif_mat.shape)
     
     c_connect = np.ma.masked_array(signif_mat, mask=True)
     #c_connect.mask[np.where((c_connect > umin) & (c_connect < umax))] = False
 
 
-    print c_connect
+    print(c_connect)
 
+    
+    
+    
     #c_colval = {4:"darkred",3:"red",2:"orange",1:"yellow",-1:"cyan",-2:"cornflowerblue",-3:"blue",-4:"navy"}
     
     #c_colval = {-1:"grey",0:"red",1:"orange",2:"blue",3:"green",4:"yellow",5:"purple"}
 
-    vb = Brain(s_xyz=coords, s_text=npLabels, s_textsize = 2,s_textcolor = s_textcolor, c_connect = c_connect, c_colval = c_colval)
+    vb = Brain(s_xyz=coords, s_text=npLabels, s_textsize = 1,s_textcolor="white", c_connect = c_connect, c_colval = c_colval)
     vb.show()
 
 
@@ -275,27 +292,10 @@ def visu_graph(net_file, coords_file, labels_file, modality_type = "fMRI", s_tex
     print sparse_matrix.todense()
 
     c_connect = np.array(sparse_matrix.todense())
-    #0/0
     
     print node_corres.shape
 
-    #data = np.load('RealDataExample.npz')
-
-    #s_data = data['beta']
-    #s_xyz = data['xyz']
-
-    umin = 0
-
-    umax = 50
-
-    #c_connect = np.ma.masked_array(sparse_matrix.todense(), mask=True)
-    ##print c_connect
-    
-    #c_connect.mask[np.where((c_connect > umin) & (c_connect < umax))] = False
     c_connect[c_connect != 0]= 1
-    ##c_connect[c_connect < umax]= 0
-    ##print c_connect
-    #print c_connect
     
     corres_coords = coords[node_corres,:]
     newLabels = npLabels[node_corres]
