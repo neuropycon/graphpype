@@ -50,6 +50,8 @@ def compute_rada_df(iter_path,df,radatools_version = "3.2", mapflow = [],mapflow
         net_prop_dir = "prep_rada"
     else:
         print "Warning, could not find radatools_version {}".format(radatools_version)
+        return
+        
         
     ########### modularity
     
