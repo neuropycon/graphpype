@@ -17,8 +17,8 @@ def visu_graph_modules_roles(net_file, lol_file, coords_file, labels_file,node_r
     if modality_type == "MEG":
         coords = 1000*coords
 
-    print "coords: ",
-    print coords
+    print("coords: ", end=' ')
+    print(coords)
 
     ########## labels 
     #label_file = os.path.abspath("data/MEG/label_names.txt")
@@ -26,27 +26,27 @@ def visu_graph_modules_roles(net_file, lol_file, coords_file, labels_file,node_r
 
     labels = [line.strip() for line in open(labels_file)]
     npLabels = np.array(labels)
-    print npLabels
+    print(npLabels)
 
     ##########  net file
 
     node_corres,sparse_matrix = read_Pajek_corres_nodes_and_sparse_matrix(net_file)
 
-    print sparse_matrix
+    print(sparse_matrix)
 
-    print node_corres
+    print(node_corres)
 
-    print node_corres.shape
+    print(node_corres.shape)
 
     ############# lol file
     community_vect = read_lol_file(lol_file)
 
-    print community_vect
+    print(community_vect)
 
-    print np.unique(community_vect)
+    print(np.unique(community_vect))
     
     c_connect = np.array(compute_modular_network(sparse_matrix,community_vect),dtype = 'float64')
-    print c_connect.shape
+    print(c_connect.shape)
 
     #data = np.load('RealDataExample.npz')
 
@@ -65,7 +65,7 @@ def visu_graph_modules_roles(net_file, lol_file, coords_file, labels_file,node_r
     c_connect = np.ma.masked_array(c_connect, mask=True)
     c_connect.mask[np.where((c_connect > umin) & (c_connect < umax))] = False
 
-    print c_connect
+    print(c_connect)
 
     # Colormap properties (for connectivity) :
     c_cmap = 'inferno'		# Matplotlib colormap
@@ -85,7 +85,7 @@ def visu_graph_modules_roles(net_file, lol_file, coords_file, labels_file,node_r
                 only_R_labels.append("")
                 
         newLabels = np.array(only_R_labels,dtype = "str")
-        print newLabels
+        print(newLabels)
         
     
     
@@ -103,7 +103,7 @@ def visu_graph_modules_roles(net_file, lol_file, coords_file, labels_file,node_r
     coords_connec_hubs = corres_coords[(node_roles[:,0] == 2) & (node_roles[:,1] == 2)]
     coords_connec_no_hubs = corres_coords[(node_roles[:,0] == 2) & (node_roles[:,1] == 1)]
     
-    print coords_prov_no_hubs
+    print(coords_prov_no_hubs)
     
     ################################## version add sources #########################
 
@@ -153,8 +153,8 @@ def visu_graph_modules(net_file, lol_file, coords_file, labels_file,inter_module
     if modality_type == "MEG":
         coords = 1000*coords
 
-    print "coords: ",
-    print coords
+    print("coords: ", end=' ')
+    print(coords)
 
     ########## labels 
     #label_file = os.path.abspath("data/MEG/label_names.txt")
@@ -162,39 +162,39 @@ def visu_graph_modules(net_file, lol_file, coords_file, labels_file,inter_module
 
     labels = [line.strip() for line in open(labels_file)]
     npLabels = np.array(labels)
-    print npLabels
+    print(npLabels)
 
     ##########  net file
 
     node_corres,sparse_matrix = read_Pajek_corres_nodes_and_sparse_matrix(net_file)
 
-    print sparse_matrix
+    print(sparse_matrix)
 
-    print node_corres
+    print(node_corres)
 
-    print node_corres.shape
+    print(node_corres.shape)
 
     ############# lol file
     community_vect = read_lol_file(lol_file)
 
-    print community_vect
+    print(community_vect)
 
     c_connect = np.array(compute_modular_network(sparse_matrix,community_vect),dtype = 'float64')
-    print c_connect.shape
+    print(c_connect.shape)
 
     #data = np.load('RealDataExample.npz')
 
     #s_data = data['beta']
     #s_xyz = data['xyz']
 
-    umin = 0.0
+    #umin = 0.0
 
-    umax = 50
+    #umax = 50
 
     c_connect = np.ma.masked_array(c_connect, mask=True)
-    c_connect.mask[np.where((c_connect > umin) & (c_connect < umax))] = False
+    #c_connect.mask[np.where((c_connect > umin) & (c_connect < umax))] = False
 
-    print c_connect
+    print(c_connect)
 
     # Colormap properties (for connectivity) :
     c_cmap = 'inferno'		# Matplotlib colormap
@@ -243,7 +243,7 @@ def visu_graph_signif(conmat_file,coords_file , labels_file ,c_colval = {4:"dark
         signif_mat = np.load(conmat_file)
         print(signif_mat)
         
-    print(signif_mat.shape)
+    print((signif_mat.shape))
     
     c_connect = np.ma.masked_array(signif_mat, mask=True)
     #c_connect.mask[np.where((c_connect > umin) & (c_connect < umax))] = False
@@ -273,8 +273,8 @@ def visu_graph(net_file, coords_file, labels_file, modality_type = "fMRI", s_tex
     if modality_type == "MEG":
         coords = 1000*coords
 
-    print "coords: ",
-    print coords
+    print("coords: ", end=' ')
+    print(coords)
 
     ########## labels 
     #label_file = os.path.abspath("data/MEG/label_names.txt")
@@ -282,26 +282,26 @@ def visu_graph(net_file, coords_file, labels_file, modality_type = "fMRI", s_tex
 
     labels = [line.strip() for line in open(labels_file)]
     npLabels = np.array(labels)
-    print npLabels
+    print(npLabels)
 
     ##########  net file
 
     node_corres,sparse_matrix = read_Pajek_corres_nodes_and_sparse_matrix(net_file)
 
-    print sparse_matrix.shape
-    print sparse_matrix.todense()
+    print(sparse_matrix.shape)
+    print(sparse_matrix.todense())
 
     c_connect = np.array(sparse_matrix.todense())
     
-    print node_corres.shape
+    print(node_corres.shape)
 
     c_connect[c_connect != 0]= 1
     
     corres_coords = coords[node_corres,:]
     newLabels = npLabels[node_corres]
     
-    print corres_coords.shape
-    print newLabels.shape
+    print(corres_coords.shape)
+    print(newLabels.shape)
     
     c_colval = {1:"orange"}
     

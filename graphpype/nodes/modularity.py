@@ -80,11 +80,11 @@ class ComputeNetList(BaseInterface):
         threshold = self.inputs.threshold
         density = self.inputs.density
         
-        print "loading Z_cor_mat_file"
+        print("loading Z_cor_mat_file")
         
         Z_cor_mat = np.load(Z_cor_mat_file)
         
-        print threshold,density
+        print(threshold,density)
                 
         if threshold != traits.Undefined and density == traits.Undefined:
             
@@ -92,20 +92,20 @@ class ComputeNetList(BaseInterface):
         
             Z_list = return_net_list(Z_cor_mat)
         
-            print Z_list
+            print(Z_list)
             
         elif threshold == traits.Undefined and density != traits.Undefined:
             
-            print density
+            print(density)
             
             Z_list = return_net_list(Z_cor_mat)
-            print Z_list.shape
+            print(Z_list.shape)
             
             N =  int(Z_list.shape[0]*density)
             
             all_sorted_indexes = (-np.abs(Z_list[:,2])).argsort()
             
-            print all_sorted_indexes
+            print(all_sorted_indexes)
             sorted_indexes =  all_sorted_indexes[:N]
             
             max_thr_for_den_file = os.path.abspath('max_thr_for_den.txt')
@@ -121,14 +121,14 @@ class ComputeNetList(BaseInterface):
 
             Z_list = Z_list[sorted_indexes,:]
             
-            print Z_list
+            print(Z_list)
             
         else:
             
             Z_list = return_net_list(Z_cor_mat)
         
         ## Z correl_mat as list of edges
-        print "saving Z_list as list of edges"
+        print("saving Z_list as list of edges")
         
         net_List_file = os.path.abspath('Z_List.txt')
         
@@ -180,7 +180,7 @@ class ComputeIntNetList(BaseInterface):
         threshold = self.inputs.threshold
         
         
-        print "loading int_mat_file"
+        print("loading int_mat_file")
         
         int_mat = np.load(int_mat_file)
         
@@ -199,7 +199,7 @@ class ComputeIntNetList(BaseInterface):
             
         ## int correl_mat as list of edges
         
-        print "saving int_list as list of edges"
+        print("saving int_list as list of edges")
         
         net_List_file = os.path.abspath('int_List.txt')
         
@@ -283,25 +283,25 @@ class ComputeNodeRoles(BaseInterface):
         Pajek_net_file = self.inputs.Pajek_net_file
         
         
-        print 'Loading Pajek_net_file for reading node_corres'
+        print('Loading Pajek_net_file for reading node_corres')
         
         node_corres,sparse_mat = read_Pajek_corres_nodes_and_sparse_matrix(Pajek_net_file)
         
-        print sparse_mat.todense()
+        print(sparse_mat.todense())
         
-        print node_corres.shape,sparse_mat.todense().shape
+        print(node_corres.shape,sparse_mat.todense().shape)
         
-        print "Loading community belonging file " + rada_lol_file
+        print("Loading community belonging file " + rada_lol_file)
 
         community_vect = read_lol_file(rada_lol_file)
         
-        print community_vect
+        print(community_vect)
         
-        print "Computing node roles"
+        print("Computing node roles")
         
         node_roles,all_Z_com_degree,all_participation_coeff = compute_roles(community_vect,sparse_mat, role_type = self.inputs.role_type)
         
-        print node_roles
+        print(node_roles)
         
         
         node_roles_file = os.path.abspath('node_roles.txt')

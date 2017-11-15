@@ -15,7 +15,7 @@ def plot_cormat(plot_file, cor_mat,list_labels = [],label_size =2):
     im = ax.matshow(cor_mat,interpolation="none")
     #plt.axis('off')
     
-    [i.set_visible(False) for i in ax.spines.itervalues()]
+    [i.set_visible(False) for i in ax.spines.values()]
     
     #im.set_cmap('binary')
     im.set_cmap('spectral')
@@ -25,12 +25,12 @@ def plot_cormat(plot_file, cor_mat,list_labels = [],label_size =2):
         
         if len(list_labels) == cor_mat.shape[0]:
             
-            plt.xticks(range(len(list_labels)), list_labels,rotation='vertical', fontsize=label_size)
-            plt.yticks(range(len(list_labels)), list_labels, fontsize=label_size)
+            plt.xticks(list(range(len(list_labels))), list_labels,rotation='vertical', fontsize=label_size)
+            plt.yticks(list(range(len(list_labels))), list_labels, fontsize=label_size)
             
             plt.subplots_adjust(top = 0.8)
         else:
-            print "Warning in utils_plot.plot_cormat, incompatible number of labels %d and matrix shape %d" %(len(list_labels),cor_mat.shape[0])
+            print("Warning in utils_plot.plot_cormat, incompatible number of labels %d and matrix shape %d" %(len(list_labels),cor_mat.shape[0]))
             
         
     plt.tick_params(axis='both',          # changes apply to the x-axis
@@ -59,7 +59,7 @@ def plot_ranged_cormat(plot_file, cor_mat,list_labels = [], fix_full_range = [-1
     im = ax.matshow(cor_mat,vmin = fix_full_range[0], vmax = fix_full_range[1],interpolation="none")
     #plt.axis('off')
     
-    [i.set_visible(False) for i in ax.spines.itervalues()]
+    [i.set_visible(False) for i in ax.spines.values()]
     
     #im.set_cmap('binary')
     im.set_cmap('spectral')
@@ -71,12 +71,12 @@ def plot_ranged_cormat(plot_file, cor_mat,list_labels = [], fix_full_range = [-1
         
         if len(list_labels) == cor_mat.shape[0]:
             
-            plt.xticks(range(len(list_labels)), list_labels,rotation='vertical', fontsize=label_size)
-            plt.yticks(range(len(list_labels)), list_labels, fontsize=label_size)
+            plt.xticks(list(range(len(list_labels))), list_labels,rotation='vertical', fontsize=label_size)
+            plt.yticks(list(range(len(list_labels))), list_labels, fontsize=label_size)
             
             plt.subplots_adjust(top = 0.8)
         else:
-            print "Warning in utils_plot.plot_cormat, incompatible number of labels %d and matrix shape %d" %(len(list_labels),cor_mat.shape[0])
+            print("Warning in utils_plot.plot_cormat, incompatible number of labels %d and matrix shape %d" %(len(list_labels),cor_mat.shape[0]))
             
         
     plt.tick_params(axis='both',          # changes apply to the x-axis
@@ -107,13 +107,13 @@ def plot_int_mat(plot_file, cor_mat,list_labels = [], fix_full_range = [-4,4],la
     
     cmap = plt.get_cmap('jet',len(np.unique(np.arange(fix_full_range[0],fix_full_range[1]+1))))
     
-    print len(np.unique(np.arange(fix_full_range[0],fix_full_range[1]+1)))
+    print(len(np.unique(np.arange(fix_full_range[0],fix_full_range[1]+1))))
     #cmap_vals = cmap(np.linspace(0.2,0.8,9))
     
     im = ax.matshow(cor_mat,vmin = fix_full_range[0], vmax = fix_full_range[1],interpolation="none", cmap= cmap)
     #plt.axis('off')
     
-    [i.set_visible(False) for i in ax.spines.itervalues()]
+    [i.set_visible(False) for i in ax.spines.values()]
     
     #im.set_cmap('binary')
     #im.set_cmap('spectral')
@@ -124,12 +124,12 @@ def plot_int_mat(plot_file, cor_mat,list_labels = [], fix_full_range = [-4,4],la
         
         if len(list_labels) == cor_mat.shape[0]:
             
-            plt.xticks(range(len(list_labels)), list_labels,rotation='vertical', fontsize=label_size)
-            plt.yticks(range(len(list_labels)), list_labels, fontsize=label_size)
+            plt.xticks(list(range(len(list_labels))), list_labels,rotation='vertical', fontsize=label_size)
+            plt.yticks(list(range(len(list_labels))), list_labels, fontsize=label_size)
             
             plt.subplots_adjust(top = 0.8)
         else:
-            print "Warning in utils_plot.plot_cormat, incompatible number of labels %d and matrix shape %d" %(len(list_labels),cor_mat.shape[0])
+            print("Warning in utils_plot.plot_cormat, incompatible number of labels %d and matrix shape %d" %(len(list_labels),cor_mat.shape[0]))
             
         
     plt.tick_params(axis='both',          # changes apply to the x-axis
@@ -143,7 +143,7 @@ def plot_int_mat(plot_file, cor_mat,list_labels = [], fix_full_range = [-4,4],la
     #plt.setp(ax.get_xticklabels(), rotation='vertical', fontsize=3)
     
     #fig1.colorbar(im, ticks = range(-4,5))
-    fig1.colorbar(im, ticks = range(-4,5))
+    fig1.colorbar(im, ticks = list(range(-4,5)))
     
     fig1.savefig(plot_file)
     
@@ -185,13 +185,13 @@ def plot_colorbar(plot_colorbar_file,colors):
     cmap.set_over('0.25')
     cmap.set_under('0.75')
 
-    bounds = range(len(colors))
+    bounds = list(range(len(colors)))
     
     norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
     
-    print bounds
+    print(bounds)
     
-    print norm
+    print(norm)
         
     cb2 = mpl.colorbar.ColorbarBase(ax2, cmap=cmap,
                                         norm=norm,
@@ -226,37 +226,34 @@ def plot_signals(plot_signals_file,signals_matrix,colors = [], ylim = [], labels
         ax.set_ylim(ylim[0],ylim[1])
     
     if len(signals_matrix.shape) == 1:
-        ax.plot(range(signals_matrix.shape[0]),signals_matrix[:]) 
+        ax.plot(list(range(signals_matrix.shape[0])),signals_matrix[:]) 
     
     else:
         for i in range(signals_matrix.shape[0]): 
         
             if len(colors) == signals_matrix.shape[0]:
-                #print i,colors[i]
                 
-		if len(labels) == 0 or len(labels) != len(colors) :
-	                ax.plot(range(signals_matrix.shape[1]),signals_matrix[i,:],colors[i]) 
-        	else:
-	                ax.plot(range(signals_matrix.shape[1]),signals_matrix[i,:],colors[i],label = labels[i])
-            elif len(colors) == 1:
-                
-                ax.plot(range(signals_matrix.shape[1]),signals_matrix[i,:],colors[0])
-                
-            else:
-		if len(labels) == signals_matrix.shape[0]:
-			print "adding label: " +labels[i] 
-                	ax.plot(range(signals_matrix.shape[1]),signals_matrix[i,:],label = labels[i])
+                if len(labels) == 0 or len(labels) != len(colors) :
+                    ax.plot(list(range(signals_matrix.shape[1])),signals_matrix[i,:],colors[i]) 
                 else:
-			ax.plot(range(signals_matrix.shape[1]),signals_matrix[i,:])
-                
+                    ax.plot(list(range(signals_matrix.shape[1])),signals_matrix[i,:],colors[i],label = labels[i])
+                    
+            elif len(colors) == 1:                    
+                ax.plot(list(range(signals_matrix.shape[1])),signals_matrix[i,:],colors[0])
+            else:
+                if len(labels) == signals_matrix.shape[0]:
+                    print("adding label: " +labels[i]) 
+                    ax.plot(list(range(signals_matrix.shape[1])),signals_matrix[i,:],label = labels[i])
+                else:
+                    ax.plot(list(range(signals_matrix.shape[1])),signals_matrix[i,:])
+                    
     if add_zero_line:
-        ax.plot(range(signals_matrix.shape[1]),[0.0]*signals_matrix.shape[1], color = 'black',linestyle = '--')
+        ax.plot(list(range(signals_matrix.shape[1])),[0.0]*signals_matrix.shape[1], color = 'black',linestyle = '--')
         
     if signals_matrix.shape[0] == len(labels):
+        print("adding legend")
+        ax.legend(loc=0, prop = {'size':8})
         
-	print "adding legend"
-	ax.legend(loc=0, prop = {'size':8})
-     
     #ax.plot(,signals_matrix)
     fig2.savefig(plot_signals_file)
     
@@ -281,7 +278,7 @@ def plot_sep_signals(plot_signals_file,signals_matrix,colors = [],range_signal =
     if len(colors) == signals_matrix.shape[0]:
         
         for i in range(signals_matrix.shape[0]): 
-            print range_signal*i
+            print(range_signal*i)
             ax.plot(signals_matrix[i,:] + range_signal*i,colors[i]) 
             
     else:

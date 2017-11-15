@@ -9,7 +9,7 @@ import os
 
 import igraph as ig
 
-from utils_dtype_coord import where_in_coords,find_index_in_coords
+from .utils_dtype_coord import where_in_coords,find_index_in_coords
 import math
 
 from graphpype.utils_color import igraph_colors,new_igraph_colors,static_igraph_colors
@@ -22,7 +22,7 @@ def add_vertex_colors(g_all,community_vect,list_colors = static_igraph_colors):
     
     ########### extract edge list (with coords belonging to )
     
-    print np.unique(community_vect)
+    print(np.unique(community_vect))
     
     vertex_col = []
     vertex_label_col = []
@@ -51,9 +51,9 @@ def create_module_edge_list(coomatrix,community_vect,list_colors = static_igraph
     
     ########### extract edge list (with coords belonging to )
     
-    print np.unique(community_vect)
+    print(np.unique(community_vect))
     
-    print len(list_colors)-1
+    print(len(list_colors)-1)
     
     edge_col_inter = []
     edge_list_inter = []
@@ -97,7 +97,7 @@ def select_edge_list_outside_module(g_sel,coomatrix,community_vect,mod_index):
 
     edge_mod_id = []
     
-    print g_sel
+    print(g_sel)
     
     for u,v,w in zip(coomatrix.row,coomatrix.col,coomatrix.data):        
         if (community_vect[u] != mod_index or community_vect[v] != mod_index):            
@@ -135,7 +135,7 @@ def project2D_np(node_coords, angle_alpha = 0.0, angle_beta = 0.0):
     angle_alpha = angle_alpha + 10.0
     angle_beta = angle_beta + 5.0
 
-    print node_coords.shape
+    print(node_coords.shape)
     
     #layout2D = project2D(node_coords.tolist(),0,0)
     layout2D = project2D(node_coords.tolist(),np.pi/180*angle_alpha,np.pi/180*angle_beta)
@@ -170,7 +170,7 @@ def project2D(layout, alpha, beta):
      
     #print proj
     
-    x,y,z = zip(*proj)
+    x,y,z = list(zip(*proj))
     
     #graph.vs['x2'], graph.vs['y2'], graph.vs['z2'] = zip(*layout2D)
     minX, maxX = min(x), max(x)
@@ -178,15 +178,15 @@ def project2D(layout, alpha, beta):
     #minZ, maxZ = min(z), max(z)
     
     
-    print minX, maxX
-    print minY, maxY
+    print(minX, maxX)
+    print(minY, maxY)
         
     
     layout2D_x = (x - minX) / (maxX - minX)
     layout2D_y = (y - minY) / (maxY - minY)
     
-    print layout2D_x
-    print layout2D_y
+    print(layout2D_x)
+    print(layout2D_y)
         
     layout2D = np.transpose(np.vstack((layout2D_x,layout2D_y)))
     
@@ -228,7 +228,7 @@ def add_non_null_labels(g, labels = []):
     
         g.vs['label_dist'] = 2
         
-        print g.vs['label']
+        print(g.vs['label'])
     
 #def  add_edge_colors(g,color_dict)
 def add_node_shapes(g_all,node_roles):
