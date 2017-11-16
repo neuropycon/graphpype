@@ -142,7 +142,7 @@ def visu_graph_modules_roles(net_file, lol_file, coords_file, labels_file,node_r
 
     vb.show()
 
-def visu_graph_modules(net_file, lol_file, coords_file, labels_file,inter_modules = True, modality_type = "",s_textcolor="black", c_colval = {0:"red",1:"orange",2:"blue",3:"green",4:"yellow",5:"darksalmon"}):
+def visu_graph_modules(net_file, lol_file, coords_file, labels_file,inter_modules = True, modality_type = "",s_textcolor="white", c_colval = {0:"red",1:"orange",2:"blue",3:"green",4:"yellow",5:"darksalmon"}):
     
 
     ########## coords
@@ -187,12 +187,12 @@ def visu_graph_modules(net_file, lol_file, coords_file, labels_file,inter_module
     #s_data = data['beta']
     #s_xyz = data['xyz']
 
-    #umin = 0.0
+    umin = 0.0
 
-    #umax = 50
+    umax = 50.0
 
     c_connect = np.ma.masked_array(c_connect, mask=True)
-    #c_connect.mask[np.where((c_connect > umin) & (c_connect < umax))] = False
+    c_connect.mask[c_connect > -1.0] = False
 
     print(c_connect)
 
@@ -208,7 +208,37 @@ def visu_graph_modules(net_file, lol_file, coords_file, labels_file,inter_module
     if inter_modules:
         c_colval[-1] = "grey"
         
-    vb = Brain(s_xyz=corres_coords, s_text=newLabels, s_textsize = 2,s_textcolor=s_textcolor, c_map=c_cmap, c_connect = c_connect, c_colval = c_colval)
+    #vb = Brain(s_xyz=corres_coords, s_text=newLabels, s_textsize = 2,s_textcolor=s_textcolor, c_map=c_cmap, c_connect = c_connect, c_colval = c_colval)
+    #vb.show()
+    
+    #################### new to visbrain 0.3.7 
+    
+    from visbrain.objects import SourceObj, ConnectObj
+    
+    s_obj = SourceObj('SourceObj1', corres_coords, text=newLabels, text_color=s_textcolor, color='crimson', alpha=.5,
+                  edge_width=2., radius_min=2., radius_max=10.)
+    
+    #umin, umax = 30, 31
+
+    ## 1 - Using select (0: hide, 1: display):
+    #select = np.zeros_like(connect)
+    #select[(connect > umin) & (connect < umax)] = 1
+
+    ## 2 - Using masking (True: hide, 1: display):
+    #connect = np.ma.masked_array(connect, mask=True)
+    #connect.mask[np.where((connect > umin) & (connect < umax))] = False
+
+    #print('1 and 2 equivalent :', np.array_equal(select, ~connect.mask + 0))
+
+    """Create the connectivity object :
+    """
+    c_obj = ConnectObj('ConnectObj1', corres_coords, c_connect, color_by='strength', cmap=c_cmap)  # , antialias=True
+
+
+    vb = Brain(source_obj=s_obj, connect_obj=c_obj)
+    
+    #vb = Brain(s_xyz=corres_coords, s_text=newLabels, s_textsize = 2,s_textcolor=s_textcolor, c_map=c_cmap, c_connect = c_connect, c_colval = c_colval)
+    
     vb.show()
 
 def visu_graph_signif(conmat_file,coords_file , labels_file ,c_colval = {4:"darkred",3:"red",2:"orange",1:"yellow",-1:"cyan",-2:"cornflowerblue",-3:"blue",-4:"navy"}):
