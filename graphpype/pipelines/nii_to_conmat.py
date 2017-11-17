@@ -11,7 +11,7 @@ import scipy.sparse as sp
 import nipype.pipeline.engine as pe
 
 import nipype.interfaces.utility  as niu
-import nipype.interfaces.spm.utils as spmu
+#import nipype.interfaces.spm.utils as spmu
 
 from graphpype.nodes.correl_mat import IntersectMask,ExtractTS,ExtractMeanTS,RegressCovar,FindSPMRegressor,MergeRuns,ComputeConfCorMat
 
@@ -298,25 +298,25 @@ def create_pipeline_nii_to_conmat(main_path, ROI_mask_file,filter_gm_threshold =
     pipeline.connect(filter_ROI_mask_with_GM, 'filtered_labels_rois_file', extract_mean_ROI_ts, 'label_rois_file')
     
     
-    #### reslice white_matter_signal
-    reslice_wm = pe.Node(interface = spmu.Reslice(), name = 'reslice_wm')    
-    reslice_wm.inputs.space_defining = ROI_mask_file
+    ##### reslice white_matter_signal
+    #reslice_wm = pe.Node(interface = spmu.Reslice(), name = 'reslice_wm')    
+    #reslice_wm.inputs.space_defining = ROI_mask_file
     
-    pipeline.connect(inputnode, 'wm_anat_file', reslice_wm, 'in_file')
+    #pipeline.connect(inputnode, 'wm_anat_file', reslice_wm, 'in_file')
     
     #### extract white matter signal
     compute_wm_ts = pe.Node(interface = ExtractMeanTS(plot_fig = False),name = 'extract_wm_ts')
     compute_wm_ts.inputs.suffix = 'wm'
     
     pipeline.connect(inputnode,'nii_4D_file', compute_wm_ts, 'file_4D')
-    pipeline.connect(reslice_wm, 'out_file', compute_wm_ts, 'filter_mask_file')
+    pipeline.connect(inputnode, 'wm_anat_file', compute_wm_ts, 'filter_mask_file')
     
     
-    #### reslice csf
-    reslice_csf = pe.Node(interface = spmu.Reslice(), name = 'reslice_csf')    
-    reslice_csf.inputs.space_defining = ROI_mask_file
+    ##### reslice csf
+    #reslice_csf = pe.Node(interface = spmu.Reslice(), name = 'reslice_csf')    
+    #reslice_csf.inputs.space_defining = ROI_mask_file
     
-    pipeline.connect(inputnode, 'csf_anat_file', reslice_csf, 'in_file')
+    #pipeline.connect(inputnode, 'csf_anat_file', reslice_csf, 'in_file')
     
     
     #### extract csf signal
@@ -324,7 +324,7 @@ def create_pipeline_nii_to_conmat(main_path, ROI_mask_file,filter_gm_threshold =
     compute_csf_ts.inputs.suffix = 'csf'
     
     pipeline.connect(inputnode,'nii_4D_file', compute_csf_ts, 'file_4D')
-    pipeline.connect(reslice_csf, 'out_file', compute_csf_ts, 'filter_mask_file')
+    pipeline.connect(inputnode, 'csf_anat_file', compute_csf_ts, 'filter_mask_file')
     
     
     

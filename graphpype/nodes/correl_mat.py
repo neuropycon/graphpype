@@ -294,7 +294,7 @@ class IntersectMask(BaseInterface):
         #import numpy as np
         import nibabel as nib
         
-        import nipype.interfaces.spm as spm
+        #import nipype.interfaces.spm as spm
 
         #from graphpype.utils_plot import plot_signals
         
@@ -322,22 +322,25 @@ class IntersectMask(BaseInterface):
         
         print("filter_mask_data shape:")
         print(filter_mask_data.shape)
-            
-        if filter_mask_data.shape != indexed_rois_data.shape:
-            
-            print("reslicing filtered_mask")
-            
-            
-            reslice_filter_mask = spm.Reslice()
-            reslice_filter_mask.inputs.in_file = filter_mask_file
-            reslice_filter_mask.inputs.space_defining = indexed_rois_file
-            #reslice_filter_mask.inputs.out_file = os.path.abspath("resliced_filter_mask.nii")
-            
-            resliced_filter_mask_file =  reslice_filter_mask.run().outputs.out_file
-
-            filter_mask_data = nib.load(resliced_filter_mask_file).get_data()
+          
         
-        print(filter_mask_data.shape)
+        assert filter_mask_data.shape == indexed_rois_data.shape, "error, filter_mask {} and indexed_rois {} should have the same shape".format(filter_mask_data.shape,indexed_rois_data.shape)
+        
+        #if filter_mask_data.shape != indexed_rois_data.shape:
+            
+            #print("reslicing filtered_mask")
+            
+            
+            #reslice_filter_mask = spm.Reslice()
+            #reslice_filter_mask.inputs.in_file = filter_mask_file
+            #reslice_filter_mask.inputs.space_defining = indexed_rois_file
+            ##reslice_filter_mask.inputs.out_file = os.path.abspath("resliced_filter_mask.nii")
+            
+            #resliced_filter_mask_file =  reslice_filter_mask.run().outputs.out_file
+
+            #filter_mask_data = nib.load(resliced_filter_mask_file).get_data()
+        
+        #print(filter_mask_data.shape)
         
         print(np.unique(filter_mask_data))
         
