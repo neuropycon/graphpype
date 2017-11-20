@@ -238,7 +238,7 @@ def create_pipeline_nii_to_conmat_seg_template(main_path, pipeline_name = "nii_t
 
 
 
-def create_pipeline_nii_to_conmat(main_path, ROI_mask_file,filter_gm_threshold = 0.9, pipeline_name = "nii_to_conmat",conf_interval_prob = 0.05, background_val = -1.0):
+def create_pipeline_nii_to_conmat(main_path, ROI_mask_file,filter_gm_threshold = 0.9, pipeline_name = "nii_to_conmat",conf_interval_prob = 0.05, background_val = -1.0, plot = True):
 
     """
     Description:
@@ -285,7 +285,7 @@ def create_pipeline_nii_to_conmat(main_path, ROI_mask_file,filter_gm_threshold =
     pipeline.connect(inputnode, 'gm_anat_file', filter_ROI_mask_with_GM, 'filter_mask_file')
     
     #### Nodes version: use min_BOLD_intensity and return coords where signal is strong enough 
-    extract_mean_ROI_ts = pe.Node(interface = ExtractTS(plot_fig = False),name = 'extract_mean_ROI_ts')
+    extract_mean_ROI_ts = pe.Node(interface = ExtractTS(plot_fig = plot),name = 'extract_mean_ROI_ts')
     
     #extract_mean_ROI_ts.inputs.background_val = background_val
     
@@ -306,7 +306,7 @@ def create_pipeline_nii_to_conmat(main_path, ROI_mask_file,filter_gm_threshold =
     #pipeline.connect(inputnode, 'wm_anat_file', reslice_wm, 'in_file')
     
     #### extract white matter signal
-    compute_wm_ts = pe.Node(interface = ExtractMeanTS(plot_fig = False),name = 'extract_wm_ts')
+    compute_wm_ts = pe.Node(interface = ExtractMeanTS(plot_fig = plot),name = 'extract_wm_ts')
     compute_wm_ts.inputs.suffix = 'wm'
     
     pipeline.connect(inputnode,'nii_4D_file', compute_wm_ts, 'file_4D')
@@ -321,7 +321,7 @@ def create_pipeline_nii_to_conmat(main_path, ROI_mask_file,filter_gm_threshold =
     
     
     #### extract csf signal
-    compute_csf_ts = pe.Node(interface = ExtractMeanTS(plot_fig = False),name = 'extract_csf_ts')
+    compute_csf_ts = pe.Node(interface = ExtractMeanTS(plot_fig = plot),name = 'extract_csf_ts')
     compute_csf_ts.inputs.suffix = 'csf'
     
     pipeline.connect(inputnode,'nii_4D_file', compute_csf_ts, 'file_4D')
@@ -343,7 +343,7 @@ def create_pipeline_nii_to_conmat(main_path, ROI_mask_file,filter_gm_threshold =
     
     ##################################### compute correlations ####################################################
     
-    compute_conf_cor_mat = pe.Node(interface = ComputeConfCorMat(),name='compute_conf_cor_mat')
+    compute_conf_cor_mat = pe.Node(interface = ComputeConfCorMat(plot_mat = plot),name='compute_conf_cor_mat')
     
     compute_conf_cor_mat.inputs.conf_interval_prob = conf_interval_prob
     
