@@ -370,13 +370,8 @@ class IntersectMask(BaseInterface):
         nib.save(nib.Nifti1Image(filtered_indexed_rois_data,indexed_rois_img.get_affine(),indexed_rois_img.get_header()),filtered_indexed_rois_img_file)
     
         print("index_corres:")
-        if background_val == -1.0:
-            #index_corres = np.unique(filtered_indexed_rois_data)[:-1]
-            index_corres = np.unique(filtered_indexed_rois_data)[1:]
+        index_corres = np.unique(filtered_indexed_rois_data)[1:]
         
-        elif background_val == 0.0:
-            index_corres = np.arange(np.unique(filtered_indexed_rois_data)[1:].shape[0])
-            
             
         print(index_corres)
         print(len(index_corres))
@@ -401,7 +396,13 @@ class IntersectMask(BaseInterface):
         reorder_indexed_rois_img_file = os.path.abspath("reorder_filtered_indexed_rois.nii")
         nib.save(nib.Nifti1Image(reorder_indexed_rois_data,indexed_rois_img.get_affine(),indexed_rois_img.get_header()),reorder_indexed_rois_img_file)
     
-    
+        if background_val == -1.0:
+            #index_corres = np.unique(filtered_indexed_rois_data)[:-1]
+            index_corres = np.unique(filtered_indexed_rois_data)[1:]
+        
+        elif background_val == 0.0:
+            index_corres = np.arange(np.unique(filtered_indexed_rois_data)[1:].shape[0])
+            
         if isdefined(coords_rois_file):
             
             ## loading ROI coordinates

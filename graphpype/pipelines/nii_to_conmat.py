@@ -276,6 +276,7 @@ def create_pipeline_nii_to_conmat(main_path, ROI_mask_file,filter_gm_threshold =
     filter_ROI_mask_with_GM.inputs.filter_thr = filter_gm_threshold
     filter_ROI_mask_with_GM.inputs.background_val = background_val
     
+
     
     pipeline.connect(inputnode, 'ROI_coords_file', filter_ROI_mask_with_GM, 'coords_rois_file')
     pipeline.connect(inputnode, 'ROI_MNI_coords_file', filter_ROI_mask_with_GM, 'MNI_coords_rois_file')
@@ -286,7 +287,7 @@ def create_pipeline_nii_to_conmat(main_path, ROI_mask_file,filter_gm_threshold =
     #### Nodes version: use min_BOLD_intensity and return coords where signal is strong enough 
     extract_mean_ROI_ts = pe.Node(interface = ExtractTS(plot_fig = False),name = 'extract_mean_ROI_ts')
     
-    extract_mean_ROI_ts.inputs.background_val = background_val
+    #extract_mean_ROI_ts.inputs.background_val = background_val
     
     #extract_mean_ROI_ts.inputs.indexed_rois_file = ROI_mask_file
     #extract_mean_ROI_ts.inputs.coord_rois_file = ROI_coords_file
