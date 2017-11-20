@@ -883,6 +883,8 @@ class RegressCovarInputSpec(BaseInterfaceInputSpec):
     
     normalized = traits.Bool(True, usedefault = True , desc = "Is the signal normalized after regression?")
     
+    plot_fig = traits.Bool(True, usedefault = True , desc = "Plotting signals?")
+    
 class RegressCovarOutputSpec(TraitedSpec):
     
     resid_ts_file = File(exists=True, desc="residuals of time series after regression of all paramters")
@@ -934,6 +936,7 @@ class RegressCovar(BaseInterface):
         rp_file = self.inputs.rp_file
         filtered = self.inputs.filtered
         normalized = self.inputs.normalized
+        plot_fig = self.inputs.plot_fig
         
         print("load masked_ts_file")
         
@@ -992,17 +995,19 @@ class RegressCovar(BaseInterface):
 
             print("plotting resid_ts")
             
-            plot_resid_ts_file = os.path.abspath('resid_ts.eps')
-            
-            plot_sep_signals(plot_resid_ts_file,z_score_data_matrix)
-            
-            
-            print("plotting diff filtered and non filtered data")
-            
-            plot_diff_filt_ts_file = os.path.abspath('diff_filt_ts.eps')
-            
-            plot_signals(plot_diff_filt_ts_file,np.array(resid_filt_data_matrix - resid_data_matrix,dtype = 'float'))
-            
+            if plot_fig:
+                    
+                plot_resid_ts_file = os.path.abspath('resid_ts.eps')
+                
+                plot_sep_signals(plot_resid_ts_file,z_score_data_matrix)
+                
+                
+                print("plotting diff filtered and non filtered data")
+                
+                plot_diff_filt_ts_file = os.path.abspath('diff_filt_ts.eps')
+                
+                plot_signals(plot_diff_filt_ts_file,np.array(resid_filt_data_matrix - resid_data_matrix,dtype = 'float'))
+                
         elif filtered == False and normalized == False:
             
             print("Using only regression")
@@ -1025,10 +1030,12 @@ class RegressCovar(BaseInterface):
             
             print("plotting resid_ts")
             
-            plot_resid_ts_file = os.path.abspath('resid_ts.eps')
-            
-            plot_sep_signals(plot_resid_ts_file,resid_data_matrix)
-            
+            if plot_fig:
+                    
+                plot_resid_ts_file = os.path.abspath('resid_ts.eps')
+                
+                plot_sep_signals(plot_resid_ts_file,resid_data_matrix)
+                
         else:
             
             print("Warning, not implemented (RegressCovar)")

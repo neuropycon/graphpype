@@ -333,7 +333,7 @@ def create_pipeline_nii_to_conmat(main_path, ROI_mask_file,filter_gm_threshold =
     
     ### use R linear model to regress movement parameters, white matter and ventricule signals, and compute Z-score of the residuals
     #regress_covar = pe.MapNode(interface = RegressCovar(filtered = False, normalized = False),iterfield = ['masked_ts_file','rp_file','mean_wm_ts_file','mean_csf_ts_file'],name='regress_covar')
-    regress_covar = pe.Node(interface = RegressCovar(),iterfield = ['masked_ts_file','rp_file','mean_wm_ts_file','mean_csf_ts_file'],name='regress_covar')
+    regress_covar = pe.Node(interface = RegressCovar(plot_fig = plot),iterfield = ['masked_ts_file','rp_file','mean_wm_ts_file','mean_csf_ts_file'],name='regress_covar')
     
     pipeline.connect(extract_mean_ROI_ts, 'mean_masked_ts_file', regress_covar, 'masked_ts_file')
     pipeline.connect(inputnode, 'rp_file', regress_covar, 'rp_file')
