@@ -352,6 +352,131 @@ def create_pipeline_nii_to_conmat(main_path, ROI_mask_file,filter_gm_threshold =
     
     return pipeline
 
+
+def create_pipeline_nii_to_conmat(main_path, ROI_mask_file,filter_gm_threshold = 0.9, pipeline_name = "nii_to_conmat",conf_interval_prob = 0.05, background_val = -1.0, plot = True, reslice = False):
+
+    """
+    Description:
+    
+    Pipeline from nifti 4D (after preprocessing) to connectivity matrices
+    
+    Inputs (inputnode):
+    
+        * nii_4D_file
+        * rp_file
+        * gm_anat_file
+        * wm_anat_file
+        * csf_anat_file
+        * ROI_coords_file
+        * ROI_MNI_coords_file
+        * ROI_labels_file
+    
+    Comments:
+    
+    Typically used after nipype preprocessing pipeline and before conmat_to_graph pipeline
+    
+    """
+    
+    pipeline = pe.Workflow(name=pipeline_name)
+    pipeline.base_dir = main_path
+    
+    inputnode = pe.Node(niu.IdentityInterface(fields=['nii_4D_file','rp_file','gm_anat_file','wm_anat_file','csf_anat_file',
+                                                      'ROI_coords_file','ROI_MNI_coords_file','ROI_labels_file']),
+                        name='inputnode')
+     
+    ###### Preprocess pipeline,
+    filter_ROI_mask_with_GM = pe.Node(interface = IntersectMask(),name = 'filter_ROI_mask_with_GM')
+    
+    filter_ROI_mask_with_GM.inputs.indexed_rois_file = ROI_mask_file
+    filter_ROI_mask_with_GM.inputs.filter_thr = filter_gm_threshold
+    filter_ROI_mask_with_GM.inputs.background_val = background_val
+    
+
+    
+    pipeline.connect(inputnode, 'ROI_coords_file', filter_ROI_mask_with_GM, 'coords_rois_file')
+    pipeline.connect(inputnode, 'ROI_MNI_coords_file', filter_ROI_mask_with_GM, 'MNI_coords_rois_file')
+    pipeline.connect(inputnode, 'ROI_labels_file', filter_ROI_mask_with_GM, 'labels_rois_file')
+    
+    pipeline.connect(inputnode, 'gm_anat_file', filter_ROI_mask_with_GM, 'filter_mask_file')
+    
+    #### Nodes version: use min_BOLD_intensity and return coords where signal is strong enough 
+    extract_mean_ROI_ts = pe.Node(interface = ExtractTS(plot_fig = plot),name = 'extract_mean_ROI_ts')
+    
+    #extract_mean_ROI_ts.inputs.background_val = background_val
+    
+    #extract_mean_ROI_ts.inputs.indexed_rois_file = ROI_mask_file
+    #extract_mean_ROI_ts.inputs.coord_rois_file = ROI_coords_file
+    #extract_mean_ROI_ts.inputs.min_BOLD_intensity = min_BOLD_intensity
+    
+    pipeline.connect(inputnode,'nii_4D_file', extract_mean_ROI_ts, 'file_4D')
+    pipeline.connect(filter_ROI_mask_with_GM, 'filtered_indexed_rois_file', extract_mean_ROI_ts, 'indexed_rois_file')
+    pipeline.connect(filter_ROI_mask_with_GM, 'filtered_coords_rois_file', extract_mean_ROI_ts, 'coord_rois_file')
+    pipeline.connect(filter_ROI_mask_with_GM, 'filtered_labels_rois_file', extract_mean_ROI_ts, 'label_rois_file')
+    
+    #### reslice white_matter_signal
+    if reslice:
+            
+        reslice_wm = pe.Node(interface = spmu.Reslice(), name = 'reslice_wm')    
+        reslice_wm.inputs.space_defining = ROI_mask_file
+        
+        pipeline.connect(inputnode, 'wm_anat_file', reslice_wm, 'in_file')
+        
+    #### extract white matter signal
+    compute_wm_ts = pe.Node(interface = ExtractMeanTS(plot_fig = plot),name = 'extract_wm_ts')
+    compute_wm_ts.inputs.suffix = 'wm'
+    
+    pipeline.connect(inputnode,'nii_4D_file', compute_wm_ts, 'file_4D')
+    
+    if reslice:
+        pipeline.connect(reslice_wm, 'out_file', compute_wm_ts, 'filter_mask_file')
+    else:
+        pipeline.connect(inputnode, 'wm_anat_file', compute_wm_ts, 'filter_mask_file')
+    
+    #### reslice csf
+    if reslice:
+            
+        reslice_csf = pe.Node(interface = spmu.Reslice(), name = 'reslice_csf')    
+        reslice_csf.inputs.space_defining = ROI_mask_file
+        
+        pipeline.connect(inputnode, 'csf_anat_file', reslice_csf, 'in_file')
+        
+    
+    #### extract csf signal
+    compute_csf_ts = pe.Node(interface = ExtractMeanTS(plot_fig = plot),name = 'extract_csf_ts')
+    compute_csf_ts.inputs.suffix = 'csf'
+    
+    pipeline.connect(inputnode,'nii_4D_file', compute_csf_ts, 'file_4D')
+    
+    
+    if reslice:
+        pipeline.connect(reslice_csf, 'out_file', compute_csf_ts, 'filter_mask_file')
+    else:
+        pipeline.connect(inputnode, 'csf_anat_file', compute_csf_ts, 'filter_mask_file')
+    
+    
+    #### regress covariates
+    
+    ### use R linear model to regress movement parameters, white matter and ventricule signals, and compute Z-score of the residuals
+    #regress_covar = pe.MapNode(interface = RegressCovar(filtered = False, normalized = False),iterfield = ['masked_ts_file','rp_file','mean_wm_ts_file','mean_csf_ts_file'],name='regress_covar')
+    regress_covar = pe.Node(interface = RegressCovar(plot_fig = plot),iterfield = ['masked_ts_file','rp_file','mean_wm_ts_file','mean_csf_ts_file'],name='regress_covar')
+    
+    pipeline.connect(extract_mean_ROI_ts, 'mean_masked_ts_file', regress_covar, 'masked_ts_file')
+    pipeline.connect(inputnode, 'rp_file', regress_covar, 'rp_file')
+
+    pipeline.connect(compute_wm_ts, 'mean_masked_ts_file', regress_covar, 'mean_wm_ts_file')
+    pipeline.connect(compute_csf_ts, 'mean_masked_ts_file', regress_covar, 'mean_csf_ts_file')
+    
+    ##################################### compute correlations ####################################################
+    
+    compute_conf_cor_mat = pe.Node(interface = ComputeConfCorMat(plot_mat = plot),name='compute_conf_cor_mat')
+    
+    compute_conf_cor_mat.inputs.conf_interval_prob = conf_interval_prob
+    
+    pipeline.connect(regress_covar, 'resid_ts_file', compute_conf_cor_mat, 'ts_file')
+    pipeline.connect(extract_mean_ROI_ts, 'subj_label_rois_file', compute_conf_cor_mat, 'labels_file')
+    
+    return pipeline
+
 #ROI_mask_file,ROI_coords_file,ROI_MNI_coords_file,ROI_labels_file,
 
 def create_pipeline_nii_to_weighted_conmat(main_path, pipeline_name = "nii_to_weighted_conmat", concatenated_runs = True, conf_interval_prob = 0.05, mult_regnames = True, spm_reg = True):
