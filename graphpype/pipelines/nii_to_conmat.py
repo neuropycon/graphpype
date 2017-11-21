@@ -383,7 +383,15 @@ def create_pipeline_nii_to_conmat(main_path, ROI_mask_file,filter_gm_threshold =
     inputnode = pe.Node(niu.IdentityInterface(fields=['nii_4D_file','rp_file','gm_anat_file','wm_anat_file','csf_anat_file',
                                                       'ROI_coords_file','ROI_MNI_coords_file','ROI_labels_file']),
                         name='inputnode')
-     
+    
+     #### reslice gm
+    if reslice:
+            
+        reslice_gm = pe.Node(interface = spmu.Reslice(), name = 'reslice_gm')    
+        reslice_gm.inputs.space_defining = ROI_mask_file
+        
+        pipeline.connect(inputnode, 'gm_anat_file', reslice_gm, 'in_file')
+       
     ###### Preprocess pipeline,
     filter_ROI_mask_with_GM = pe.Node(interface = IntersectMask(),name = 'filter_ROI_mask_with_GM')
     
@@ -397,7 +405,11 @@ def create_pipeline_nii_to_conmat(main_path, ROI_mask_file,filter_gm_threshold =
     pipeline.connect(inputnode, 'ROI_MNI_coords_file', filter_ROI_mask_with_GM, 'MNI_coords_rois_file')
     pipeline.connect(inputnode, 'ROI_labels_file', filter_ROI_mask_with_GM, 'labels_rois_file')
     
-    pipeline.connect(inputnode, 'gm_anat_file', filter_ROI_mask_with_GM, 'filter_mask_file')
+    if reslice:
+        pipeline.connect(reslice_gm, 'out_file', filter_ROI_mask_with_GM, 'filter_mask_file')
+        
+    else:
+        pipeline.connect(inputnode, 'gm_anat_file', filter_ROI_mask_with_GM, 'filter_mask_file')
     
     #### Nodes version: use min_BOLD_intensity and return coords where signal is strong enough 
     extract_mean_ROI_ts = pe.Node(interface = ExtractTS(plot_fig = plot),name = 'extract_mean_ROI_ts')
