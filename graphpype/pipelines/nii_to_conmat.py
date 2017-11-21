@@ -11,7 +11,7 @@ import scipy.sparse as sp
 import nipype.pipeline.engine as pe
 
 import nipype.interfaces.utility  as niu
-#import nipype.interfaces.spm.utils as spmu
+import nipype.interfaces.spm.utils as spmu
 
 from graphpype.nodes.correl_mat import IntersectMask,ExtractTS,ExtractMeanTS,RegressCovar,FindSPMRegressor,MergeRuns,ComputeConfCorMat
 
