@@ -394,7 +394,6 @@ class IntersectMask(BaseInterface):
         
         print('unique np.unique(filtered_indexed_rois_data)')
         print(np.unique(filtered_indexed_rois_data))
-        0/0
         
         print("index_corres:")
         
