@@ -366,20 +366,15 @@ class IntersectMask(BaseInterface):
         print(np.unique(filtered_indexed_rois_data))
         print(len(np.unique(filtered_indexed_rois_data)))
             
-        filtered_indexed_rois_img_file = os.path.abspath("filtered_indexed_rois.nii")
-        nib.save(nib.Nifti1Image(filtered_indexed_rois_data,indexed_rois_img.get_affine(),indexed_rois_img.get_header()),filtered_indexed_rois_img_file)
+        #filtered_indexed_rois_img_file = os.path.abspath("filtered_indexed_rois.nii")
+        #nib.save(nib.Nifti1Image(filtered_indexed_rois_data,indexed_rois_img.get_affine(),indexed_rois_img.get_header()),filtered_indexed_rois_img_file)
     
-        print("index_corres:")
-        index_corres = np.unique(filtered_indexed_rois_data)[1:]
-        
-            
-        print(index_corres)
-        print(len(index_corres))
-        
         print("reorder_indexed_rois:")
         reorder_indexed_rois_data = np.zeros(shape = filtered_indexed_rois_data.shape,dtype = 'int64') - 1
         
-        for i,index in enumerate(index_corres):
+        i = 0
+        
+        for index in np.unique(filtered_indexed_rois_data)[1:]:
             
             print(i,index)
             
@@ -387,6 +382,7 @@ class IntersectMask(BaseInterface):
                 
                 print(np.sum(np.array(filtered_indexed_rois_data == index,dtype = int)))
                 reorder_indexed_rois_data[filtered_indexed_rois_data == index] = i
+                i = i+1
             else:
                 print("Warning could not find value %d in filtered_indexed_rois_data"%index)
             
@@ -395,14 +391,19 @@ class IntersectMask(BaseInterface):
         
         reorder_indexed_rois_img_file = os.path.abspath("reorder_filtered_indexed_rois.nii")
         nib.save(nib.Nifti1Image(reorder_indexed_rois_data,indexed_rois_img.get_affine(),indexed_rois_img.get_header()),reorder_indexed_rois_img_file)
-    
-        if background_val == -1.0:
-            #index_corres = np.unique(filtered_indexed_rois_data)[:-1]
-            index_corres = np.unique(filtered_indexed_rois_data)[1:]
         
+        print("index_corres:")
+        
+        if background_val == -1.0:
+            index_corres = np.unique(filtered_indexed_rois_data)[1:]
+           
         elif background_val == 0.0:
-            index_corres = np.arange(np.unique(filtered_indexed_rois_data)[1:].shape[0])
+            index_corres = np.unique(filtered_indexed_rois_data)[1:]-1
             
+            
+        print(index_corres)
+        print(len(index_corres))
+        
         if isdefined(coords_rois_file):
             
             ## loading ROI coordinates
