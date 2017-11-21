@@ -392,6 +392,10 @@ class IntersectMask(BaseInterface):
         reorder_indexed_rois_img_file = os.path.abspath("reorder_filtered_indexed_rois.nii")
         nib.save(nib.Nifti1Image(reorder_indexed_rois_data,indexed_rois_img.get_affine(),indexed_rois_img.get_header()),reorder_indexed_rois_img_file)
         
+        print('unique np.unique(filtered_indexed_rois_data)')
+        print(np.unique(filtered_indexed_rois_data))
+        0/0
+        
         print("index_corres:")
         
         if background_val == -1.0:
