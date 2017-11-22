@@ -13,6 +13,8 @@ import nipype.pipeline.engine as pe
 import nipype.interfaces.utility  as niu
 import nipype.interfaces.spm.utils as spmu
 
+from nipype.interfaces.niftyreg.regutils import RegResample
+
 from graphpype.nodes.correl_mat import IntersectMask,ExtractTS,ExtractMeanTS,RegressCovar,FindSPMRegressor,MergeRuns,ComputeConfCorMat
 
 from graphpype.utils import show_files,show_length
@@ -353,7 +355,7 @@ def create_pipeline_nii_to_conmat(main_path, ROI_mask_file,filter_gm_threshold =
     return pipeline
 
 
-def create_pipeline_nii_to_conmat(main_path, ROI_mask_file,filter_gm_threshold = 0.9, pipeline_name = "nii_to_conmat",conf_interval_prob = 0.05, background_val = -1.0, plot = True, reslice = False):
+def create_pipeline_nii_to_conmat(main_path, ROI_mask_file,filter_gm_threshold = 0.9, pipeline_name = "nii_to_conmat",conf_interval_prob = 0.05, background_val = -1.0, plot = True, reslice = False, resample = False):
 
     """
     Description:
@@ -376,7 +378,10 @@ def create_pipeline_nii_to_conmat(main_path, ROI_mask_file,filter_gm_threshold =
     Typically used after nipype preprocessing pipeline and before conmat_to_graph pipeline
     
     """
-    
+    if reslice and resample:
+        print("Only reslice OR resample can be true, setting reslice to False")
+        reslice = False
+        
     pipeline = pe.Workflow(name=pipeline_name)
     pipeline.base_dir = main_path
     
@@ -391,6 +396,42 @@ def create_pipeline_nii_to_conmat(main_path, ROI_mask_file,filter_gm_threshold =
         reslice_gm.inputs.space_defining = ROI_mask_file
         
         pipeline.connect(inputnode, 'gm_anat_file', reslice_gm, 'in_file')
+       
+    if resample:
+         
+        resample_gm = pe.Node(interface = RegResample(), name = 'resample_gm')    
+        resample_gm.inputs.ref_file = ROI_mask_file
+        pipeline.connect(inputnode, 'gm_anat_file',resample_gm,'flo_file')
+       
+    
+     #### reslice wm
+    if reslice:
+            
+        reslice_wm = pe.Node(interface = spmu.Reslice(), name = 'reslice_wm')    
+        reslice_wm.inputs.space_defining = ROI_mask_file
+        
+        pipeline.connect(inputnode, 'wm_anat_file', reslice_wm, 'in_file')
+       
+    if resample:
+         
+        resample_wm = pe.Node(interface = RegResample(), name = 'resample_wm')    
+        resample_wm.inputs.ref_file = ROI_mask_file
+        pipeline.connect(inputnode, 'wm_anat_file',resample_wm,'flo_file')
+       
+    
+     #### reslice csf
+    if reslice:
+            
+        reslice_csf = pe.Node(interface = spmu.Reslice(), name = 'reslice_csf')    
+        reslice_csf.inputs.space_defining = ROI_mask_file
+        
+        pipeline.connect(inputnode, 'csf_anat_file', reslice_csf, 'in_file')
+       
+    if resample:
+         
+        resample_csf = pe.Node(interface = RegResample(), name = 'resample_csf')    
+        resample_csf.inputs.ref_file = ROI_mask_file
+        pipeline.connect(inputnode, 'csf_anat_file',resample_csf,'flo_file')
        
     ###### Preprocess pipeline,
     filter_ROI_mask_with_GM = pe.Node(interface = IntersectMask(),name = 'filter_ROI_mask_with_GM')
@@ -407,6 +448,9 @@ def create_pipeline_nii_to_conmat(main_path, ROI_mask_file,filter_gm_threshold =
     
     if reslice:
         pipeline.connect(reslice_gm, 'out_file', filter_ROI_mask_with_GM, 'filter_mask_file')
+        
+    elif resample:
+        pipeline.connect(resample_gm, 'out_file', filter_ROI_mask_with_GM, 'filter_mask_file')
         
     else:
         pipeline.connect(inputnode, 'gm_anat_file', filter_ROI_mask_with_GM, 'filter_mask_file')
@@ -425,14 +469,6 @@ def create_pipeline_nii_to_conmat(main_path, ROI_mask_file,filter_gm_threshold =
     pipeline.connect(filter_ROI_mask_with_GM, 'filtered_coords_rois_file', extract_mean_ROI_ts, 'coord_rois_file')
     pipeline.connect(filter_ROI_mask_with_GM, 'filtered_labels_rois_file', extract_mean_ROI_ts, 'label_rois_file')
     
-    #### reslice white_matter_signal
-    if reslice:
-            
-        reslice_wm = pe.Node(interface = spmu.Reslice(), name = 'reslice_wm')    
-        reslice_wm.inputs.space_defining = ROI_mask_file
-        
-        pipeline.connect(inputnode, 'wm_anat_file', reslice_wm, 'in_file')
-        
     #### extract white matter signal
     compute_wm_ts = pe.Node(interface = ExtractMeanTS(plot_fig = plot),name = 'extract_wm_ts')
     compute_wm_ts.inputs.suffix = 'wm'
@@ -441,17 +477,13 @@ def create_pipeline_nii_to_conmat(main_path, ROI_mask_file,filter_gm_threshold =
     
     if reslice:
         pipeline.connect(reslice_wm, 'out_file', compute_wm_ts, 'filter_mask_file')
+        
+    elif resample:
+        pipeline.connect(resample_wm, 'out_file', compute_wm_ts, 'filter_mask_file')
+        
     else:
         pipeline.connect(inputnode, 'wm_anat_file', compute_wm_ts, 'filter_mask_file')
     
-    #### reslice csf
-    if reslice:
-            
-        reslice_csf = pe.Node(interface = spmu.Reslice(), name = 'reslice_csf')    
-        reslice_csf.inputs.space_defining = ROI_mask_file
-        
-        pipeline.connect(inputnode, 'csf_anat_file', reslice_csf, 'in_file')
-        
     
     #### extract csf signal
     compute_csf_ts = pe.Node(interface = ExtractMeanTS(plot_fig = plot),name = 'extract_csf_ts')
@@ -462,6 +494,10 @@ def create_pipeline_nii_to_conmat(main_path, ROI_mask_file,filter_gm_threshold =
     
     if reslice:
         pipeline.connect(reslice_csf, 'out_file', compute_csf_ts, 'filter_mask_file')
+        
+    elif resample:
+        pipeline.connect(resample_csf, 'out_file', compute_csf_ts, 'filter_mask_file')
+        
     else:
         pipeline.connect(inputnode, 'csf_anat_file', compute_csf_ts, 'filter_mask_file')
     
