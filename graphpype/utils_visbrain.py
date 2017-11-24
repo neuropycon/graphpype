@@ -261,8 +261,19 @@ def visu_graph_signif(indexed_mat_file, coords_file, labels_file, c_colval = {4:
     print(npLabels)
 
     ##########  net file
+    
+    ##########  indexed_mat file
+    if indexed_mat_file.endswith(".csv"):
+        
+        indexed_mat = pd.read_csv(indexed_mat_file,index_col = 0).values
+        
+    elif indexed_mat_file.endswith(".npy"):
+        
+        indexed_mat = np.load(indexed_mat_file)
+        
     indexed_mat = np.load(indexed_mat_file)
     print (indexed_mat[indexed_mat != 0])
+    
     
     for i in range(indexed_mat.shape[0]):    
         if np.sum(indexed_mat[i,:] == 0) == indexed_mat.shape[1]:
