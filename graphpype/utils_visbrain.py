@@ -241,8 +241,8 @@ def visu_graph_modules(net_file, lol_file, coords_file, labels_file,inter_module
     
     vb.show()
 
-def visu_graph_signif(conmat_file,coords_file , labels_file ,c_colval = {4:"darkred",3:"red",2:"orange",1:"yellow",-1:"cyan",-2:"cornflowerblue",-3:"blue",-4:"navy"}):
-    
+def visu_graph_signif(indexed_mat_file, coords_file, labels_file, c_colval = {4:"darkred",3:"red",2:"orange",1:"yellow",-1:"cyan",-2:"cornflowerblue",-3:"blue",-4:"navy"}):
+
     ########### coords
         
     #coord_file = os.path.abspath("data/MEG/label_coords.txt")
@@ -256,42 +256,36 @@ def visu_graph_signif(conmat_file,coords_file , labels_file ,c_colval = {4:"dark
         
     ########## labels
 
-    labels = [line.strip() for line in open(labels_file)]
+    labels = [line.strip().split("_")[1] for line in open(labels_file)]
     npLabels = np.array(labels)
     print(npLabels)
 
     ##########  net file
+    indexed_mat = np.load(indexed_mat_file)
+    print (indexed_mat[indexed_mat != 0])
     
-    if conmat_file.endswith(".csv"):
-        
-        signif_mat = pd.read_csv(conmat_file,index_col = 0).values
-        
-        print(signif_mat)
-        
-    elif conmat_file.endswith(".npy"):
-        
-        signif_mat = np.load(conmat_file)
-        print(signif_mat)
-        
-    print((signif_mat.shape))
+    for i in range(indexed_mat.shape[0]):    
+        if np.sum(indexed_mat[i,:] == 0) == indexed_mat.shape[1]:
+            npLabels[i] = ""
+            
+    c_connect = np.ma.masked_array(indexed_mat, mask = indexed_mat == 0)
     
-    c_connect = np.ma.masked_array(signif_mat, mask=True)
-    #c_connect.mask[np.where((c_connect > umin) & (c_connect < umax))] = False
+    #################### new to visbrain 0.3.7 
+    
+    from visbrain.objects import SourceObj, ConnectObj
+    
+
+    s_obj = SourceObj('SourceObj1', coords, text=npLabels, text_color="white", color='crimson', alpha=.5,
+                  edge_width=2., radius_min=2., radius_max=10.)
+    
+    """Create the connectivity object :
+    """
+    c_obj = ConnectObj('ConnectObj1', coords, c_connect, color_by='strength',  custom_colors = c_colval)  # , antialias=True
 
 
-    print(c_connect)
-
-    
-    
-    
-    #c_colval = {4:"darkred",3:"red",2:"orange",1:"yellow",-1:"cyan",-2:"cornflowerblue",-3:"blue",-4:"navy"}
-    
-    #c_colval = {-1:"grey",0:"red",1:"orange",2:"blue",3:"green",4:"yellow",5:"purple"}
-
-    vb = Brain(s_xyz=coords, s_text=npLabels, s_textsize = 1,s_textcolor="white", c_connect = c_connect, c_colval = c_colval)
+    vb = Brain(source_obj=s_obj, connect_obj=c_obj)
     vb.show()
-
-
+    
 def visu_graph(net_file, coords_file, labels_file, modality_type = "fMRI", s_textcolor="black"):
     
 
