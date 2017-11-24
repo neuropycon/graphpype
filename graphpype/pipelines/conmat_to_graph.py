@@ -56,7 +56,57 @@ def create_pipeline_conmat_to_graph_density( main_path, pipeline_name = "graph_d
         
         plot = False
         
-    if multi == False:
+    if multi:
+        
+        ################################################ density-based graphs #################################################
+        
+        #### net_list
+        compute_net_List = pe.MapNode(interface = ComputeNetList(),name='compute_net_List',iterfield = ["Z_cor_mat_file"])
+        compute_net_List.inputs.density = con_den
+        
+        pipeline.connect(inputnode, 'conmat_file',compute_net_List, 'Z_cor_mat_file')
+        
+        ##### radatools ################################################################
+
+        ### prepare net_list for radatools processing  
+        prep_rada = pe.MapNode(interface = PrepRada(),name='prep_rada',iterfield = ["net_List_file"])
+        prep_rada.inputs.network_type = "U"
+        
+        pipeline.connect(compute_net_List, 'net_List_file', prep_rada, 'net_List_file')
+        
+        
+        if mod == True:
+                
+            ### compute community with radatools
+            community_rada = pe.MapNode(interface = CommRada(), name='community_rada',iterfield = ["Pajek_net_file"])
+            community_rada.inputs.optim_seq = optim_seq
+            
+            pipeline.connect( prep_rada, 'Pajek_net_file',community_rada,'Pajek_net_file')
+            
+            ### node roles
+            node_roles = pe.MapNode(interface = ComputeNodeRoles(role_type = "4roles"), name='node_roles', iterfield = ['Pajek_net_file','rada_lol_file'])
+            
+            pipeline.connect( prep_rada, 'Pajek_net_file',node_roles,'Pajek_net_file')
+            pipeline.connect( community_rada, 'rada_lol_file',node_roles,'rada_lol_file')
+            
+            if plot == True :
+                    
+                #### plot_igraph_modules_rada
+                plot_igraph_modules_rada = pe.MapNode(interface = PlotIGraphModules(),name='plot_igraph_modules_rada',iterfield = ['Pajek_net_file','rada_lol_file','node_roles_file'])
+                
+                pipeline.connect(prep_rada, 'Pajek_net_file',plot_igraph_modules_rada,'Pajek_net_file')
+                pipeline.connect(community_rada, 'rada_lol_file',plot_igraph_modules_rada,'rada_lol_file')
+                
+                pipeline.connect(node_roles, 'node_roles_file',plot_igraph_modules_rada,'node_roles_file')
+                pipeline.connect(inputnode,'labels_file',plot_igraph_modules_rada,'labels_file')
+                
+    
+        ############ compute network properties with rada
+        net_prop = pe.MapNode(interface = NetPropRada(optim_seq = "A"), name = 'net_prop',iterfield = ["Pajek_net_file"])
+        #net_prop.inputs.radatools_path = radatools_path
+        
+        pipeline.connect(prep_rada, 'Pajek_net_file',net_prop,'Pajek_net_file')
+    else:
         
         ################################################ density-based graphs
         
@@ -110,59 +160,6 @@ def create_pipeline_conmat_to_graph_density( main_path, pipeline_name = "graph_d
         
         pipeline.connect(prep_rada, 'Pajek_net_file',net_prop,'Pajek_net_file')
         
-        
-    else:
-        
-        ################################################ density-based graphs #################################################
-        
-        #### net_list
-        compute_net_List = pe.MapNode(interface = ComputeNetList(),name='compute_net_List',iterfield = ["Z_cor_mat_file"])
-        compute_net_List.inputs.density = con_den
-        
-        pipeline.connect(inputnode, 'conmat_file',compute_net_List, 'Z_cor_mat_file')
-        
-        ##### radatools ################################################################
-
-        ### prepare net_list for radatools processing  
-        prep_rada = pe.MapNode(interface = PrepRada(),name='prep_rada',iterfield = ["net_List_file"])
-        prep_rada.inputs.network_type = "U"
-        
-        pipeline.connect(compute_net_List, 'net_List_file', prep_rada, 'net_List_file')
-        
-        
-        if mod == True:
-                
-            ### compute community with radatools
-            community_rada = pe.MapNode(interface = CommRada(), name='community_rada',iterfield = ["Pajek_net_file"])
-            community_rada.inputs.optim_seq = optim_seq
-            
-            pipeline.connect( prep_rada, 'Pajek_net_file',community_rada,'Pajek_net_file')
-            
-            ### node roles
-            node_roles = pe.MapNode(interface = ComputeNodeRoles(role_type = "4roles"), name='node_roles', iterfield = ['Pajek_net_file','rada_lol_file'])
-            
-            pipeline.connect( prep_rada, 'Pajek_net_file',node_roles,'Pajek_net_file')
-            pipeline.connect( community_rada, 'rada_lol_file',node_roles,'rada_lol_file')
-            
-            if plot == True :
-                    
-                #### plot_igraph_modules_rada
-                plot_igraph_modules_rada = pe.MapNode(interface = PlotIGraphModules(),name='plot_igraph_modules_rada',iterfield = ['Pajek_net_file','rada_lol_file','node_roles_file'])
-                
-                pipeline.connect(prep_rada, 'Pajek_net_file',plot_igraph_modules_rada,'Pajek_net_file')
-                pipeline.connect(community_rada, 'rada_lol_file',plot_igraph_modules_rada,'rada_lol_file')
-                
-                pipeline.connect(node_roles, 'node_roles_file',plot_igraph_modules_rada,'node_roles_file')
-                pipeline.connect(inputnode,'labels_file',plot_igraph_modules_rada,'labels_file')
-                
-    
-        ############ compute network properties with rada
-        net_prop = pe.MapNode(interface = NetPropRada(optim_seq = "A"), name = 'net_prop',iterfield = ["Pajek_net_file"])
-        #net_prop.inputs.radatools_path = radatools_path
-        
-        pipeline.connect(prep_rada, 'Pajek_net_file',net_prop,'Pajek_net_file')
-
-
     return pipeline
 
     

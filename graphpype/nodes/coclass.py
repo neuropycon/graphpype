@@ -88,7 +88,7 @@ class PrepareCoclass(BaseInterface):
 
     def _run_interface(self, runtime):
                 
-        print 'in prepare_coclass'
+        print('in prepare_coclass')
         mod_files = self.inputs.mod_files
         
         node_corres_files = self.inputs.node_corres_files
@@ -99,11 +99,11 @@ class PrepareCoclass(BaseInterface):
             
             gm_mask_coords_file = self.inputs.gm_mask_coords_file
         
-            print 'loading gm mask corres'
+            print('loading gm mask corres')
             
             gm_mask_coords = np.loadtxt(gm_mask_coords_file)
             
-            print gm_mask_coords.shape
+            print(gm_mask_coords.shape)
                 
             #### read matrix from the first group
             #print Z_cor_mat_files
@@ -116,40 +116,40 @@ class PrepareCoclass(BaseInterface):
                     
             group_coclass_matrix = np.zeros((gm_mask_coords.shape[0],gm_mask_coords.shape[0],len(mod_files)),dtype = float)
             
-            print group_coclass_matrix.shape
+            print(group_coclass_matrix.shape)
             
             if len(mod_files) != len(coords_files) or len(mod_files) != len(node_corres_files):
-                print "warning, length of mod_files, coords_files and node_corres_files are imcompatible {} {} {}".format(len(mod_files),len(coords_files),len(node_corres_files))
+                print("warning, length of mod_files, coords_files and node_corres_files are imcompatible {} {} {}".format(len(mod_files),len(coords_files),len(node_corres_files)))
             
             for index_file in range(len(mod_files)):
             #for index_file in range(1):
                     
-                print mod_files[index_file]
+                print(mod_files[index_file])
                 
                 if os.path.exists(mod_files[index_file]) and os.path.exists(node_corres_files[index_file]) and os.path.exists(coords_files[index_file]):
                 
                     community_vect = read_lol_file(mod_files[index_file])
-                    print "community_vect:"
-                    print community_vect.shape
+                    print("community_vect:")
+                    print(community_vect.shape)
                     
                     node_corres_vect = read_Pajek_corres_nodes(node_corres_files[index_file])
-                    print "node_corres_vect:"
-                    print node_corres_vect.shape
+                    print("node_corres_vect:")
+                    print(node_corres_vect.shape)
                     
                     
                     coords = np.loadtxt(coords_files[index_file])
-                    print "coords_subj:"
-                    print coords.shape
+                    print("coords_subj:")
+                    print(coords.shape)
                     
                     
                     corres_coords = coords[node_corres_vect,:]
-                    print "corres_coords:"
-                    print corres_coords.shape
+                    print("corres_coords:")
+                    print(corres_coords.shape)
                     
                     
                     coclass_mat,possible_edge_mat = return_coclass_mat(community_vect,corres_coords,gm_mask_coords)
                     
-                    print coclass_mat
+                    print(coclass_mat)
                     
                     np.fill_diagonal(coclass_mat,0)
                     
@@ -163,7 +163,7 @@ class PrepareCoclass(BaseInterface):
                     
                     
                 else:
-                    print "Warning, one or more files between " + mod_files[index_file] + ',' + node_corres_files[index_file] + ', ' + coords_files[index_file] + " do not exists"
+                    print("Warning, one or more files between " + mod_files[index_file] + ',' + node_corres_files[index_file] + ', ' + coords_files[index_file] + " do not exists")
               
         elif isdefined(self.inputs.gm_mask_labels_file) and isdefined(self.inputs.labels_files):    
                 
@@ -172,7 +172,7 @@ class PrepareCoclass(BaseInterface):
             gm_mask_labels_file = self.inputs.gm_mask_labels_file
             
                 
-            print 'loading gm mask labels'
+            print('loading gm mask labels')
             
             #gm_mask_labels = [line.strip() for line in open(gm_mask_labels_file)]
             
@@ -180,7 +180,7 @@ class PrepareCoclass(BaseInterface):
                 
             gm_mask_labels = np.array([line.strip() for line in open(gm_mask_labels_file)],dtype = 'str')
             
-            print gm_mask_labels.shape
+            print(gm_mask_labels.shape)
             
             sum_coclass_matrix = np.zeros((gm_mask_labels.shape[0],gm_mask_labels.shape[0]),dtype = int)
             sum_possible_edge_matrix = np.zeros((gm_mask_labels.shape[0],gm_mask_labels.shape[0]),dtype = int)
@@ -190,39 +190,39 @@ class PrepareCoclass(BaseInterface):
                     
             group_coclass_matrix = np.zeros((gm_mask_labels.shape[0],gm_mask_labels.shape[0],len(mod_files)),dtype = float)
             
-            print group_coclass_matrix.shape
+            print(group_coclass_matrix.shape)
             
             if len(mod_files) != len(coords_files) or len(mod_files) != len(node_corres_files):
-                print "warning, length of mod_files, coords_files and node_corres_files are imcompatible {} {} {}".format(len(mod_files),len(coords_files),len(node_corres_files))
+                print("warning, length of mod_files, coords_files and node_corres_files are imcompatible {} {} {}".format(len(mod_files),len(coords_files),len(node_corres_files)))
             
             for index_file in range(len(mod_files)):
             #for index_file in range(1):
                     
-                print mod_files[index_file]
+                print(mod_files[index_file])
                 
                 if os.path.exists(mod_files[index_file]) and os.path.exists(node_corres_files[index_file]) and os.path.exists(labels_files[index_file]):
                 
                     community_vect = read_lol_file(mod_files[index_file])
-                    print "community_vect:"
-                    print community_vect.shape
+                    print("community_vect:")
+                    print(community_vect.shape)
                     
                     node_corres_vect = read_Pajek_corres_nodes(node_corres_files[index_file])
-                    print "node_corres_vect:"
-                    print node_corres_vect.shape
+                    print("node_corres_vect:")
+                    print(node_corres_vect.shape)
                     
                     
                     labels = np.array([line.strip() for line in open(labels_files[index_file])],dtype = 'str')
-                    print "labels_subj:"
-                    print labels.shape
+                    print("labels_subj:")
+                    print(labels.shape)
                     
                     corres_labels = labels[node_corres_vect]
-                    print "corres_labels:"
-                    print corres_labels.shape
+                    print("corres_labels:")
+                    print(corres_labels.shape)
                     
                     
                     coclass_mat,possible_edge_mat = return_coclass_mat_labels(community_vect,corres_labels,gm_mask_labels)
                     
-                    print coclass_mat
+                    print(coclass_mat)
                     
                     np.fill_diagonal(coclass_mat,0)
                     
@@ -236,10 +236,10 @@ class PrepareCoclass(BaseInterface):
                     
                     
                 else:
-                    print "Warning, one or more files between " + mod_files[index_file] + ',' + node_corres_files[index_file] + ', ' + coords_files[index_file] + " do not exists"
+                    print("Warning, one or more files between " + mod_files[index_file] + ',' + node_corres_files[index_file] + ', ' + coords_files[index_file] + " do not exists")
                 
         else:
-            print "Error, gm_mask_coords_file XOR gm_mask_labels_file should be defined"
+            print("Error, gm_mask_coords_file XOR gm_mask_labels_file should be defined")
             return
             
             
@@ -248,13 +248,13 @@ class PrepareCoclass(BaseInterface):
         np.save(group_coclass_matrix_file,group_coclass_matrix)
         
             
-        print 'saving coclass matrix'
+        print('saving coclass matrix')
         
         sum_coclass_matrix_file = os.path.abspath('sum_coclass_matrix.npy')
         
         np.save(sum_coclass_matrix_file,sum_coclass_matrix)
         
-        print 'saving possible_edge matrix'
+        print('saving possible_edge matrix')
         
         sum_possible_edge_matrix_file = os.path.abspath('sum_possible_edge_matrix.npy')
         
@@ -262,16 +262,16 @@ class PrepareCoclass(BaseInterface):
         
         
         #### save norm_coclass_matrix
-        print 
+        print() 
         
-        print np.where(np.array(sum_possible_edge_matrix == 0))
+        print(np.where(np.array(sum_possible_edge_matrix == 0)))
             
         norm_coclass_matrix = np.divide(np.array(sum_coclass_matrix,dtype = float),np.array(sum_possible_edge_matrix,dtype = float)) * 100
         
         
         #0/0
         
-        print 'saving norm coclass matrix'
+        print('saving norm coclass matrix')
         
         norm_coclass_matrix_file =  os.path.abspath('norm_coclass_matrix.npy')
         
@@ -337,20 +337,20 @@ class DiffMatrices(BaseInterface):
 
     def _run_interface(self, runtime):
                 
-        print 'in prepare_coclass'
+        print('in prepare_coclass')
         mat_file1 = self.inputs.mat_file1
         mat_file2 = self.inputs.mat_file2
             
         mat1 = np.load(mat_file1)
-        print mat1.shape
+        print(mat1.shape)
         
         mat2 = np.load(mat_file2)
-        print mat2.shape
+        print(mat2.shape)
         
         if check_np_shapes(mat1.shape,mat2.shape):
             
             diff_mat = mat1 - mat2
-            print diff_mat
+            print(diff_mat)
             
             diff_mat_file = os.path.abspath("diff_matrix.npy")
             
@@ -358,7 +358,7 @@ class DiffMatrices(BaseInterface):
             
         else:
         
-            print "Warning, shapes are different, cannot substrat matrices"
+            print("Warning, shapes are different, cannot substrat matrices")
             sys.exit()
             
         
@@ -427,20 +427,20 @@ class PlotCoclass(BaseInterface):
 
     def _run_interface(self, runtime):
                 
-        print 'in plot_coclass'
+        print('in plot_coclass')
         
         coclass_matrix_file = self.inputs.coclass_matrix_file
         labels_file = self.inputs.labels_file
         list_value_range = self.inputs.list_value_range
             
         
-        print 'loading coclass'
+        print('loading coclass')
         coclass_mat = np.load(coclass_matrix_file)
         
         
         if isdefined(labels_file):
             
-            print 'loading labels'
+            print('loading labels')
             labels = [line.strip() for line in open(labels_file)]
             
         else :
@@ -450,7 +450,7 @@ class PlotCoclass(BaseInterface):
         
             list_value_range = [np.amin(coclass_mat),np.amax(coclass_mat)]
         
-        print 'plotting heatmap'
+        print('plotting heatmap')
         
         path,fname,ext = split_f(coclass_matrix_file)
         

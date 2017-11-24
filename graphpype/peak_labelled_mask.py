@@ -41,13 +41,13 @@ def return_indexed_mask_neigh_within_binary_template(peak_position,neighbourhood
     
     peak_x,peak_y,peak_z = np.array(peak_position,dtype = 'int')
     
-    neigh_range = range(-neighbourhood,neighbourhood+1)
+    neigh_range = list(range(-neighbourhood,neighbourhood+1))
     
     list_neigh_coords = []
     
     peak_template_roi_index = resliced_template_template_data[peak_x,peak_y,peak_z]
     
-    print peak_template_roi_index
+    print(peak_template_roi_index)
     
     
     #print "template index = " + str(peak_template_roi_index)
@@ -74,7 +74,7 @@ def return_indexed_mask_neigh_within_binary_template(peak_position,neighbourhood
                 
                 count_neigh_in_orig_mask = count_neigh_in_orig_mask +1
                 
-        print list_neigh_coords
+        print(list_neigh_coords)
         
         if min_nb_voxels_in_neigh <= len(list_neigh_coords):
             
@@ -90,7 +90,7 @@ def return_indexed_mask_cube_size_within_binary_template(peak_position,cube_size
     
     peak_template_roi_index = resliced_template_template_data[peak_x,peak_y,peak_z]
     
-    print peak_template_roi_index
+    print(peak_template_roi_index)
     
     
     #print "template index = " + str(peak_template_roi_index)
@@ -99,7 +99,7 @@ def return_indexed_mask_cube_size_within_binary_template(peak_position,cube_size
         
     if peak_template_roi_index != 0:
         
-        for relative_coord in iter.product(range(cube_size), repeat=3):
+        for relative_coord in iter.product(list(range(cube_size)), repeat=3):
 
             neigh_x,neigh_y,neigh_z = peak_position + relative_coord
 
@@ -117,7 +117,7 @@ def return_indexed_mask_cube_size_within_binary_template(peak_position,cube_size
                 
                 count_neigh_in_orig_mask = count_neigh_in_orig_mask +1
                 
-        print list_neigh_coords
+        print(list_neigh_coords)
         
         0/0
         
@@ -131,7 +131,7 @@ def return_neigh_within_same_region(peak_position,neighbourhood,resliced_templat
     
     peak_x,peak_y,peak_z = np.array(peak_position,dtype = 'int')
     
-    neigh_range = range(-neighbourhood,neighbourhood+1)
+    neigh_range = list(range(-neighbourhood,neighbourhood+1))
     
     list_neigh_coords = []
     
@@ -179,7 +179,7 @@ def return_voxels_within_same_region(peak_position,ROI_cube_size,template_data,m
         
         list_voxel_coords = []
     
-        for relative_coord in iter.product(range(ROI_cube_size), repeat=3):
+        for relative_coord in iter.product(list(range(ROI_cube_size)), repeat=3):
 
             neigh_x,neigh_y,neigh_z = peak_position + relative_coord
 
@@ -235,7 +235,7 @@ def remove_close_peaks(list_orig_peak_coords,min_dist = 2.0 * np.sqrt(3)):
         else:
             list_selected_peaks_coords.append(orig_peak_coord)
             
-        print len(list_selected_peaks_coords)
+        print(len(list_selected_peaks_coords))
         
     return list_selected_peaks_coords
     
@@ -251,19 +251,19 @@ def remove_close_peaks_neigh_in_binary_template(list_orig_peak_coords,template_d
     
     indexed_mask_rois_data = np.zeros(img_shape,dtype = 'int64') -1
     
-    print indexed_mask_rois_data.shape
+    print(indexed_mask_rois_data.shape)
     
     list_selected_peaks_coords = []
     
     orig_peak_coords_np = np.array(list_orig_peak_coords)
     
-    print type(orig_peak_coords_np),orig_peak_coords_np.dtype,orig_peak_coords_np.shape
+    print(type(orig_peak_coords_np),orig_peak_coords_np.dtype,orig_peak_coords_np.shape)
     
     list_selected_peaks_indexes = []
     
     orig_peak_coords_dt = convert_np_coords_to_coords_dt(orig_peak_coords_np)
            
-    print type(orig_peak_coords_dt),orig_peak_coords_dt.dtype,orig_peak_coords_dt.shape
+    print(type(orig_peak_coords_dt),orig_peak_coords_dt.dtype,orig_peak_coords_dt.shape)
     
     #for i,orig_peak_coord in enumerate([list_orig_peak_coords[0]]):
     for i,orig_peak_coord in enumerate(list_orig_peak_coords):
@@ -293,7 +293,7 @@ def remove_close_peaks_neigh_in_binary_template(list_orig_peak_coords,template_d
                     
                     list_selected_peaks_indexes.append(i)
                     
-                    print len(list_selected_peaks_coords)
+                    print(len(list_selected_peaks_coords))
                     
         else:
             
@@ -310,7 +310,7 @@ def remove_close_peaks_neigh_in_binary_template(list_orig_peak_coords,template_d
                 
                 list_selected_peaks_indexes.append(i)
             
-                print len(list_selected_peaks_coords)
+                print(len(list_selected_peaks_coords))
         
     return list_selected_peaks_coords,indexed_mask_rois_data,list_selected_peaks_indexes
     
@@ -320,7 +320,7 @@ def remove_close_peaks_neigh_in_template(list_orig_peak_coords,template_data,tem
     
     indexed_mask_rois_data = np.zeros(img_shape,dtype = 'int64') -1
     
-    print indexed_mask_rois_data.shape
+    print(indexed_mask_rois_data.shape)
     
     label_rois = []
     
@@ -328,12 +328,12 @@ def remove_close_peaks_neigh_in_template(list_orig_peak_coords,template_data,tem
     
     orig_peak_coords_np = np.array(list_orig_peak_coords)
     
-    print type(orig_peak_coords_np),orig_peak_coords_np.dtype,orig_peak_coords_np.shape
+    print(type(orig_peak_coords_np),orig_peak_coords_np.dtype,orig_peak_coords_np.shape)
     
     
     orig_peak_coords_dt = convert_np_coords_to_coords_dt(orig_peak_coords_np)
            
-    print type(orig_peak_coords_dt),orig_peak_coords_dt.dtype,orig_peak_coords_dt.shape
+    print(type(orig_peak_coords_dt),orig_peak_coords_dt.dtype,orig_peak_coords_dt.shape)
     
     for orig_peak_coord in list_orig_peak_coords:
         
@@ -377,7 +377,7 @@ def remove_close_peaks_neigh_in_template(list_orig_peak_coords,template_data,tem
                 list_selected_peaks_coords.append(orig_peak_coord_np)
                 
                 
-        print len(list_selected_peaks_coords)
+        print(len(list_selected_peaks_coords))
         
     return list_selected_peaks_coords,indexed_mask_rois_data,label_rois
     
@@ -387,7 +387,7 @@ def compute_labelled_mask_from_HO_all_signif_contrasts():
     
     write_dir = os.path.join(nipype_analyses_path,peak_activation_mask_analysis_name)
     
-    print spm_contrasts_path
+    print(spm_contrasts_path)
     
     if not os.path.exists(write_dir):
         os.makedirs(write_dir)
@@ -396,9 +396,9 @@ def compute_labelled_mask_from_HO_all_signif_contrasts():
     spm_mask_files =  glob.glob(os.path.join(spm_contrasts_path,contrast_pattern))
     
     
-    print spm_mask_files
+    print(spm_mask_files)
     
-    print spm_mask_files.sort()
+    print(spm_mask_files.sort())
     
     # prepare the data
     img = nib.load(spm_mask_files[0])
@@ -427,14 +427,14 @@ def compute_labelled_mask_from_HO_all_signif_contrasts():
     
     #print template_indexes
         
-    print np_HO_labels.shape,np_HO_abbrev_labels.shape,template_indexes.shape
+    print(np_HO_labels.shape,np_HO_abbrev_labels.shape,template_indexes.shape)
     
     #info_rois = np.hstack((np.unique(indexed_mask_rois_data)[1:].reshape(len(label_rois),1),np_full_label_rois,np_label_rois,rois_MNI_coords))
     #info_rois = np.hstack((np.unique(indexed_mask_rois_data)[1:].reshape(len(label_rois),1),rois_MNI_coords))
     info_template = np.hstack((template_indexes.reshape(len(HO_labels),1),np_HO_labels.reshape(len(HO_labels),1),np_HO_abbrev_labels.reshape(len(HO_labels),1)))
     #,rois_MNI_coords))
     
-    print info_template
+    print(info_template)
    
     np.savetxt(info_template_file,info_template, fmt = '%s %s %s')
     
@@ -446,7 +446,7 @@ def compute_labelled_mask_from_HO_all_signif_contrasts():
     
     for i,spm_mask_file in enumerate(spm_mask_files):
         
-        print spm_mask_file
+        print(spm_mask_file)
         
         spm_mask_img = nib.load(spm_mask_file)
         
@@ -461,7 +461,7 @@ def compute_labelled_mask_from_HO_all_signif_contrasts():
         
         if peaks != None :
                 
-            print len(peaks)
+            print(len(peaks))
             list_orig_peak_vals = [peak['val'] for peak in peaks]
             list_orig_peak_coords = [peak['ijk'] for peak in peaks]
             list_orig_peak_MNI_coords = [peak['pos'] for peak in peaks]
@@ -470,34 +470,34 @@ def compute_labelled_mask_from_HO_all_signif_contrasts():
             
             list_orig_ROI_spm_index = list_orig_ROI_spm_index +  [i+1] * len(peaks)
                 
-            print len(list_orig_peak_coords)
-            print len(list_orig_ROI_spm_index)
+            print(len(list_orig_peak_coords))
+            print(len(list_orig_ROI_spm_index))
         
             
             list_selected_peaks_coords,indexed_mask_rois_data,list_selected_peaks_indexes = remove_close_peaks_neigh_in_binary_template(list_orig_peak_coords,resliced_full_HO_data,min_dist_between_ROIs)
             
-            print list_selected_peaks_indexes
-            print len(list_selected_peaks_indexes)
+            print(list_selected_peaks_indexes)
+            print(len(list_selected_peaks_indexes))
             
             
             merged_mask_data[indexed_mask_rois_data != 0] += i+1 
             
             template_indexes = np.array([resliced_full_HO_data[coord[0],coord[1],coord[2]] for coord in list_selected_peaks_coords],dtype = 'int64')
-            print template_indexes
+            print(template_indexes)
             
             np_HO_abbrev_labels = np.array(HO_abbrev_labels,dtype = 'string')
             
             np_HO_labels = np.array(HO_labels,dtype = 'string')
             
             
-            print template_indexes-1
+            print(template_indexes-1)
             
             label_rois = np_HO_abbrev_labels[template_indexes-1]
             full_label_rois = np_HO_labels[template_indexes-1]
             
             #print label_rois2
             
-            print label_rois
+            print(label_rois)
                         
                         
             #### indexed_mask
@@ -523,7 +523,7 @@ def compute_labelled_mask_from_HO_all_signif_contrasts():
             
             
             #### exporting Rois image with different indexes 
-            print np.unique(indexed_mask_rois_data)[1:].shape
+            print(np.unique(indexed_mask_rois_data)[1:].shape)
             nib.save(nib.Nifti1Image(data = indexed_mask_rois_data,header = img_header,affine = img_affine),indexed_mask_rois_file)
             
             #### saving ROI coords as textfile
@@ -532,7 +532,7 @@ def compute_labelled_mask_from_HO_all_signif_contrasts():
             #### saving MNI coords as textfile
             list_rois_MNI_coords = [list_orig_peak_MNI_coords[index] for index in list_selected_peaks_indexes]
             
-            print list_rois_MNI_coords
+            print(list_rois_MNI_coords)
             
             rois_MNI_coords = np.array(list_rois_MNI_coords,dtype = int)
             np.savetxt(MNI_coord_rois_file,rois_MNI_coords, fmt = '%d')
@@ -540,11 +540,11 @@ def compute_labelled_mask_from_HO_all_signif_contrasts():
             ### orig index of peaks
             list_rois_orig_indexes = [list_orig_ROI_spm_index[index] for index in list_selected_peaks_indexes]
             
-            print list_rois_orig_indexes
+            print(list_rois_orig_indexes)
             
             rois_orig_indexes = np.array(list_rois_orig_indexes,dtype = int).reshape(len(list_rois_orig_indexes),1)
             
-            print rois_orig_indexes.shape
+            print(rois_orig_indexes.shape)
             
             #### saving labels 
             np.savetxt(label_rois_file,label_rois, fmt = '%s')
@@ -553,14 +553,14 @@ def compute_labelled_mask_from_HO_all_signif_contrasts():
             np_label_rois = np.array(label_rois,dtype = 'string').reshape(len(label_rois),1)
             np_full_label_rois = np.array(full_label_rois,dtype = 'string').reshape(len(full_label_rois),1)
             
-            print np_label_rois.shape
-            print rois_MNI_coords.shape
+            print(np_label_rois.shape)
+            print(rois_MNI_coords.shape)
             
             #info_rois = np.hstack((np.unique(indexed_mask_rois_data)[1:].reshape(len(label_rois),1),np_full_label_rois,np_label_rois,rois_MNI_coords))
             #info_rois = np.hstack((np.unique(indexed_mask_rois_data)[1:].reshape(len(label_rois),1),rois_MNI_coords))
             info_rois = np.hstack((np.unique(indexed_mask_rois_data)[1:].reshape(len(label_rois),1),np_full_label_rois,np_label_rois,rois_MNI_coords,rois_orig_indexes))
             
-            print info_rois
+            print(info_rois)
         
             np.savetxt(info_rois_file,info_rois, fmt = '%s %s %s %s %s %s %s')
             
@@ -573,16 +573,16 @@ def compute_labelled_mask_from_HO_and_merged_spm_mask():
     
     write_dir = os.path.join(nipype_analyses_path,peak_activation_mask_analysis_name)
     
-    print spm_contrasts_path
+    print(spm_contrasts_path)
     
     if not os.path.exists(write_dir):
         os.makedirs(write_dir)
 
     spm_mask_files =  glob.glob(os.path.join(spm_contrasts_path,contrast_pattern))
         
-    print spm_mask_files
+    print(spm_mask_files)
     
-    print spm_mask_files.sort()
+    print(spm_mask_files.sort())
     
     # prepare the data
     img = nib.load(spm_mask_files[0])
@@ -611,14 +611,14 @@ def compute_labelled_mask_from_HO_and_merged_spm_mask():
     
     #print template_indexes
         
-    print np_HO_labels.shape,np_HO_abbrev_labels.shape,template_indexes.shape
+    print(np_HO_labels.shape,np_HO_abbrev_labels.shape,template_indexes.shape)
     
     #info_rois = np.hstack((np.unique(indexed_mask_rois_data)[1:].reshape(len(label_rois),1),np_full_label_rois,np_label_rois,rois_MNI_coords))
     #info_rois = np.hstack((np.unique(indexed_mask_rois_data)[1:].reshape(len(label_rois),1),rois_MNI_coords))
     info_template = np.hstack((template_indexes.reshape(len(HO_labels),1),np_HO_labels.reshape(len(HO_labels),1),np_HO_abbrev_labels.reshape(len(HO_labels),1)))
     #,rois_MNI_coords))
     
-    print info_template
+    print(info_template)
    
     np.savetxt(info_template_file,info_template, fmt = '%s %s %s')
     
@@ -631,7 +631,7 @@ def compute_labelled_mask_from_HO_and_merged_spm_mask():
     
     merged_mask_data = np.zeros(shape = img_shape,dtype = float)
     
-    print merged_mask_data.shape
+    print(merged_mask_data.shape)
     
     list_orig_ROI_spm_index = []
     
@@ -642,7 +642,7 @@ def compute_labelled_mask_from_HO_and_merged_spm_mask():
     
     for i,spm_mask_file in enumerate(spm_mask_files):
         
-        print spm_mask_file
+        print(spm_mask_file)
         
         spm_mask_img = nib.load(spm_mask_file)
         
@@ -655,7 +655,7 @@ def compute_labelled_mask_from_HO_and_merged_spm_mask():
         
         if peaks != None :
                 
-            print len(peaks)
+            print(len(peaks))
             list_orig_peak_vals = list_orig_peak_vals + [peak['val'] for peak in peaks]
             list_orig_peak_coords = list_orig_peak_coords + [peak['ijk'] for peak in peaks]
             list_orig_peak_MNI_coords = list_orig_peak_MNI_coords + [peak['pos'] for peak in peaks]
@@ -674,36 +674,36 @@ def compute_labelled_mask_from_HO_and_merged_spm_mask():
         
             list_orig_ROI_spm_index = list_orig_ROI_spm_index +  [i+1] * len(peaks)
             
-        print len(list_orig_peak_coords)
-        print len(list_orig_ROI_spm_index)
+        print(len(list_orig_peak_coords))
+        print(len(list_orig_ROI_spm_index))
     
     #### selectionne les pics sur leur distance entre eux et sur leur appatenance au template HO
     list_selected_peaks_coords,indexed_mask_rois_data,list_selected_peaks_indexes = remove_close_peaks_neigh_in_binary_template(list_orig_peak_coords,resliced_full_HO_data,min_dist_between_ROIs)
     
     nib.save(nib.Nifti1Image(data = merged_mask_data,header = img_header,affine = img_affine),merged_mask_img_file)
     
-    print list_selected_peaks_indexes
-    print len(list_selected_peaks_indexes)
+    print(list_selected_peaks_indexes)
+    print(len(list_selected_peaks_indexes))
     
     template_indexes = np.array([resliced_full_HO_data[coord[0],coord[1],coord[2]] for coord in list_selected_peaks_coords],dtype = 'int64')
-    print template_indexes
+    print(template_indexes)
     
     np_HO_abbrev_labels = np.array(HO_abbrev_labels,dtype = 'string')
     
     np_HO_labels = np.array(HO_labels,dtype = 'string')
     
     
-    print template_indexes-1
+    print(template_indexes-1)
     
     label_rois = np_HO_abbrev_labels[template_indexes-1]
     full_label_rois = np_HO_labels[template_indexes-1]
     
     #print label_rois2
     
-    print label_rois
+    print(label_rois)
     
     #### exporting Rois image with different indexes 
-    print np.unique(indexed_mask_rois_data)[1:].shape
+    print(np.unique(indexed_mask_rois_data)[1:].shape)
     nib.save(nib.Nifti1Image(data = indexed_mask_rois_data,header = img_header,affine = img_affine),indexed_mask_rois_file)
     
     #### saving ROI coords as textfile
@@ -712,7 +712,7 @@ def compute_labelled_mask_from_HO_and_merged_spm_mask():
     #### saving MNI coords as textfile
     list_rois_MNI_coords = [list_orig_peak_MNI_coords[index] for index in list_selected_peaks_indexes]
     
-    print list_rois_MNI_coords
+    print(list_rois_MNI_coords)
     
     rois_MNI_coords = np.array(list_rois_MNI_coords,dtype = int)
     np.savetxt(MNI_coord_rois_file,rois_MNI_coords, fmt = '%d')
@@ -720,20 +720,20 @@ def compute_labelled_mask_from_HO_and_merged_spm_mask():
     ### orig index of peaks
     list_rois_orig_indexes = [list_orig_ROI_spm_index[index] for index in list_selected_peaks_indexes]
     
-    print list_rois_orig_indexes
+    print(list_rois_orig_indexes)
     
     rois_orig_indexes = np.array(list_rois_orig_indexes,dtype = int).reshape(len(list_rois_orig_indexes),1)
     
-    print rois_orig_indexes.shape
+    print(rois_orig_indexes.shape)
     
     #### mask with orig spm index
     orig_spm_index_mask_data = np.zeros(shape = img_shape,dtype = int)
     
-    print np.unique(indexed_mask_rois_data)
+    print(np.unique(indexed_mask_rois_data))
     
     for i in np.unique(indexed_mask_rois_data)[1:]:
     
-        print i,np.sum(indexed_mask_rois_data == i),rois_orig_indexes[i]
+        print(i,np.sum(indexed_mask_rois_data == i),rois_orig_indexes[i])
         
         orig_spm_index_mask_data[indexed_mask_rois_data == i] = rois_orig_indexes[i]
     
@@ -746,14 +746,14 @@ def compute_labelled_mask_from_HO_and_merged_spm_mask():
     np_label_rois = np.array(label_rois,dtype = 'string').reshape(len(label_rois),1)
     np_full_label_rois = np.array(full_label_rois,dtype = 'string').reshape(len(full_label_rois),1)
     
-    print np_label_rois.shape
-    print rois_MNI_coords.shape
+    print(np_label_rois.shape)
+    print(rois_MNI_coords.shape)
     
     #info_rois = np.hstack((np.unique(indexed_mask_rois_data)[1:].reshape(len(label_rois),1),np_full_label_rois,np_label_rois,rois_MNI_coords))
     #info_rois = np.hstack((np.unique(indexed_mask_rois_data)[1:].reshape(len(label_rois),1),rois_MNI_coords))
     info_rois = np.hstack((np.unique(indexed_mask_rois_data)[1:].reshape(len(label_rois),1),np_full_label_rois,np_label_rois,rois_MNI_coords,rois_orig_indexes))
     
-    print info_rois
+    print(info_rois)
    
     np.savetxt(info_rois_file,info_rois, fmt = '%s %s %s %s %s %s %s')
     
@@ -765,7 +765,7 @@ def compute_labelled_mask_from_HO_and_merged_thr_spm_mask():
     
     write_dir = os.path.join(nipype_analyses_path,peak_activation_mask_analysis_name)
     
-    print spm_contrasts_path
+    print(spm_contrasts_path)
     
     if not os.path.exists(write_dir):
         os.makedirs(write_dir)
@@ -777,7 +777,7 @@ def compute_labelled_mask_from_HO_and_merged_thr_spm_mask():
         
     #spm_mask_files.sort()
     
-    print len(spm_mask_files)
+    print(len(spm_mask_files))
     
     # prepare the data
     img = nib.load(spm_mask_files[0])
@@ -806,14 +806,14 @@ def compute_labelled_mask_from_HO_and_merged_thr_spm_mask():
     
     #print template_indexes
         
-    print np_HO_labels.shape,np_HO_abbrev_labels.shape,template_indexes.shape
+    print(np_HO_labels.shape,np_HO_abbrev_labels.shape,template_indexes.shape)
     
     #info_rois = np.hstack((np.unique(indexed_mask_rois_data)[1:].reshape(len(label_rois),1),np_full_label_rois,np_label_rois,rois_MNI_coords))
     #info_rois = np.hstack((np.unique(indexed_mask_rois_data)[1:].reshape(len(label_rois),1),rois_MNI_coords))
     info_template = np.hstack((template_indexes.reshape(len(HO_labels),1),np_HO_labels.reshape(len(HO_labels),1),np_HO_abbrev_labels.reshape(len(HO_labels),1)))
     #,rois_MNI_coords))
     
-    print info_template
+    print(info_template)
    
     np.savetxt(info_template_file,info_template, fmt = '%s %s %s')
     
@@ -826,7 +826,7 @@ def compute_labelled_mask_from_HO_and_merged_thr_spm_mask():
     
     merged_mask_data = np.zeros(shape = img_shape,dtype = float)
     
-    print merged_mask_data.shape
+    print(merged_mask_data.shape)
     
     list_orig_ROI_spm_index = []
     
@@ -837,7 +837,7 @@ def compute_labelled_mask_from_HO_and_merged_thr_spm_mask():
     
     for i,spm_mask_file in enumerate(spm_mask_files):
         
-        print spm_mask_file
+        print(spm_mask_file)
         
         spm_mask_img = nib.load(spm_mask_file)
         
@@ -850,7 +850,7 @@ def compute_labelled_mask_from_HO_and_merged_thr_spm_mask():
         
         if peaks != None :
                 
-            print len(peaks)
+            print(len(peaks))
             list_orig_peak_vals = list_orig_peak_vals + [peak['val'] for peak in peaks]
             list_orig_peak_coords = list_orig_peak_coords + [peak['ijk'] for peak in peaks]
             list_orig_peak_MNI_coords = list_orig_peak_MNI_coords + [peak['pos'] for peak in peaks]
@@ -869,8 +869,8 @@ def compute_labelled_mask_from_HO_and_merged_thr_spm_mask():
         
             list_orig_ROI_spm_index = list_orig_ROI_spm_index +  [i+1] * len(peaks)
             
-        print len(list_orig_peak_coords)
-        print len(list_orig_ROI_spm_index)
+        print(len(list_orig_peak_coords))
+        print(len(list_orig_ROI_spm_index))
     
     #### selectionne les pics sur leur distance entre eux et sur leur appatenance au template HO
     
@@ -880,8 +880,8 @@ def compute_labelled_mask_from_HO_and_merged_thr_spm_mask():
     
     nib.save(nib.Nifti1Image(data = merged_mask_data,header = img_header,affine = img_affine),merged_mask_img_file)
 
-    print list_selected_peaks_indexes
-    print len(list_selected_peaks_indexes)
+    print(list_selected_peaks_indexes)
+    print(len(list_selected_peaks_indexes))
     
     #for coord in list_selected_peaks_coords:
     
@@ -890,24 +890,24 @@ def compute_labelled_mask_from_HO_and_merged_thr_spm_mask():
         #print resliced_full_HO_data[coord[0],coord[1],coord[2]]
     
     template_indexes = np.array([resliced_full_HO_data[coord[0],coord[1],coord[2]] for coord in list_selected_peaks_coords],dtype = 'int64')
-    print template_indexes
+    print(template_indexes)
     
     np_HO_abbrev_labels = np.array(HO_abbrev_labels,dtype = 'string')
     
     np_HO_labels = np.array(HO_labels,dtype = 'string')
     
     
-    print template_indexes-1
+    print(template_indexes-1)
     
     label_rois = np_HO_abbrev_labels[template_indexes-1]
     full_label_rois = np_HO_labels[template_indexes-1]
     
     #print label_rois2
     
-    print label_rois
+    print(label_rois)
     
     #### exporting Rois image with different indexes 
-    print np.unique(indexed_mask_rois_data)[1:].shape
+    print(np.unique(indexed_mask_rois_data)[1:].shape)
     nib.save(nib.Nifti1Image(data = indexed_mask_rois_data,header = img_header,affine = img_affine),indexed_mask_rois_file)
     
     #### saving ROI coords as textfile
@@ -916,7 +916,7 @@ def compute_labelled_mask_from_HO_and_merged_thr_spm_mask():
     #### saving MNI coords as textfile
     list_rois_MNI_coords = [list_orig_peak_MNI_coords[index] for index in list_selected_peaks_indexes]
     
-    print list_rois_MNI_coords
+    print(list_rois_MNI_coords)
     
     rois_MNI_coords = np.array(list_rois_MNI_coords,dtype = int)
     np.savetxt(MNI_coord_rois_file,rois_MNI_coords, fmt = '%d')
@@ -924,11 +924,11 @@ def compute_labelled_mask_from_HO_and_merged_thr_spm_mask():
     ### orig index of peaks
     list_rois_orig_indexes = [list_orig_ROI_spm_index[index] for index in list_selected_peaks_indexes]
     
-    print list_rois_orig_indexes
+    print(list_rois_orig_indexes)
     
     rois_orig_indexes = np.array(list_rois_orig_indexes,dtype = int).reshape(len(list_rois_orig_indexes),1)
     
-    print rois_orig_indexes.shape
+    print(rois_orig_indexes.shape)
     
     np.savetxt(rois_orig_indexes_file,rois_orig_indexes, fmt = '%d')
     
@@ -937,11 +937,11 @@ def compute_labelled_mask_from_HO_and_merged_thr_spm_mask():
     #### mask with orig spm index
     orig_spm_index_mask_data = np.zeros(shape = img_shape,dtype = int)
     
-    print np.unique(indexed_mask_rois_data)
+    print(np.unique(indexed_mask_rois_data))
     
     for i in np.unique(indexed_mask_rois_data)[1:]:
     
-        print i,np.sum(indexed_mask_rois_data == i),rois_orig_indexes[i]
+        print(i,np.sum(indexed_mask_rois_data == i),rois_orig_indexes[i])
         
         orig_spm_index_mask_data[indexed_mask_rois_data == i] = rois_orig_indexes[i]
     
@@ -954,14 +954,14 @@ def compute_labelled_mask_from_HO_and_merged_thr_spm_mask():
     np_label_rois = np.array(label_rois,dtype = 'string').reshape(len(label_rois),1)
     np_full_label_rois = np.array(full_label_rois,dtype = 'string').reshape(len(full_label_rois),1)
     
-    print np_label_rois.shape
-    print rois_MNI_coords.shape
+    print(np_label_rois.shape)
+    print(rois_MNI_coords.shape)
     
     #info_rois = np.hstack((np.unique(indexed_mask_rois_data)[1:].reshape(len(label_rois),1),np_full_label_rois,np_label_rois,rois_MNI_coords))
     #info_rois = np.hstack((np.unique(indexed_mask_rois_data)[1:].reshape(len(label_rois),1),rois_MNI_coords))
     info_rois = np.hstack((np.unique(indexed_mask_rois_data)[1:].reshape(len(label_rois),1),np_full_label_rois,np_label_rois,rois_MNI_coords,rois_orig_indexes))
     
-    print info_rois
+    print(info_rois)
    
     np.savetxt(info_rois_file,info_rois, fmt = '%s %s %s %s %s %s %s')
     

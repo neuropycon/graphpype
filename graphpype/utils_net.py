@@ -16,17 +16,17 @@ def return_net_list(Z_cor_mat):
 
     t2 = time.time()
     
-    print Z_cor_mat.shape 
+    print(Z_cor_mat.shape) 
     
     x_sig,y_sig = np.where(Z_cor_mat != 0.0)
         
     net_list = np.array(np.column_stack((x_sig + 1,y_sig + 1,Z_cor_mat[x_sig,y_sig]*1000)),dtype = int)
     
-    print net_list.shape
+    print(net_list.shape)
     
     t3 = time.time()
     
-    print "Sparse Weighted correlation thresholding computation took " + str(t3-t2) + "s"
+    print("Sparse Weighted correlation thresholding computation took " + str(t3-t2) + "s")
     
     return net_list
     
@@ -38,11 +38,11 @@ def return_int_net_list(int_mat,min_int = 0):
     
     net_list = np.array(np.column_stack((x_sig + 1,y_sig + 1,int_mat[x_sig,y_sig])),dtype = 'int64')
     
-    print net_list.shape
+    print(net_list.shape)
     
     t3 = time.time()
     
-    print "Sparse Weighted correlation thresholding computation took " + str(t3-t2) + "s"
+    print("Sparse Weighted correlation thresholding computation took " + str(t3-t2) + "s")
     
     return net_list
     
@@ -51,7 +51,7 @@ def return_int_net_list(int_mat,min_int = 0):
 def export_List_net_from_list(Z_List_file,Z_list):
     
     
-    print Z_list.shape
+    print(Z_list.shape)
     
     #print "saving file " + Z_List_file
     
@@ -91,14 +91,12 @@ def read_lol_file(lol_file):
         
         for i,line in enumerate(lines):
             
-            #print line
-            
             try:
                 nb_nodes,index_nodes = line.split(': ')
                 #print nb_nodes
                 
-                if nb_nodes > 1:
-                    index_nodes = np.array(map(int,index_nodes.split(' ')),dtype = int) -1
+                if int(nb_nodes) > 1:
+                    index_nodes = np.array(list(map(int,index_nodes.split(' '))),dtype = int) -1
                 
                     #print i,index_nodes
                     community_vect[index_nodes] = i
@@ -107,7 +105,7 @@ def read_lol_file(lol_file):
                     community_vect[index_nodes] = i
                 
             except ValueError:
-                print "Warning, reading lol file "
+                print("Warning, reading lol file ")
                 
         f.close()
         
@@ -143,7 +141,7 @@ def read_Pajek_corres_nodes(Pajek_net_file):
             if (i+1) == int(new_index) :
                 node_corres[i] = int(old_index)-1
             else:
-                print "Warning, incompatible indexes {} {}".format(new_index,i+1)
+                print("Warning, incompatible indexes {} {}".format(new_index,i+1))
             
         f.close()
         
@@ -199,7 +197,7 @@ def read_Pajek_corres_nodes_and_sparse_matrix(Pajek_net_file):
         
         nb_elements = int(line_nb_elements.split(' ')[1])
         
-        print nb_elements
+        print(nb_elements)
         
         node_corres = np.empty((nb_elements),dtype = 'int')
         
@@ -219,7 +217,7 @@ def read_Pajek_corres_nodes_and_sparse_matrix(Pajek_net_file):
             if (i+1) == int(new_index) :
                 node_corres[i] = int(old_index)-1
             else:
-                print "Warning, incompatible indexes {} {}".format(new_index,i+1)
+                print("Warning, incompatible indexes {} {}".format(new_index,i+1))
             
             
             
@@ -268,7 +266,7 @@ def get_strength_pos_values_from_info_nodes_file(info_nodes_file):
     
     info_nodes = read_csv(info_nodes_file, sep = "\t")
     
-    print info_nodes
+    print(info_nodes)
     
     return info_nodes['Strength_Pos']
 
@@ -278,7 +276,7 @@ def get_strength_neg_values_from_info_nodes_file(info_nodes_file):
     
     info_nodes = read_csv(info_nodes_file, sep = "\t")
     
-    print info_nodes
+    print(info_nodes)
     
     return info_nodes['Strength_Neg']
     
@@ -288,7 +286,7 @@ def get_degree_pos_values_from_info_nodes_file(info_nodes_file):
     
     info_nodes = read_csv(info_nodes_file, sep = "\t")
     
-    print info_nodes
+    print(info_nodes)
     
     return info_nodes['Degree_Pos']
 
@@ -298,7 +296,7 @@ def get_degree_neg_values_from_info_nodes_file(info_nodes_file):
     
     info_nodes = read_csv(info_nodes_file, sep = "\t")
     
-    print info_nodes
+    print(info_nodes)
     
     return info_nodes['Degree_Neg']
     
@@ -306,22 +304,22 @@ def get_degree_neg_values_from_info_nodes_file(info_nodes_file):
         
 def export_Louvain_net_from_list(Z_Louvain_file,Z_list,coords):
     
-    print np.array(Z_list).shape
+    print(np.array(Z_list).shape)
     
     #print sig_x,sig_y
-    print "column_stack"
+    print("column_stack")
     tab_edges = np.column_stack((np.array(Z_list),np.repeat(1,repeats = len(Z_list))))
     
-    print tab_edges.shape
+    print(tab_edges.shape)
     
-    print "file"
+    print("file")
     
     with open(Z_Louvain_file,'w') as f:
         
         #### write node list
         nb_nodes = coords.shape[0]
         
-        print "Nb nodes: " + str(nb_nodes)
+        print("Nb nodes: " + str(nb_nodes))
         
         coords_list = coords.tolist()
         

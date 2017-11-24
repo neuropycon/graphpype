@@ -83,19 +83,19 @@ class PlotIGraphModules(BaseInterface):
         labels_file = self.inputs.labels_file
         node_roles_file = self.inputs.node_roles_file
         
-        print 'Loading node_corres and Z list'
+        print('Loading node_corres and Z list')
         
         node_corres,Z_list = read_Pajek_corres_nodes_and_sparse_matrix(Pajek_net_file)
         
-        print np.min(node_corres),np.max(node_corres)
+        print(np.min(node_corres),np.max(node_corres))
         
-        print node_corres.shape
-        print node_corres
+        print(node_corres.shape)
+        print(node_corres)
         
-        print Z_list
-        print Z_list.shape 
+        print(Z_list)
+        print(Z_list.shape) 
         
-        print 'Loading coords'
+        print('Loading coords')
         
         #print 'Loading gm mask coords'
         
@@ -103,23 +103,23 @@ class PlotIGraphModules(BaseInterface):
         
         #print gm_mask_coords.shape
         
-        print "Loading community belonging file" + rada_lol_file
+        print("Loading community belonging file" + rada_lol_file)
 
         community_vect = read_lol_file(rada_lol_file)
         
-        print community_vect
-        print community_vect.shape
-        print np.min(community_vect),np.max(community_vect)
+        print(community_vect)
+        print(community_vect.shape)
+        print(np.min(community_vect),np.max(community_vect))
         
         if isdefined(coords_file):
             
-            print 'extracting node coords'
+            print('extracting node coords')
             
             coords = np.array(np.loadtxt(coords_file),dtype = 'float')
-            print coords.shape
+            print(coords.shape)
             
             node_coords = coords[node_corres,:]
-            print node_coords.shape
+            print(node_coords.shape)
             
             #print np.isnan(node_coords)
             
@@ -132,20 +132,20 @@ class PlotIGraphModules(BaseInterface):
             
         if isdefined(labels_file):
             
-            print 'extracting node labels'
+            print('extracting node labels')
                    
             labels = [line.strip() for line in open(labels_file)]
-            print labels
+            print(labels)
             
             node_labels = np.array(labels,dtype = 'string')[node_corres].tolist()
-            print len(node_labels)
+            print(len(node_labels))
             
         else :
             node_labels = node_corres.tolist()
             
         if isdefined(node_roles_file):
         
-            print 'extracting node roles'
+            print('extracting node roles')
                     
             node_roles = np.array(np.loadtxt(node_roles_file),dtype = 'int64')
             
@@ -158,11 +158,11 @@ class PlotIGraphModules(BaseInterface):
             
         #print node_roles 
         
-        print "plotting 3D modules with igraph"
+        print("plotting 3D modules with igraph")
         
         #Z_list_single_modules_files = plot_3D_igraph_single_modules(community_vect,Z_list,node_coords,node_labels,node_roles = node_roles,nb_min_nodes_by_module = 5)
         
-        print node_coords.size
+        print(node_coords.size)
         
         if node_coords.size != 0:
         
@@ -244,7 +244,7 @@ class PlotIGraphCoclass(BaseInterface):
 
     def _run_interface(self, runtime):
                 
-        print 'in plot_coclass'
+        print('in plot_coclass')
         
         coclass_matrix_file = self.inputs.coclass_matrix_file
         labels_file = self.inputs.labels_file
@@ -253,13 +253,13 @@ class PlotIGraphCoclass(BaseInterface):
         gm_mask_coords_file = self.inputs.gm_mask_coords_file
         
         
-        print 'loading coclass'
+        print('loading coclass')
         coclass_matrix = np.load(coclass_matrix_file)
         
         
         if isdefined(labels_file):
             
-            print 'loading labels'
+            print('loading labels')
             labels = [line.strip() for line in open(labels_file)]
             
         else :
@@ -267,7 +267,7 @@ class PlotIGraphCoclass(BaseInterface):
             
         if isdefined(gm_mask_coords_file):
             
-            print 'loading coords'
+            print('loading coords')
             
             gm_mask_coords = np.loadtxt(gm_mask_coords_file)
             
@@ -275,15 +275,15 @@ class PlotIGraphCoclass(BaseInterface):
             gm_mask_coords = np.array([])
             
             
-        print 'thresholding coclass'
+        print('thresholding coclass')
         
         coclass_matrix[coclass_matrix <= threshold] = 0
         
         coclass_matrix[coclass_matrix > threshold] = 1
         
-        print coclass_matrix
+        print(coclass_matrix)
         
-        print 'plotting igraph'
+        print('plotting igraph')
         
         
         plot_igraph_3D_coclass_matrix_file = os.path.abspath("plot_3D_signif_coclass_mat.eps")
@@ -341,7 +341,7 @@ class PlotIGraphConjCoclass(BaseInterface):
 
     def _run_interface(self, runtime):
                 
-        print 'in plot_coclass'
+        print('in plot_coclass')
         
         coclass_matrix_file1 = self.inputs.coclass_matrix_file1
         coclass_matrix_file2 = self.inputs.coclass_matrix_file2
@@ -353,37 +353,37 @@ class PlotIGraphConjCoclass(BaseInterface):
         
         #from nipype.utils.filemanip import split_filename as split_f
         
-        print 'loading labels'
+        print('loading labels')
         
         labels = [line.strip() for line in open(labels_file)]
         
         
-        print 'loading coclass_matrices'
+        print('loading coclass_matrices')
         coclass_matrix1 = np.load(coclass_matrix_file1)
         coclass_matrix2 = np.load(coclass_matrix_file2)
         
         path,fname,ext = split_f(coclass_matrix_file1)
         
         
-        print 'loading gm mask corres'
+        print('loading gm mask corres')
         
         gm_mask_coords = np.array(np.loadtxt(gm_mask_coords_file),dtype = 'float')
         
-        print gm_mask_coords.shape
+        print(gm_mask_coords.shape)
             
             
-        print 'computing diff coclass'
+        print('computing diff coclass')
         
         if not check_np_shapes(coclass_matrix1.shape,coclass_matrix2.shape):
             
-            print "$$$$$$$$ exiting, unequal shapes for coclass matrices"
+            print("$$$$$$$$ exiting, unequal shapes for coclass matrices")
             
             sys.exit()
             
         diff_matrix = coclass_matrix1 - coclass_matrix2
         
         #### 
-        print "plotting diff matrix"    
+        print("plotting diff matrix")    
         
         plot_diff_coclass_matrix_file =  os.path.abspath('heatmap_diff_coclass_matrix.eps')
         
@@ -391,7 +391,7 @@ class PlotIGraphConjCoclass(BaseInterface):
         
         
         
-        print "separating the overlap and signif diff netwtorks"
+        print("separating the overlap and signif diff netwtorks")
         
         conj_labelled_matrix = np.zeros(shape = diff_matrix.shape, dtype = 'int')
         
@@ -442,7 +442,7 @@ class PlotIGraphConjCoclass(BaseInterface):
             plot_3D_igraph_int_mat(plot_igraph_FR_signif_coclass2_coclass_matrix_file,signif_coclass2_labelled_matrix,labels = labels)
         
         
-        print "computing signif int_labelled_signif_matrix"
+        print("computing signif int_labelled_signif_matrix")
             
         int_labelled_signif_matrix = np.zeros(shape = diff_matrix.shape, dtype = 'int')
         
@@ -458,9 +458,9 @@ class PlotIGraphConjCoclass(BaseInterface):
         int_labelled_signif_matrix[signif_coclass2_labelled_matrix == 1] = 3
         
         
-        print int_labelled_signif_matrix
+        print(int_labelled_signif_matrix)
         
-        print 'plotting igraph'
+        print('plotting igraph')
         
         if np.sum(int_labelled_signif_matrix != 0) != 0:
                 

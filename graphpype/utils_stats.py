@@ -86,7 +86,7 @@ def return_signif_code(p_values,uncor_alpha = 0.05,fdr_alpha = 0.05,bon_alpha = 
     
 def return_signif_code_Z(Z_values,conf_interval_binom_fdr = 0.05):
 
-    print Z_values
+    print(Z_values)
     
     N = Z_values.shape[0]
     
@@ -105,7 +105,7 @@ def return_signif_code_Z(Z_values,conf_interval_binom_fdr = 0.05):
     
     sorted_Z_values= Z_values[order[::-1]]
     
-    print sorted_Z_values
+    print(sorted_Z_values)
     
     ### by default, code = 1 (cor at 0.05)
     signif_code = np.ones(shape = N)
@@ -114,21 +114,21 @@ def return_signif_code_Z(Z_values,conf_interval_binom_fdr = 0.05):
     ### code = 0 for all correlation below uncor_alpha
     Z_uncor = stat.norm.ppf(1-conf_interval_binom_fdr/2)
     
-    print Z_uncor
+    print(Z_uncor)
     
     signif_code[Z_values < Z_uncor] = 0
     
-    print np.sum(signif_code != 0)
+    print(np.sum(signif_code != 0))
     
     ################ FPcor #############################
     
     Z_FPcor = stat.norm.ppf(1-(1.0/(2*N)))
     
-    print Z_FPcor
+    print(Z_FPcor)
     
     signif_code[Z_values > Z_FPcor] = 2
     
-    print np.sum(signif_code == 2)
+    print(np.sum(signif_code == 2))
     
     ################ fdr ###############################
     
@@ -145,17 +145,17 @@ def return_signif_code_Z(Z_values,conf_interval_binom_fdr = 0.05):
     
     signif_code[order[signif_sorted]] = 3
     
-    print np.sum(signif_code == 3)
+    print(np.sum(signif_code == 3))
     
     ################# bonferroni #######################
     
     Z_bon = stat.norm.ppf(1-conf_interval_binom_fdr/(2*N))
     
-    print Z_bon
+    print(Z_bon)
     
     signif_code[Z_values > Z_bon] = 4
     
-    print np.sum(signif_code == 4)
+    print(np.sum(signif_code == 4))
     
     return signif_code
     
@@ -169,7 +169,7 @@ def compute_pairwise_binom(X,Y,conf_interval_binom):
     # Perform binomial test at each edge
     ADJ = np.zeros((N,N),dtype = 'int')
     
-    for i,j in it.combinations(range(N), 2):
+    for i,j in it.combinations(list(range(N)), 2):
         
         ADJ[i,j] = ADJ[j,i] = binom_CI_test(X[i,j,:],Y[i,j,:],conf_interval_binom)
         
@@ -186,14 +186,14 @@ def compute_pairwise_ttest_fdr(X,Y, cor_alpha, uncor_alpha, paired = True,old_or
         N = X.shape[1]
     
     if keep_intracon:
-        iter_indexes = it.combinations_with_replacement(range(N), 2)
+        iter_indexes = it.combinations_with_replacement(list(range(N)), 2)
     else:
         
-        iter_indexes = it.combinations(range(N), 2)
+        iter_indexes = it.combinations(list(range(N)), 2)
         
     if old_order:
             
-        print X.shape
+        print(X.shape)
         
         list_diff = []
         
@@ -215,8 +215,8 @@ def compute_pairwise_ttest_fdr(X,Y, cor_alpha, uncor_alpha, paired = True,old_or
                 
                 if np.isnan(p_val):
                     
-                    print "Warning, unable to compute T-test: "
-                    print t_stat,p_val,X_nonan,Y_nonan
+                    print("Warning, unable to compute T-test: ")
+                    print(t_stat,p_val,X_nonan,Y_nonan)
                     
                     
             
@@ -258,7 +258,7 @@ def compute_pairwise_ttest_fdr(X,Y, cor_alpha, uncor_alpha, paired = True,old_or
                 
                 if np.isnan(p_val):
                     
-                    print "Warning, unable to compute T-test: "
+                    print("Warning, unable to compute T-test: ")
                     #print t_stat,p_val,X_nonan,Y_nonan
                     
                     
@@ -323,7 +323,7 @@ def compute_pairwise_oneway_ttest_fdr(X, cor_alpha, uncor_alpha, old_order = Tru
         
         list_diff = []
         
-        for i,j in it.combinations(range(N), 2):
+        for i,j in it.combinations(list(range(N)), 2):
             
             X_nonan = X[i,j,np.logical_not(np.isnan(X[i,j,:]))]
                 
@@ -338,8 +338,8 @@ def compute_pairwise_oneway_ttest_fdr(X, cor_alpha, uncor_alpha, old_order = Tru
                 
             if np.isnan(p_val):
                 
-                print "Warning, unable to compute T-test: "
-                print t_stat,p_val,X_nonan
+                print("Warning, unable to compute T-test: ")
+                print(t_stat,p_val,X_nonan)
                 
             list_diff.append([i,j,p_val,np.sign(np.mean(X_nonan)),t_stat])
     else:
@@ -355,7 +355,7 @@ def compute_pairwise_oneway_ttest_fdr(X, cor_alpha, uncor_alpha, old_order = Tru
         
         list_diff = []
         
-        for i,j in it.combinations(range(N), 2):
+        for i,j in it.combinations(list(range(N)), 2):
             
             X_nonan = X[np.logical_not(np.isnan(X[:,i,j])),i,j]
                 
@@ -370,29 +370,29 @@ def compute_pairwise_oneway_ttest_fdr(X, cor_alpha, uncor_alpha, old_order = Tru
             
             if np.isnan(p_val):
                 
-                print "Warning, unable to compute T-test: "
-                print t_stat,p_val,X_nonan,
+                print("Warning, unable to compute T-test: ")
+                print(t_stat,p_val,X_nonan, end=' ')
                 
             list_diff.append([i,j,p_val,np.sign(np.mean(X_nonan)),t_stat])
             
         
-    print list_diff
+    print(list_diff)
         
     assert len(list_diff) != 0, "Error, list_diff is empty"
     
     np_list_diff = np.array(list_diff)
    
-    print np_list_diff
+    print(np_list_diff)
     
     signif_code = return_signif_code(np_list_diff[:,2],uncor_alpha = uncor_alpha,fdr_alpha = cor_alpha, bon_alpha = cor_alpha)
     
-    print np.sum(signif_code == 0.0),np.sum(signif_code == 1.0),np.sum(signif_code == 2.0),np.sum(signif_code == 3.0),np.sum(signif_code == 4.0)
+    print(np.sum(signif_code == 0.0),np.sum(signif_code == 1.0),np.sum(signif_code == 2.0),np.sum(signif_code == 3.0),np.sum(signif_code == 4.0))
     
     np_list_diff[:,3] = np_list_diff[:,3] * signif_code
     
-    print np.sum(np_list_diff[:,3] == 0.0)
-    print np.sum(np_list_diff[:,3] == 1.0),np.sum(np_list_diff[:,3] == 2.0),np.sum(np_list_diff[:,3] == 3.0),np.sum(np_list_diff[:,3] == 4.0)
-    print np.sum(np_list_diff[:,3] == -1.0),np.sum(np_list_diff[:,3] == -2.0),np.sum(np_list_diff[:,3] == -3.0),np.sum(np_list_diff[:,3] == -4.0)
+    print(np.sum(np_list_diff[:,3] == 0.0))
+    print(np.sum(np_list_diff[:,3] == 1.0),np.sum(np_list_diff[:,3] == 2.0),np.sum(np_list_diff[:,3] == 3.0),np.sum(np_list_diff[:,3] == 4.0))
+    print(np.sum(np_list_diff[:,3] == -1.0),np.sum(np_list_diff[:,3] == -2.0),np.sum(np_list_diff[:,3] == -3.0),np.sum(np_list_diff[:,3] == -4.0))
     
     
     signif_signed_adj_mat = np.zeros((N,N),dtype = 'int')
@@ -407,7 +407,7 @@ def compute_pairwise_oneway_ttest_fdr(X, cor_alpha, uncor_alpha, old_order = Tru
     p_val_mat[signif_i,signif_j] = p_val_mat[signif_j,signif_i] = np_list_diff[:,2]
     T_stat_mat[signif_i,signif_j] = T_stat_mat[signif_j,signif_i] = np_list_diff[:,4]
     
-    print T_stat_mat
+    print(T_stat_mat)
     
     return signif_signed_adj_mat, p_val_mat, T_stat_mat
 
@@ -419,7 +419,7 @@ def compute_pairwise_mannwhitney_fdr(X,Y,t_test_thresh_fdr,uncor_alpha = 0.01):
    
     list_diff = []
     
-    for i,j in it.combinations(range(N), 2):
+    for i,j in it.combinations(list(range(N)), 2):
         
         #t_stat_zalewski = ttest2(X[i,j,:],Y[i,j,:])
         
@@ -434,13 +434,13 @@ def compute_pairwise_mannwhitney_fdr(X,Y,t_test_thresh_fdr,uncor_alpha = 0.01):
    
     signif_code = return_signif_code(np_list_diff[:,2],uncor_alpha = uncor_alpha,fdr_alpha = t_test_thresh_fdr, bon_alpha = 0.05)
     
-    print np.sum(signif_code == 0.0),np.sum(signif_code == 1.0),np.sum(signif_code == 2.0),np.sum(signif_code == 3.0),np.sum(signif_code == 4.0)
+    print(np.sum(signif_code == 0.0),np.sum(signif_code == 1.0),np.sum(signif_code == 2.0),np.sum(signif_code == 3.0),np.sum(signif_code == 4.0))
     
     np_list_diff[:,3] = np_list_diff[:,3] * signif_code
     
-    print np.sum(np_list_diff[:,3] == 0.0)
-    print np.sum(np_list_diff[:,3] == 1.0),np.sum(np_list_diff[:,3] == 2.0),np.sum(np_list_diff[:,3] == 3.0),np.sum(np_list_diff[:,3] == 4.0)
-    print np.sum(np_list_diff[:,3] == -1.0),np.sum(np_list_diff[:,3] == -2.0),np.sum(np_list_diff[:,3] == -3.0),np.sum(np_list_diff[:,3] == -4.0)
+    print(np.sum(np_list_diff[:,3] == 0.0))
+    print(np.sum(np_list_diff[:,3] == 1.0),np.sum(np_list_diff[:,3] == 2.0),np.sum(np_list_diff[:,3] == 3.0),np.sum(np_list_diff[:,3] == 4.0))
+    print(np.sum(np_list_diff[:,3] == -1.0),np.sum(np_list_diff[:,3] == -2.0),np.sum(np_list_diff[:,3] == -3.0),np.sum(np_list_diff[:,3] == -4.0))
     
     
     
@@ -471,25 +471,25 @@ def compute_pairwise_binom_fdr(X,Y,conf_interval_binom_fdr):
     
     list_diff = []
     
-    for i,j in it.combinations(range(N), 2):
+    for i,j in it.combinations(list(range(N)), 2):
         
         abs_diff,SE,sign_diff = info_CI(X[i,j,:],Y[i,j,:])
          
         list_diff.append([i,j,abs_diff/SE,sign_diff])
         
-    print list_diff
+    print(list_diff)
     
     np_list_diff = np.array(list_diff)
     
     signif_code = return_signif_code_Z(np_list_diff[:,2],conf_interval_binom_fdr)
     
-    print np.sum(signif_code == 0.0),np.sum(signif_code == 1.0),np.sum(signif_code == 2.0),np.sum(signif_code == 3.0),np.sum(signif_code == 4.0)
+    print(np.sum(signif_code == 0.0),np.sum(signif_code == 1.0),np.sum(signif_code == 2.0),np.sum(signif_code == 3.0),np.sum(signif_code == 4.0))
     
     np_list_diff[:,3] = np_list_diff[:,3] * signif_code
     
-    print np.sum(np_list_diff[:,3] == 0.0)
-    print np.sum(np_list_diff[:,3] == 1.0),np.sum(np_list_diff[:,3] == 2.0),np.sum(np_list_diff[:,3] == 3.0),np.sum(np_list_diff[:,3] == 4.0)
-    print np.sum(np_list_diff[:,3] == -1.0),np.sum(np_list_diff[:,3] == -2.0),np.sum(np_list_diff[:,3] == -3.0),np.sum(np_list_diff[:,3] == -4.0)
+    print(np.sum(np_list_diff[:,3] == 0.0))
+    print(np.sum(np_list_diff[:,3] == 1.0),np.sum(np_list_diff[:,3] == 2.0),np.sum(np_list_diff[:,3] == 3.0),np.sum(np_list_diff[:,3] == 4.0))
+    print(np.sum(np_list_diff[:,3] == -1.0),np.sum(np_list_diff[:,3] == -2.0),np.sum(np_list_diff[:,3] == -3.0),np.sum(np_list_diff[:,3] == -4.0))
     
     signif_signed_adj_mat = np.zeros((N,N),dtype = 'int')
     
@@ -524,10 +524,10 @@ def compute_oneway_anova_fwe(list_of_list_matrices,cor_alpha = 0.05, uncor_alpha
     list_diff = []
     
     if keep_intracon:
-        iter_indexes = it.combinations_with_replacement(range(N), 2)
+        iter_indexes = it.combinations_with_replacement(list(range(N)), 2)
         
     else:
-        iter_indexes = it.combinations(range(N), 2)
+        iter_indexes = it.combinations(list(range(N)), 2)
     
     for i,j in iter_indexes:
         
@@ -547,13 +547,13 @@ def compute_oneway_anova_fwe(list_of_list_matrices,cor_alpha = 0.05, uncor_alpha
     
     np_list_diff = np.array(list_diff)
     
-    print np_list_diff
+    print(np_list_diff)
     
     signif_code = return_signif_code(np_list_diff[:,2],uncor_alpha = uncor_alpha, fdr_alpha = cor_alpha, bon_alpha = cor_alpha)
     
     signif_code[np.isnan(np_list_diff[:,2])] = 0
                          
-    print np.sum(signif_code == 0.0),np.sum(signif_code == 1.0),np.sum(signif_code == 2.0),np.sum(signif_code == 3.0),np.sum(signif_code == 4.0)
+    print(np.sum(signif_code == 0.0),np.sum(signif_code == 1.0),np.sum(signif_code == 2.0),np.sum(signif_code == 3.0),np.sum(signif_code == 4.0))
     
     ################ converting to matrix
     
@@ -589,14 +589,14 @@ def compute_correl_behav(X, reg_interest,uncor_alpha = 0.001,cor_alpha = 0.05,ol
     else:
         N = X.shape[1]
         
-    print reg_interest
-    print reg_interest.dtype
+    print(reg_interest)
+    print(reg_interest.dtype)
         
     
     if keep_intracon:
-        iter_indexes = it.combinations_with_replacement(range(N), 2)
+        iter_indexes = it.combinations_with_replacement(list(range(N)), 2)
     else:
-        iter_indexes = it.combinations(range(N), 2)
+        iter_indexes = it.combinations(list(range(N)), 2)
         
     if not old_order:
         # number of nodes
@@ -611,16 +611,16 @@ def compute_correl_behav(X, reg_interest,uncor_alpha = 0.001,cor_alpha = 0.05,ol
             
             keep_val = (~np.isnan(X[:,i,j])) & (~np.isnan(reg_interest))
             
-            print keep_val
+            print(keep_val)
             
             r_stat,p_val = stat.pearsonr(X[keep_val,i,j],reg_interest[keep_val])
             
-            print r_stat,p_val
+            print(r_stat,p_val)
             
             if np.isnan(p_val):
                 
-                print "Warning, unable to compute T-test: "
-                print r_stat,p_val,X_nonan,Y_nonan
+                print("Warning, unable to compute T-test: ")
+                print(r_stat,p_val,X_nonan,Y_nonan)
                 
                     
             
@@ -632,23 +632,23 @@ def compute_correl_behav(X, reg_interest,uncor_alpha = 0.001,cor_alpha = 0.05,ol
             list_diff.append([i,j,p_val,np.sign(r_stat),r_stat])
             
         
-    print list_diff
+    print(list_diff)
         
     assert len(list_diff) != 0, "Error, list_diff is empty"
     
     np_list_diff = np.array(list_diff)
    
-    print np_list_diff
+    print(np_list_diff)
     
     signif_code = return_signif_code(np_list_diff[:,2],uncor_alpha = uncor_alpha,fdr_alpha = cor_alpha, bon_alpha = cor_alpha)
     
-    print np.sum(signif_code == 0.0),np.sum(signif_code == 1.0),np.sum(signif_code == 2.0),np.sum(signif_code == 3.0),np.sum(signif_code == 4.0)
+    print(np.sum(signif_code == 0.0),np.sum(signif_code == 1.0),np.sum(signif_code == 2.0),np.sum(signif_code == 3.0),np.sum(signif_code == 4.0))
     
     np_list_diff[:,3] = np_list_diff[:,3] * signif_code
     
-    print np.sum(np_list_diff[:,3] == 0.0)
-    print np.sum(np_list_diff[:,3] == 1.0),np.sum(np_list_diff[:,3] == 2.0),np.sum(np_list_diff[:,3] == 3.0),np.sum(np_list_diff[:,3] == 4.0)
-    print np.sum(np_list_diff[:,3] == -1.0),np.sum(np_list_diff[:,3] == -2.0),np.sum(np_list_diff[:,3] == -3.0),np.sum(np_list_diff[:,3] == -4.0)
+    print(np.sum(np_list_diff[:,3] == 0.0))
+    print(np.sum(np_list_diff[:,3] == 1.0),np.sum(np_list_diff[:,3] == 2.0),np.sum(np_list_diff[:,3] == 3.0),np.sum(np_list_diff[:,3] == 4.0))
+    print(np.sum(np_list_diff[:,3] == -1.0),np.sum(np_list_diff[:,3] == -2.0),np.sum(np_list_diff[:,3] == -3.0),np.sum(np_list_diff[:,3] == -4.0))
     
     
     signif_signed_adj_mat = np.zeros((N,N),dtype = 'int')
@@ -663,7 +663,7 @@ def compute_correl_behav(X, reg_interest,uncor_alpha = 0.001,cor_alpha = 0.05,ol
     p_val_mat[signif_i,signif_j] = p_val_mat[signif_j,signif_i] = np_list_diff[:,2]
     r_stat_mat[signif_i,signif_j] = r_stat_mat[signif_j,signif_i] = np_list_diff[:,4]
     
-    print r_stat_mat
+    print(r_stat_mat)
     
     return signif_signed_adj_mat, p_val_mat, r_stat_mat
 
@@ -672,7 +672,7 @@ def compute_correl_behav(X, reg_interest,uncor_alpha = 0.001,cor_alpha = 0.05,ol
 ############### nodewise stats #########################
 def compute_nodewise_t_test_vect(d_stacked, nx, ny):
 
-    print d_stacked.shape
+    print(d_stacked.shape)
     
     assert d_stacked.shape[1] == nx + ny
     
@@ -682,7 +682,7 @@ def compute_nodewise_t_test_vect(d_stacked, nx, ny):
 
     t2 = time.time()
     
-    print "computation took %f" %(t2-t1)
+    print("computation took %f" %(t2-t1))
     
     return t_val_vect
     
@@ -698,7 +698,7 @@ def compute_pairwise_correl_fdr(X,behav_score,correl_thresh_fdr):
    
     list_diff = []
     
-    for i,j in it.combinations(range(N), 2):
+    for i,j in it.combinations(list(range(N)), 2):
         
         #t_stat_zalewski = ttest2(X[i,j,:],Y[i,j,:])
         
@@ -717,13 +717,13 @@ def compute_pairwise_correl_fdr(X,behav_score,correl_thresh_fdr):
    
     signif_code = return_signif_code(np_list_diff[:,2],uncor_alpha = 0.001,fdr_alpha = correl_thresh_fdr, bon_alpha = 0.05)
     
-    print np.sum(signif_code == 0.0),np.sum(signif_code == 1.0),np.sum(signif_code == 2.0),np.sum(signif_code == 3.0),np.sum(signif_code == 4.0)
+    print(np.sum(signif_code == 0.0),np.sum(signif_code == 1.0),np.sum(signif_code == 2.0),np.sum(signif_code == 3.0),np.sum(signif_code == 4.0))
     
     np_list_diff[:,3] = np_list_diff[:,3] * signif_code
     
-    print np.sum(np_list_diff[:,3] == 0.0)
-    print np.sum(np_list_diff[:,3] == 1.0),np.sum(np_list_diff[:,3] == 2.0),np.sum(np_list_diff[:,3] == 3.0),np.sum(np_list_diff[:,3] == 4.0)
-    print np.sum(np_list_diff[:,3] == -1.0),np.sum(np_list_diff[:,3] == -2.0),np.sum(np_list_diff[:,3] == -3.0),np.sum(np_list_diff[:,3] == -4.0)
+    print(np.sum(np_list_diff[:,3] == 0.0))
+    print(np.sum(np_list_diff[:,3] == 1.0),np.sum(np_list_diff[:,3] == 2.0),np.sum(np_list_diff[:,3] == 3.0),np.sum(np_list_diff[:,3] == 4.0))
+    print(np.sum(np_list_diff[:,3] == -1.0),np.sum(np_list_diff[:,3] == -2.0),np.sum(np_list_diff[:,3] == -3.0),np.sum(np_list_diff[:,3] == -4.0))
     
     
     signif_signed_adj_mat = np.zeros((N,N),dtype = 'int')
@@ -734,9 +734,9 @@ def compute_pairwise_correl_fdr(X,behav_score,correl_thresh_fdr):
     
     signif_sign = np.array(np_list_diff[:,3],dtype = int)
     
-    print signif_i,signif_j
+    print(signif_i,signif_j)
     
-    print signif_signed_adj_mat[signif_i,signif_j] 
+    print(signif_signed_adj_mat[signif_i,signif_j]) 
     
     #print signif_sign
     
@@ -744,6 +744,6 @@ def compute_pairwise_correl_fdr(X,behav_score,correl_thresh_fdr):
     
     signif_signed_adj_mat[signif_i,signif_j] = signif_signed_adj_mat[signif_j,signif_i] = signif_sign
     
-    print signif_signed_adj_mat
+    print(signif_signed_adj_mat)
     
     return signif_signed_adj_mat

@@ -31,14 +31,14 @@ def is_in_coords(np_coords1,np_coords2):
     
 def where_in_coords(np_coords1,np_coords2):
     
-    print np_coords1
-    print np_coords2
+    print(np_coords1)
+    print(np_coords2)
     
-    print is_in_coords(np_coords1,np_coords2)
+    print(is_in_coords(np_coords1,np_coords2))
     
-    print np.where(is_in_coords(np_coords1,np_coords2))
-    print np.array(np.where(is_in_coords(np_coords1,np_coords2)), dtype = 'int64')
-    print np.array(np.where(is_in_coords(np_coords1,np_coords2)), dtype = 'int64').reshape(-1)
+    print(np.where(is_in_coords(np_coords1,np_coords2)))
+    print(np.array(np.where(is_in_coords(np_coords1,np_coords2)), dtype = 'int64'))
+    print(np.array(np.where(is_in_coords(np_coords1,np_coords2)), dtype = 'int64').reshape(-1))
     
     return np.array(np.where(is_in_coords(np_coords1,np_coords2)), dtype = 'int64').reshape(-1)
 
