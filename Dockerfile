@@ -28,11 +28,6 @@ RUN git checkout dev  ###
 WORKDIR /root/packages/
 RUN wget http://deim.urv.cat/~sergio.gomez/download.php?f=radatools-4.0-linux64.tar.gz
 RUN tar -xvf download.php\?f\=radatools-4.0-linux64.tar.gz
-RUN echo 'RADA_PATH=/root/packages/radatools-4.0-linux64' >> /root/.bashrc
-RUN echo 'export PATH=$PATH:$RADA_PATH/Network_Tools' >> /root/.bashrc
-RUN echo 'export PATH=$PATH:$RADA_PATH/Network_Properties' >> /root/.bashrc
-RUN echo 'export PATH=$PATH:$RADA_PATH/Communities_Detection' >> /root/.bashrc
-RUN echo 'export PATH=$PATH:$RADA_PATH/Communities_Tools' >> /root/.bashrc
 
 #ENV DISPLAY :0
 # 
@@ -46,11 +41,6 @@ RUN echo 'export PATH=$PATH:$RADA_PATH/Communities_Tools' >> /root/.bashrc
 ################### NiftiReg
 RUN wget https://sourceforge.net/projects/niftyreg/files/nifty_reg-1.3.9/NiftyReg-1.3.9-Linux-x86_64-Release.tar.gz/download
 RUN tar -xvf download
-RUN echo 'export NIFTYREG_INSTALL=/root/packages/NiftyReg-1.3.9-Linux-x86_64-Release' >> /root/.bashrc
-RUN echo 'PATH=${PATH}:${NIFTYREG_INSTALL}/bin' >> /root/.bashrc
-RUN echo 'LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${NIFTYREG_INSTALL}/lib' >> /root/.bashrc
-RUN echo 'export PATH' >> /root/.bashrc
-RUN echo 'export LD_LIBRARY_PATH' >> /root/.bashrc
 
 
 ENV RADA_PATH=/root/packages/radatools-4.0-linux64
