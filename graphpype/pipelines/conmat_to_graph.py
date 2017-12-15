@@ -54,6 +54,8 @@ def create_pipeline_conmat_to_graph_density( main_path, pipeline_name = "graph_d
     
     if plot==True and can_plot_igraph==False:
         
+        print("warning, no igraph is installed, plot is set back to zero.")
+        
         plot = False
         
     if multi:
