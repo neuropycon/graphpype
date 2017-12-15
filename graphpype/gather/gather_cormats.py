@@ -186,10 +186,10 @@ def compute_mean_cormats(all_cormats,all_descriptors,descript_columns):
 
 
 
-def compute_stats_cormats(all_cormats,all_descriptors,descript_columns, groups = [], keep_intracon = False):
+def compute_stats_cormats(all_cormats,all_descriptors,descript_columns, groups = [], keep_intracon = False,cor_alpha = 0.05, uncor_alpha = 0.01):
 
     print(all_cormats.shape)
-    
+
     for column in descript_columns:
     
         assert column in all_descriptors.columns, "Error, {} not in {}".format(column,all_descriptors.columns)
@@ -214,7 +214,7 @@ def compute_stats_cormats(all_cormats,all_descriptors,descript_columns, groups =
         print(np.array(list_of_list_matrices).shape)
         
         
-        signif_adj_mat, p_val_mat, F_stat_mat = compute_oneway_anova_fwe(list_of_list_matrices,cor_alpha = 0.05, uncor_alpha = 0.01, keep_intracon = keep_intracon)
+        signif_adj_mat, p_val_mat, F_stat_mat = compute_oneway_anova_fwe(list_of_list_matrices,cor_alpha = cor_alpha, uncor_alpha = uncor_alpha, keep_intracon = keep_intracon)
         
         #print signif_adj_mat
         #print p_val_mat
@@ -233,7 +233,7 @@ def compute_stats_cormats(all_cormats,all_descriptors,descript_columns, groups =
             try:
                 signif_adj_mat,p_val_mat,T_stat_mat = compute_pairwise_ttest_fdr(X = list_of_list_matrices[groups.index(combi_pair[0])],
                                                                Y = list_of_list_matrices[groups.index(combi_pair[1])],
-                                                               cor_alpha = 0.05, uncor_alpha = 0.01,paired = True,old_order = False, keep_intracon = keep_intracon)
+                                                               cor_alpha = cor_alpha, uncor_alpha = uncor_alpha ,paired = True,old_order = False, keep_intracon = keep_intracon)
                 
                 print(T_stat_mat)
                 
