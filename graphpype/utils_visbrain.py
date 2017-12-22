@@ -256,9 +256,9 @@ def visu_graph_signif(indexed_mat_file, coords_file, labels_file, c_colval = {4:
         
     ########## labels
 
-    labels = [line.strip().split("_")[1] for line in open(labels_file)]
+    labels = [line.strip() for line in open(labels_file)]
     npLabels = np.array(labels)
-    print(npLabels)
+    #print(npLabels)
 
     ##########  net file
     
@@ -342,3 +342,4 @@ def visu_graph(net_file, coords_file, labels_file, modality_type = "fMRI", s_tex
     
     vb = Brain(s_xyz=corres_coords, s_text=newLabels, s_textsize = 2,s_textcolor=s_textcolor, c_connect = c_connect, c_colval = c_colval)
     vb.show()
+    
