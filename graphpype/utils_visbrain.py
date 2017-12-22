@@ -342,4 +342,3 @@ def visu_graph(net_file, coords_file, labels_file, modality_type = "fMRI", s_tex
     
     vb = Brain(s_xyz=corres_coords, s_text=newLabels, s_textsize = 2,s_textcolor=s_textcolor, c_connect = c_connect, c_colval = c_colval)
     vb.show()
-    
