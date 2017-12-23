@@ -48,15 +48,15 @@ def return_data_img_from_roi_mask(roi_mask_file,data_vect):
     
     roi_mask_affine = roi_mask.get_affine()
     
-    print np.unique(roi_mask_data)
+    print(np.unique(roi_mask_data))
     
     
-    print data_vect
+    print(data_vect)
     
-    print np.arange(data_vect.shape[0],dtype = float)
+    print(np.arange(data_vect.shape[0],dtype = float))
     
     if np.any(np.arange(data_vect.shape[0],dtype = float) != np.unique(roi_mask_data) [1:]):
-        print "warning, ROI roi_mask not compatible with data  {} {}".format(np.arange(data_vect.shape[0],dtype = float).shape,np.unique(roi_mask_data)[1:].shape)
+        print("warning, ROI roi_mask not compatible with data  {} {}".format(np.arange(data_vect.shape[0],dtype = float).shape,np.unique(roi_mask_data)[1:].shape))
         
     
     data = np.zeros((roi_mask.shape),dtype = data_vect.dtype) - 1

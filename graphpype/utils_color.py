@@ -131,7 +131,7 @@ def generate_igraph_colors(nb_colors):
     #RGB_tuples = cm.get_cmap('rainbow',N)
     RGB_tuples = cm.get_cmap('spectral',N)
     
-    print RGB_tuples
+    print(RGB_tuples)
        
     
     #RGB_tuples = my_cmap[:N]
@@ -257,7 +257,7 @@ def generate_new_igraph_colors(nb_colors):
     
     N = 1000
     HSV_tuples = [(x*1.0/N, 0.5, 0.5) for x in range(N)]
-    RGB_tuples = map(lambda x: colorsys.hsv_to_rgb(*x), HSV_tuples)
+    RGB_tuples = [colorsys.hsv_to_rgb(*x) for x in HSV_tuples]
     
     #print RGB_tuples
     

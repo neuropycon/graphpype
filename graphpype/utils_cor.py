@@ -35,7 +35,7 @@ import time
 
 #from sets import Set
 
-from utils_dtype_coord import *
+from .utils_dtype_coord import *
 
 #def return_regressor(spm_mat_file,regressor_name):
 
@@ -192,22 +192,26 @@ def mean_select_mask_data(data_img,data_mask):
     #print np.sum(data_mask == 1)
     
     if img_shape[:3] == mask_shape:
-        print "Image and mask are compatible"
+        print("Image and mask are compatible")
         
         masked_data_matrix = data_img[data_mask == 1,:]
-        print masked_data_matrix.shape
+        print(masked_data_matrix.shape)
         
-        masked_data_matrix = masked_data_matrix[~np.isnan(masked_data_matrix)]
-        mean_mask_data_matrix = np.mean(masked_data_matrix,axis = 0)
+        try:
+            print("ok nanmean")
+            mean_mask_data_matrix = np.nanmean(masked_data_matrix,axis = 0)
         
-        #mean_mask_data_matrix = np.nanmean(masked_data_matrix,axis = 0)
-        
-        print mean_mask_data_matrix.shape
+        except AttributeError:
+                
+            print("no nanmean")            
+            mean_mask_data_matrix = np.mean(masked_data_matrix,axis = 0)
+            
+        print(mean_mask_data_matrix.shape)
         
     else:
-        print "Warning, Image and mask are incompatible"
-        print img_shape
-        print mask_shape
+        print("Warning, Image and mask are incompatible")
+        print(img_shape)
+        print(mask_shape)
         return
     
     return np.array(mean_mask_data_matrix)
@@ -217,13 +221,13 @@ def mean_select_indexed_mask_data(orig_ts,indexed_mask_rois_data,min_BOLD_intens
         ### extrating ts by averaging the time series of all voxel with the same index
         sequence_roi_index = np.unique(indexed_mask_rois_data)
         
-        print sequence_roi_index
+        print(sequence_roi_index)
         
         if sequence_roi_index[0] == background_val:
             sequence_roi_index = sequence_roi_index[1:]
         
         #print "sequence_roi_index:"
-        print sequence_roi_index
+        print(sequence_roi_index)
         
         mean_masked_ts = []
         
@@ -235,17 +239,17 @@ def mean_select_indexed_mask_data(orig_ts,indexed_mask_rois_data,min_BOLD_intens
             
             index_roi_x,index_roi_y,index_roi_z = np.where(indexed_mask_rois_data == roi_index)
             
-            print index_roi_x,index_roi_y,index_roi_z
+            print(index_roi_x,index_roi_y,index_roi_z)
             
             all_voxel_roi_ts = orig_ts[index_roi_x,index_roi_y,index_roi_z,:]
             
-            print all_voxel_roi_ts.shape
+            print(all_voxel_roi_ts.shape)
             ### testing if at least 50% of the voxels in the ROIs have values always higher than min bold intensity
             nb_signal_voxels = np.sum(np.sum(all_voxel_roi_ts > min_BOLD_intensity,axis = 1) == all_voxel_roi_ts.shape[1])
             
             non_nan_voxels = np.sum(np.sum(np.logical_not(np.isnan(all_voxel_roi_ts)),axis = 1) == all_voxel_roi_ts.shape[1])
             
-            print nb_signal_voxels, non_nan_voxels, all_voxel_roi_ts.shape[0]
+            print(nb_signal_voxels, non_nan_voxels, all_voxel_roi_ts.shape[0])
             
             if nb_signal_voxels/float(all_voxel_roi_ts.shape[0]) > percent_signal:
                 
@@ -254,21 +258,26 @@ def mean_select_indexed_mask_data(orig_ts,indexed_mask_rois_data,min_BOLD_intens
                 #all_voxel_roi_ts = all_voxel_roi_ts[~np.isnan(all_voxel_roi_ts)]
                 #mean_all_voxel_roi_ts = np.mean(all_voxel_roi_ts,axis = 0)
             
-                mean_all_voxel_roi_ts = np.nanmean(all_voxel_roi_ts,axis = 0)
-                
-                print mean_all_voxel_roi_ts
-                print mean_all_voxel_roi_ts.shape
+                try:
+                    mean_all_voxel_roi_ts = np.nanmean(all_voxel_roi_ts,axis = 0)
+                    
+                except AttributeError:
+                    
+                    mean_all_voxel_roi_ts = np.mean(all_voxel_roi_ts,axis = 0)
+                    
+                print(mean_all_voxel_roi_ts)
+                print(mean_all_voxel_roi_ts.shape)
                 
                 mean_masked_ts.append(mean_all_voxel_roi_ts)
             else:
-                print "ROI {} was not selected : {} {} ".format(roi_index, np.sum(np.sum(all_voxel_roi_ts > min_BOLD_intensity,axis = 1) == all_voxel_roi_ts.shape[1]),np.sum(np.sum(all_voxel_roi_ts > min_BOLD_intensity,axis = 1) == all_voxel_roi_ts.shape[1])/float(all_voxel_roi_ts.shape[0]))
+                print("ROI {} was not selected : {} {} ".format(roi_index, np.sum(np.sum(all_voxel_roi_ts > min_BOLD_intensity,axis = 1) == all_voxel_roi_ts.shape[1]),np.sum(np.sum(all_voxel_roi_ts > min_BOLD_intensity,axis = 1) == all_voxel_roi_ts.shape[1])/float(all_voxel_roi_ts.shape[0])))
                 
         assert len(mean_masked_ts) != 0, "min_BOLD_intensity {} and percent_signal are to restrictive".format(min_BOLD_intensity,percent_signal)
             
             
         mean_masked_ts = np.array(mean_masked_ts,dtype = 'f')
         
-        print mean_masked_ts.shape
+        print(mean_masked_ts.shape)
         
         return mean_masked_ts,keep_rois
         
@@ -359,36 +368,36 @@ def regress_parameters(data_matrix,covariates):
 
     import statsmodels.formula.api as smf
     
-    print data_matrix.shape
+    print(data_matrix.shape)
     
-    print covariates.shape
+    print(covariates.shape)
     
     resid_data = []
     
     data_names = ['Var_' + str(i) for i in range(data_matrix.shape[0])]
     
-    print data_names
+    print(data_names)
     
     covar_names = ['Cov_' + str(i) for i in range(covariates.shape[1])]
     
-    print np.transpose(data_matrix).shape
+    print(np.transpose(data_matrix).shape)
     
     all_data = np.concatenate((np.transpose(data_matrix),covariates), axis = 1)
     
-    print all_data.shape
+    print(all_data.shape)
     
     col_names = data_names + covar_names
     
     df = pd.DataFrame(all_data, columns = col_names)
     
-    print df
+    print(df)
     
     
     for var in data_names:
         
         formula = var + " ~ " + " + ".join(covar_names)
             
-        print formula
+        print(formula)
         
         est = smf.ols(formula=formula, data=df).fit()
         
@@ -402,7 +411,7 @@ def regress_parameters(data_matrix,covariates):
 
     resid_data_matrix = np.array(resid_data,dtype = float)
     
-    print resid_data_matrix.shape
+    print(resid_data_matrix.shape)
     
     return resid_data_matrix
 
@@ -410,9 +419,9 @@ def regress_filter_normalize_parameters(data_matrix,covariates):
 
     import statsmodels.formula.api as smf
     
-    print data_matrix.shape
+    print(data_matrix.shape)
     
-    print covariates.shape
+    print(covariates.shape)
     
     resid_data = []
     resid_filt_data = []
@@ -422,30 +431,30 @@ def regress_filter_normalize_parameters(data_matrix,covariates):
         
     data_names = ['Var_' + str(i) for i in range(data_matrix.shape[0])]
     
-    print data_names
+    print(data_names)
     
     
     covar_names = ['Cov_' + str(i) for i in range(covariates.shape[1])]
     
     
-    print np.transpose(data_matrix).shape
+    print(np.transpose(data_matrix).shape)
     
     all_data = np.concatenate((np.transpose(data_matrix),covariates), axis = 1)
     
-    print all_data.shape
+    print(all_data.shape)
     
     col_names = data_names + covar_names
     
     df = pd.DataFrame(all_data, columns = col_names)
     
-    print df
+    print(df)
     
     
     for var in data_names:
         
         formula = var + " ~ " + " + ".join(covar_names)
             
-        print formula
+        print(formula)
         
         est = smf.ols(formula=formula, data=df).fit()
         
@@ -465,7 +474,7 @@ def regress_filter_normalize_parameters(data_matrix,covariates):
 
     resid_data_matrix = np.array(resid_data,dtype = float)
     
-    print resid_data_matrix.shape
+    print(resid_data_matrix.shape)
     
     resid_filt_data_matrix = np.array(resid_filt_data, dtype = float)
     
@@ -490,21 +499,21 @@ def regress_parameters_rpy(data_matrix,covariates):
         
         r_formula = "r_serie ~"
         
-        print covariates.shape
+        print(covariates.shape)
         
         for cov in range(covariates.shape[1]):
         
             r_formula += " r_rp[,"+str(cov+1)+"]"
             
-            if cov != range(covariates.shape[1])[-1]:
+            if cov != list(range(covariates.shape[1]))[-1]:
             
                 r_formula += " +"
             
         resid_data_matrix[i,] = rpy.r.lm(rpy.r(r_formula))['residuals']
         
-        print resid_data_matrix[i,]
+        print(resid_data_matrix[i,])
         
-    print resid_data_matrix
+    print(resid_data_matrix)
     
     return resid_data_matrix
 
@@ -531,13 +540,13 @@ def regress_filter_normalize_parameters_rpy(data_matrix,covariates):
         
         r_formula = "r_serie ~"
         
-        print covariates.shape
+        print(covariates.shape)
         
         for cov in range(covariates.shape[1]):
         
             r_formula += " r_rp[,"+str(cov+1)+"]"
             
-            if cov != range(covariates.shape[1])[-1]:
+            if cov != list(range(covariates.shape[1]))[-1]:
             
                 r_formula += " +"
             
@@ -663,7 +672,7 @@ def return_conf_cor_mat(ts_mat,regressor_vect,conf_interval_prob):
     t1 = time.time()
     
     if ts_mat.shape[0] != len(regressor_vect):
-        print "Warning, incompatible regressor length {} {}".format(ts_mat.shape[0], len(regressor_vect))
+        print("Warning, incompatible regressor length {} {}".format(ts_mat.shape[0], len(regressor_vect)))
         return
 
     
@@ -677,11 +686,11 @@ def return_conf_cor_mat(ts_mat,regressor_vect,conf_interval_prob):
     deg_freedom = w.sum()/w.max()-3
     #deg_freedom = w.shape[0]-3
     
-    print deg_freedom
+    print(deg_freedom)
     
-    print norm,norm/np.sqrt(deg_freedom)
+    print(norm,norm/np.sqrt(deg_freedom))
     
-    print regressor_vect.shape[0],w.shape[0],w.sum(),w.sum()/w.max()
+    print(regressor_vect.shape[0],w.shape[0],w.sum(),w.sum()/w.max())
     
     s, n = ts_mat.shape
     
@@ -693,7 +702,7 @@ def return_conf_cor_mat(ts_mat,regressor_vect,conf_interval_prob):
     
     ts_mat2 = ts_mat*np.sqrt(w)[:,np.newaxis]
     
-    for i,j in it.combinations(range(n), 2):
+    for i,j in it.combinations(list(range(n)), 2):
     
         keep_val = np.logical_not(np.logical_or(np.isnan(ts_mat2[:,i]),np.isnan(ts_mat2[:,j])))
             
@@ -709,23 +718,23 @@ def return_conf_cor_mat(ts_mat,regressor_vect,conf_interval_prob):
         
         if np.isnan(Z_cor_mat[i,j]):
             
-            print i,j
+            print(i,j)
             
-            print keep_val
-            print s1
-            print s2
-            print cor_mat[i,j]
+            print(keep_val)
+            print(s1)
+            print(s2)
+            print(cor_mat[i,j])
             
             0/0
         elif np.isinf(Z_cor_mat[i,j]):
             
-            print "find infinity"
-            print i,j
+            print("find infinity")
+            print(i,j)
             
-            print s1
-            print s2
+            print(s1)
+            print(s2)
             
-            print cor_mat[i,j]
+            print(cor_mat[i,j])
             
             0/0
         
@@ -742,23 +751,23 @@ def return_conf_cor_mat(ts_mat,regressor_vect,conf_interval_prob):
     
     signif_pos = np.logical_and(Z_cor_mat > norm/np.sqrt(deg_freedom),np.sign(Z_cor_mat) == +1.0)
                   
-    print np.sum(signif_pos)              
+    print(np.sum(signif_pos))              
     #print signif_pos
     
     signif_neg = np.logical_and(Z_cor_mat < -norm/np.sqrt(deg_freedom),np.sign(Z_cor_mat) == -1.0)
                           
     
-    print np.sum(signif_neg)   
+    print(np.sum(signif_neg))   
     #print signif_neg
     
     Z_conf_cor_mat[signif_pos] = Z_cor_mat[signif_pos]
     Z_conf_cor_mat[signif_neg] = Z_cor_mat[signif_neg]
     
-    print np.sum(Z_conf_cor_mat != 0.0)
+    print(np.sum(Z_conf_cor_mat != 0.0))
     
     t2 = time.time()
     
-    print "Weighted correlation computation took " + str(t2-t1) + "s"
+    print("Weighted correlation computation took " + str(t2-t1) + "s")
     
     return cor_mat,Z_cor_mat,conf_cor_mat,Z_conf_cor_mat
     
@@ -1145,27 +1154,27 @@ def return_conf_cor_mat(ts_mat,regressor_vect,conf_interval_prob):
 
 def return_coclass_mat(community_vect,corres_coords,gm_mask_coords):
 
-    print corres_coords.shape[0],community_vect.shape[0]
+    print(corres_coords.shape[0],community_vect.shape[0])
     
     if (corres_coords.shape[0] != community_vect.shape[0]):
-        print "warning, length of corres_coords and community_vect are imcompatible {} {}".format(corres_coords.shape[0],community_vect.shape[0])
+        print("warning, length of corres_coords and community_vect are imcompatible {} {}".format(corres_coords.shape[0],community_vect.shape[0]))
     
     where_in_gm = where_in_coords(corres_coords,gm_mask_coords)
     
-    print where_in_gm
+    print(where_in_gm)
     
-    print np.min(where_in_gm)
-    print np.max(where_in_gm)
-    print where_in_gm.shape
+    print(np.min(where_in_gm))
+    print(np.max(where_in_gm))
+    print(where_in_gm.shape)
     
     if (where_in_gm.shape[0] != community_vect.shape[0]):
-        print "warning, length of where_in_gm and community_vect are imcompatible {} {}".format(where_in_gm.shape[0],community_vect.shape[0])
+        print("warning, length of where_in_gm and community_vect are imcompatible {} {}".format(where_in_gm.shape[0],community_vect.shape[0]))
     
     coclass_mat = np.zeros((gm_mask_coords.shape[0],gm_mask_coords.shape[0]),dtype = int)
         
     possible_edge_mat = np.zeros((gm_mask_coords.shape[0],gm_mask_coords.shape[0]),dtype = int)
     
-    for i,j in it.combinations(range(where_in_gm.shape[0]),2):
+    for i,j in it.combinations(list(range(where_in_gm.shape[0])),2):
     
         coclass_mat[where_in_gm[i],where_in_gm[j]] = np.int(community_vect[i] == community_vect[j])
         coclass_mat[where_in_gm[j],where_in_gm[i]] = np.int(community_vect[i] == community_vect[j])
@@ -1181,27 +1190,27 @@ def where_in_labels(corres_labels,gm_mask_labels):
 
 def return_coclass_mat_labels(community_vect,corres_labels,gm_mask_labels):
 
-    print corres_labels.shape[0],community_vect.shape[0]
+    print(corres_labels.shape[0],community_vect.shape[0])
     
     if (corres_labels.shape[0] != community_vect.shape[0]):
-        print "warning, length of corres_labels and community_vect are imcompatible {} {}".format(corres_labels.shape[0],community_vect.shape[0])
+        print("warning, length of corres_labels and community_vect are imcompatible {} {}".format(corres_labels.shape[0],community_vect.shape[0]))
     
     where_in_gm = where_in_labels(corres_labels.tolist(),gm_mask_labels.tolist())
     
-    print where_in_gm
+    print(where_in_gm)
     
-    print np.min(where_in_gm)
-    print np.max(where_in_gm)
-    print where_in_gm.shape
+    print(np.min(where_in_gm))
+    print(np.max(where_in_gm))
+    print(where_in_gm.shape)
     
     if (where_in_gm.shape[0] != community_vect.shape[0]):
-        print "warning, length of where_in_gm and community_vect are imcompatible {} {}".format(where_in_gm.shape[0],community_vect.shape[0])
+        print("warning, length of where_in_gm and community_vect are imcompatible {} {}".format(where_in_gm.shape[0],community_vect.shape[0]))
     
     coclass_mat = np.zeros((gm_mask_labels.shape[0],gm_mask_labels.shape[0]),dtype = int)
         
     possible_edge_mat = np.zeros((gm_mask_labels.shape[0],gm_mask_labels.shape[0]),dtype = int)
     
-    for i,j in it.combinations(range(where_in_gm.shape[0]),2):
+    for i,j in it.combinations(list(range(where_in_gm.shape[0])),2):
     
         coclass_mat[where_in_gm[i],where_in_gm[j]] = np.int(community_vect[i] == community_vect[j])
         coclass_mat[where_in_gm[j],where_in_gm[i]] = np.int(community_vect[i] == community_vect[j])
@@ -1336,13 +1345,13 @@ def return_corres_correl_mat(Z_cor_mat,coords,gm_mask_coords):
     
     #print where_in_gm
     
-    print np.min(where_in_gm),np.max(where_in_gm),where_in_gm.shape
+    print(np.min(where_in_gm),np.max(where_in_gm),where_in_gm.shape)
     
     
     corres_correl_mat = np.zeros((gm_mask_coords.shape[0],gm_mask_coords.shape[0]),dtype = float)
     possible_edge_mat = np.zeros((gm_mask_coords.shape[0],gm_mask_coords.shape[0]),dtype = int)
     
-    for i,j in it.combinations(range(len(where_in_gm)),2):
+    for i,j in it.combinations(list(range(len(where_in_gm))),2):
     
         corres_correl_mat[where_in_gm[i],where_in_gm[j]] = Z_cor_mat[i,j]
         corres_correl_mat[where_in_gm[j],where_in_gm[i]] = Z_cor_mat[i,j]
@@ -1358,7 +1367,7 @@ def return_corres_correl_mat_labels(Z_cor_mat,corres_labels,gm_mask_labels):
 
     where_in_gm = where_in_labels(corres_labels.tolist(),gm_mask_labels.tolist())
     
-    print Z_cor_mat.shape
+    print(Z_cor_mat.shape)
     
     #print where_in_gm
     
@@ -1367,13 +1376,13 @@ def return_corres_correl_mat_labels(Z_cor_mat,corres_labels,gm_mask_labels):
     #print where_in_gm.shape
     
     
-    print np.min(where_in_gm),np.max(where_in_gm),where_in_gm.shape
+    print(np.min(where_in_gm),np.max(where_in_gm),where_in_gm.shape)
     
     
     corres_correl_mat = np.zeros((gm_mask_labels.shape[0],gm_mask_labels.shape[0]),dtype = float)
     possible_edge_mat = np.zeros((gm_mask_labels.shape[0],gm_mask_labels.shape[0]),dtype = int)
     
-    for i,j in it.product(range(len(where_in_gm)),repeat = 2):
+    for i,j in it.product(list(range(len(where_in_gm))),repeat = 2):
     
         #print i,j
         
@@ -1387,7 +1396,7 @@ def return_corres_correl_mat_labels(Z_cor_mat,corres_labels,gm_mask_labels):
         
         possible_edge_mat[where_in_gm[i],where_in_gm[j]] = 1
         
-    print corres_correl_mat.shape
+    print(corres_correl_mat.shape)
     
     return corres_correl_mat,possible_edge_mat
 

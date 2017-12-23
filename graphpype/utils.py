@@ -17,14 +17,14 @@ def get_second(string_list):
 ### utilitaire pour vérifier la longueur d'une liste sans avoir à créer de nouveaux noeuds
 def show_length(files):
 
-    print len(files)
+    print(len(files))
     
     return files
     
 ### utilitaire pour vérifier une liste sans avoir à créer de nouveaux noeuds
 def show_files(files):
 
-    print files
+    print(files)
     
     return files
 
@@ -36,7 +36,7 @@ def get_multiple_indexes(cur_list,item):
 ### generate itertools.product in a random order 
 def random_product(*args, **kwds):
     "Random selection from itertools.product(*args, **kwds)"
-    pools = map(tuple, args) * kwds.get('repeat', 1)
+    pools = list(map(tuple, args)) * kwds.get('repeat', 1)
     return tuple(random.choice(pool) for pool in pools)
     
 ### test dimensions 
@@ -51,7 +51,7 @@ def check_np_shapes(np_shape1,np_shape2):
 
     if len(np_shape1) != len(np_shape2):
     
-        print "Warning, dimensions for nd array1 %d and nd array2 %d do not match"%(len(np_shape1),len(np_shape2))
+        print("Warning, dimensions for nd array1 %d and nd array2 %d do not match"%(len(np_shape1),len(np_shape2)))
         
         return 0
         
@@ -59,7 +59,7 @@ def check_np_shapes(np_shape1,np_shape2):
     
         if np_shape1[i] != np_shape2[i]:
             
-            print "Warning, number of elements for dimension %d is different : %d != %d"%(i,np_shape1[i],np_shape2[i])
+            print("Warning, number of elements for dimension %d is different : %d != %d"%(i,np_shape1[i],np_shape2[i]))
         
             return 0
             
@@ -70,7 +70,7 @@ def check_np_dimension(np_shape, np_coords):
     ### verification des dimensions
     if len(np_shape) != np_coords.shape[0]:
     
-        print "Warning dimensions for nd array %d and coords %d do not match"%(len(np_shape),np_coords.shape[0])
+        print("Warning dimensions for nd array %d and coords %d do not match"%(len(np_shape),np_coords.shape[0]))
         
         return 0
         
@@ -78,13 +78,13 @@ def check_np_dimension(np_shape, np_coords):
     
         if np_shape[dim] <= np_coords[dim] :
         
-            print "Warning nb elements for nd array %d and coord %d do not match (dimension %d)"%(np_shape[dim], np_coords[dim], dim)
+            print("Warning nb elements for nd array %d and coord %d do not match (dimension %d)"%(np_shape[dim], np_coords[dim], dim))
         
             return 0
         
         if np_coords[dim] < 0:
 
-            print "Warning negative coord %d (dimension %d)"%(np_coords[dim], dim)
+            print("Warning negative coord %d (dimension %d)"%(np_coords[dim], dim))
         
             return 0
             
