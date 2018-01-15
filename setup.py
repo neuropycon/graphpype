@@ -15,7 +15,7 @@ setup(
                       'nipype==0.13'
                       'configparser',
                       "pandas",
-                      'networkx==1.9'
+                      'networkx==1.9',
                       "matplotlib"]
 )
 
