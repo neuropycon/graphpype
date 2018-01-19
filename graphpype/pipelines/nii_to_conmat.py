@@ -536,6 +536,14 @@ def create_pipeline_nii_to_weighted_conmat(main_path, pipeline_name = "nii_to_we
     Pipeline from resid_ts_file (after preprocessing) to weighted connectivity matrices
     Involves a regressor file as wiehgt for computing weighted correlations
     
+    Parameters:
+        * main_path: path where the analysis will be located (base_dir of workflow)
+        * pipeline_name (default = "nii_to_weighted_conmat"): name of the workflow that will be created for this analysis
+        * concatenated_runs (default = True): If several sessions are contained in the same SPM.mat
+        * conf_interval_prob (default = 0.05): default confidence interval value for thresholding connectivity matrix
+        * mult_regnames (default = True): if reg_names is a list (instead of the instance of an iterable at the higher level)
+        * spm_reg (default = True) : either use spm_mat_file or reg_txt (the latter containing directly the weighting use for computing weighted correlation)
+    
     Inputs (inputnode):
     
         * resid_ts_file
