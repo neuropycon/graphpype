@@ -216,7 +216,7 @@ class CommRada(CommandLine):
     input_spec = CommRadaInputSpec
     output_spec = CommRadaOutputSpec
 
-    cmd = "Communities_Detection.exe"
+    _cmd = "Communities_Detection.exe"
 
     def _list_outputs(self):
         
