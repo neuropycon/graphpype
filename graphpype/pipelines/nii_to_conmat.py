@@ -237,7 +237,7 @@ def create_pipeline_nii_to_conmat_seg_template(main_path, pipeline_name = "nii_t
     
     return pipeline
 
-def create_pipeline_nii_to_subj_ROI(main_path, ROI_mask_file,filter_gm_threshold = 0.9, pipeline_name = "nii_to_subj_ROI", background_val = -1.0, plot = True, reslice = False, resample = False):
+def create_pipeline_nii_to_subj_ROI(main_path, ROI_mask_file,filter_gm_threshold = 0.9, pipeline_name = "nii_to_subj_ROI", background_val = -1.0, plot = True, reslice = False, resample = False, min_BOLD_intensity = 50, percent_signal = 0.5):
 
     """
     Description:
@@ -311,8 +311,8 @@ def create_pipeline_nii_to_subj_ROI(main_path, ROI_mask_file,filter_gm_threshold
     #extract_mean_ROI_ts.inputs.background_val = background_val
     
     #extract_mean_ROI_ts.inputs.indexed_rois_file = ROI_mask_file
-    #extract_mean_ROI_ts.inputs.coord_rois_file = ROI_coords_file
-    #extract_mean_ROI_ts.inputs.min_BOLD_intensity = min_BOLD_intensity
+    extract_mean_ROI_ts.inputs.percent_signal = percent_signal
+    extract_mean_ROI_ts.inputs.min_BOLD_intensity = min_BOLD_intensity
     
     pipeline.connect(inputnode,'nii_4D_file', extract_mean_ROI_ts, 'file_4D')
     pipeline.connect(filter_ROI_mask_with_GM, 'filtered_indexed_rois_file', extract_mean_ROI_ts, 'indexed_rois_file')
@@ -321,7 +321,7 @@ def create_pipeline_nii_to_subj_ROI(main_path, ROI_mask_file,filter_gm_threshold
     
     return pipeline
 
-def create_pipeline_nii_to_conmat(main_path, ROI_mask_file,filter_gm_threshold = 0.9, pipeline_name = "nii_to_conmat",conf_interval_prob = 0.05, background_val = -1.0, plot = True, reslice = False, resample = False):
+def create_pipeline_nii_to_conmat(main_path, ROI_mask_file,filter_gm_threshold = 0.9, pipeline_name = "nii_to_conmat",conf_interval_prob = 0.05, background_val = -1.0, plot = True, reslice = False, resample = False, min_BOLD_intensity = 50, percent_signal = 0.5):
 
     """
     Description:
@@ -424,11 +424,10 @@ def create_pipeline_nii_to_conmat(main_path, ROI_mask_file,filter_gm_threshold =
     #### Nodes version: use min_BOLD_intensity and return coords where signal is strong enough 
     extract_mean_ROI_ts = pe.Node(interface = ExtractTS(plot_fig = plot),name = 'extract_mean_ROI_ts')
     
-    #extract_mean_ROI_ts.inputs.background_val = background_val
+    extract_mean_ROI_ts.inputs.percent_signal = percent_signal
+    extract_mean_ROI_ts.inputs.min_BOLD_intensity = min_BOLD_intensity
     
-    #extract_mean_ROI_ts.inputs.indexed_rois_file = ROI_mask_file
-    #extract_mean_ROI_ts.inputs.coord_rois_file = ROI_coords_file
-    #extract_mean_ROI_ts.inputs.min_BOLD_intensity = min_BOLD_intensity
+    #extract_mean_ROI_ts.inputs.background_val = background_val
     
     pipeline.connect(inputnode,'nii_4D_file', extract_mean_ROI_ts, 'file_4D')
     pipeline.connect(filter_ROI_mask_with_GM, 'filtered_indexed_rois_file', extract_mean_ROI_ts, 'indexed_rois_file')
@@ -483,7 +482,6 @@ def create_pipeline_nii_to_conmat(main_path, ROI_mask_file,filter_gm_threshold =
     ##################################### compute correlations ####################################################
     
     compute_conf_cor_mat = pe.Node(interface = ComputeConfCorMat(plot_mat = plot),name='compute_conf_cor_mat')
-    
     compute_conf_cor_mat.inputs.conf_interval_prob = conf_interval_prob
     
     pipeline.connect(regress_covar, 'resid_ts_file', compute_conf_cor_mat, 'ts_file')
