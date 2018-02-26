@@ -239,7 +239,7 @@ def mean_select_indexed_mask_data(orig_ts,indexed_mask_rois_data,min_BOLD_intens
             
             index_roi_x,index_roi_y,index_roi_z = np.where(indexed_mask_rois_data == roi_index)
             
-            print(index_roi_x,index_roi_y,index_roi_z)
+            #print(index_roi_x,index_roi_y,index_roi_z)
             
             all_voxel_roi_ts = orig_ts[index_roi_x,index_roi_y,index_roi_z,:]
             
@@ -265,8 +265,7 @@ def mean_select_indexed_mask_data(orig_ts,indexed_mask_rois_data,min_BOLD_intens
                     
                     mean_all_voxel_roi_ts = np.mean(all_voxel_roi_ts,axis = 0)
                     
-                print(mean_all_voxel_roi_ts)
-                print(mean_all_voxel_roi_ts.shape)
+                #print(mean_all_voxel_roi_ts.shape)
                 
                 mean_masked_ts.append(mean_all_voxel_roi_ts)
             else:
