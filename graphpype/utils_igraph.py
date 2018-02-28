@@ -212,7 +212,7 @@ def add_non_null_labels(g, labels = []):
     
     #print null_degree_index
     
-    np_labels = np.array(labels,dtype = 'string')
+    np_labels = np.array(labels,dtype = 'str')
     
     #print np_labels
     

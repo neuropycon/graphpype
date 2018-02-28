@@ -134,17 +134,9 @@ class ExtractTS(BaseInterface):
         
         if isdefined(self.inputs.coord_rois_file):
             
-            coord_rois_file = self.inputs.coord_rois_file
-        
-            coord_rois = np.loadtxt(coord_rois_file)
-            
-            print("coord_rois: ") 
-            print(coord_rois.shape)
+            coord_rois = np.loadtxt(self.inputs.coord_rois_file)
             
             subj_coord_rois = coord_rois[keep_rois,:]
-            
-            print(coord_rois.shape)
-            print(subj_coord_rois.shape)
             
             ### saving subject ROIs
             subj_coord_rois_file = os.path.abspath("subj_coord_rois.txt")
@@ -152,9 +144,7 @@ class ExtractTS(BaseInterface):
             
         if isdefined(self.inputs.label_rois_file):
             
-            label_rois_file = self.inputs.label_rois_file
-        
-            labels_rois = np.array([line.strip() for line in open(label_rois_file)],dtype = 'str')
+            labels_rois = np.array([line.strip() for line in open(self.inputs.label_rois_file)],dtype = 'str')
             
             print(labels_rois.shape)
             
@@ -307,44 +297,25 @@ class IntersectMask(BaseInterface):
         
         filter_thr = self.inputs.filter_thr 
         
-        print(filter_thr)
-        
         ## loading ROI indexed mask
         indexed_rois_img = nib.load(indexed_rois_file)
         
         indexed_rois_data = indexed_rois_img.get_data()
         
-        print("indexed_rois_data: ")
-        print(indexed_rois_data.shape)
+        print(np.where(np.isnan(indexed_rois_data)))
+        
+        indexed_rois_data[np.isnan(indexed_rois_data)] = background_val
+        
+        
+        print (np.unique(indexed_rois_data))
+        
+        ### previous version, error when nan
+        #indexed_rois_data = np.array(indexed_rois_img.get_data(),dtype = 'int')
         
         ### loading time series
         filter_mask_data = nib.load(filter_mask_file).get_data()
         
-        print("filter_mask_data shape:")
-        print(filter_mask_data.shape)
-          
-        
         assert filter_mask_data.shape == indexed_rois_data.shape, "error, filter_mask {} and indexed_rois {} should have the same shape".format(filter_mask_data.shape,indexed_rois_data.shape)
-        
-        #if filter_mask_data.shape != indexed_rois_data.shape:
-            
-            #print("reslicing filtered_mask")
-            
-            
-            #reslice_filter_mask = spm.Reslice()
-            #reslice_filter_mask.inputs.in_file = filter_mask_file
-            #reslice_filter_mask.inputs.space_defining = indexed_rois_file
-            ##reslice_filter_mask.inputs.out_file = os.path.abspath("resliced_filter_mask.nii")
-            
-            #resliced_filter_mask_file =  reslice_filter_mask.run().outputs.out_file
-
-            #filter_mask_data = nib.load(resliced_filter_mask_file).get_data()
-        
-        #print(filter_mask_data.shape)
-        
-        print(np.unique(filter_mask_data))
-        
-        print(np.sum(filter_mask_data > filter_thr))
         
         filter_mask_data[filter_mask_data > filter_thr] = 1.0
         filter_mask_data[filter_mask_data <= filter_thr] = 0.0
@@ -380,14 +351,14 @@ class IntersectMask(BaseInterface):
             
             if np.sum(np.array(filtered_indexed_rois_data == index,dtype = int)) != 0:
                 
-                print(np.sum(np.array(filtered_indexed_rois_data == index,dtype = int)))
+                #print(np.sum(np.array(filtered_indexed_rois_data == index,dtype = int)))
                 reorder_indexed_rois_data[filtered_indexed_rois_data == index] = i
                 i = i+1
             else:
                 print("Warning could not find value %d in filtered_indexed_rois_data"%index)
             
                                        
-        print(np.unique(reorder_indexed_rois_data))  
+        #print(np.unique(reorder_indexed_rois_data))  
         
         reorder_indexed_rois_img_file = os.path.abspath("reorder_filtered_indexed_rois.nii")
         nib.save(nib.Nifti1Image(reorder_indexed_rois_data,indexed_rois_img.get_affine(),indexed_rois_img.get_header()),reorder_indexed_rois_img_file)
@@ -410,17 +381,9 @@ class IntersectMask(BaseInterface):
         if isdefined(coords_rois_file):
             
             ## loading ROI coordinates
-            print("coords_rois_file: ")
-            print(coords_rois_file)
             coords_rois = np.loadtxt(coords_rois_file)
             
-            print("coords_rois: ") 
-            print(coords_rois.shape)
-            
             filtered_coords_rois = coords_rois[index_corres,:]
-            
-            print("filtered_coords_rois: ") 
-            print(filtered_coords_rois)
             
             filtered_coords_rois_file = os.path.abspath("filtered_coords_rois.txt")
             np.savetxt(filtered_coords_rois_file,filtered_coords_rois, fmt = "%d")
@@ -430,33 +393,18 @@ class IntersectMask(BaseInterface):
             ## loading ROI coordinates
             MNI_coords_rois = np.loadtxt(MNI_coords_rois_file)
             
-            print("MNI_coords_rois: ") 
-            print(MNI_coords_rois.shape)
-            
             filtered_MNI_coords_rois = MNI_coords_rois[index_corres,:]
-            
-            print("filtered_MNI_coords_rois: ") 
-            print(filtered_MNI_coords_rois)
             
             filtered_MNI_coords_rois_file = os.path.abspath("filtered_MNI_coords_rois.txt")
             np.savetxt(filtered_MNI_coords_rois_file,filtered_MNI_coords_rois, fmt = "%f")
             
         if isdefined(labels_rois_file):
     
-    
             print('extracting node labels')
-                
-            labels_rois = [line.strip() for line in open(labels_rois_file)]
-            print(labels_rois)
-            print(len(labels_rois))
-            
-            np_labels_rois = np.array(labels_rois,dtype = 'str')
+            np_labels_rois = np.array([line.strip() for line in open(labels_rois_file)],dtype = 'str')
             
                 
             filtered_labels_rois = np_labels_rois[index_corres]
-            
-            print("filtered_coords_rois: ") 
-            print(filtered_coords_rois)
             
             filtered_labels_rois_file = os.path.abspath("filtered_labels_rois.txt")
             np.savetxt(filtered_labels_rois_file,filtered_labels_rois, fmt = "%s")
@@ -1554,7 +1502,7 @@ class ComputeConfCorMat(BaseInterface):
             
             plot_hist(plot_hist_Z_cor_mat_file,Z_cor_mat,nb_bins = 100)
             
-            ############ conf_cor_mat
+            ############# conf_cor_mat
             
             #### heatmap 
             
@@ -1566,11 +1514,11 @@ class ComputeConfCorMat(BaseInterface):
             
             #### histogram 
             
-            print('plotting conf_cor_mat histogram')
+            #print('plotting conf_cor_mat histogram')
             
-            plot_hist_conf_cor_mat_file = os.path.abspath('hist_conf_cor_mat_' + fname + '.eps')
+            #plot_hist_conf_cor_mat_file = os.path.abspath('hist_conf_cor_mat_' + fname + '.eps')
 
-            plot_hist(plot_hist_conf_cor_mat_file,conf_cor_mat,nb_bins = 100)
+            #plot_hist(plot_hist_conf_cor_mat_file,conf_cor_mat,nb_bins = 100)
             
         
             ############# Z_conf_cor_mat

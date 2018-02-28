@@ -236,6 +236,7 @@ def plot_signals(plot_signals_file,signals_matrix,colors = [], ylim = [], labels
                 if len(labels) == 0 or len(labels) != len(colors) :
                     ax.plot(list(range(signals_matrix.shape[1])),signals_matrix[i,:],colors[i]) 
                 else:
+                    print("adding label: " +labels[i]) 
                     ax.plot(list(range(signals_matrix.shape[1])),signals_matrix[i,:],colors[i],label = labels[i])
                     
             elif len(colors) == 1:                    
