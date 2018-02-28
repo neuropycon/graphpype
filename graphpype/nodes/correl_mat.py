@@ -300,7 +300,17 @@ class IntersectMask(BaseInterface):
         ## loading ROI indexed mask
         indexed_rois_img = nib.load(indexed_rois_file)
         
-        indexed_rois_data = np.array(indexed_rois_img.get_data(),dtype = 'int')
+        indexed_rois_data = indexed_rois_img.get_data()
+        
+        print(np.where(np.isnan(indexed_rois_data)))
+        
+        indexed_rois_data[np.isnan(indexed_rois_data)] = background_val
+        
+        
+        print (np.unique(indexed_rois_data))
+        
+        ### previous version, error when nan
+        #indexed_rois_data = np.array(indexed_rois_img.get_data(),dtype = 'int')
         
         ### loading time series
         filter_mask_data = nib.load(filter_mask_file).get_data()
