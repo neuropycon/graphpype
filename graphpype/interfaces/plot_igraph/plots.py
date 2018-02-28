@@ -137,7 +137,7 @@ class PlotIGraphModules(BaseInterface):
             labels = [line.strip() for line in open(labels_file)]
             print(labels)
             
-            node_labels = np.array(labels,dtype = 'string')[node_corres].tolist()
+            node_labels = np.array(labels,dtype = 'str')[node_corres].tolist()
             print(len(node_labels))
             
         else :
