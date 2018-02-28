@@ -1502,7 +1502,7 @@ class ComputeConfCorMat(BaseInterface):
             
             plot_hist(plot_hist_Z_cor_mat_file,Z_cor_mat,nb_bins = 100)
             
-            ############ conf_cor_mat
+            ############# conf_cor_mat
             
             #### heatmap 
             
@@ -1514,11 +1514,11 @@ class ComputeConfCorMat(BaseInterface):
             
             #### histogram 
             
-            print('plotting conf_cor_mat histogram')
+            #print('plotting conf_cor_mat histogram')
             
-            plot_hist_conf_cor_mat_file = os.path.abspath('hist_conf_cor_mat_' + fname + '.eps')
+            #plot_hist_conf_cor_mat_file = os.path.abspath('hist_conf_cor_mat_' + fname + '.eps')
 
-            plot_hist(plot_hist_conf_cor_mat_file,conf_cor_mat,nb_bins = 100)
+            #plot_hist(plot_hist_conf_cor_mat_file,conf_cor_mat,nb_bins = 100)
             
         
             ############# Z_conf_cor_mat
