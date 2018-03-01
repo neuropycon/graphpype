@@ -269,6 +269,8 @@ def compute_nodes_rada_df(local_dir,gm_coords,coords_file,labels_file,radatools_
     
     info_nodes_file = os.path.join(local_dir,net_prop_dir,"Z_List-info_nodes.txt")
     
+    print(info_nodes_file)
+    
     if os.path.exists(info_nodes_file) :
         
         ## loading info_nodes
