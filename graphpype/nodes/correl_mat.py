@@ -1308,6 +1308,8 @@ class ComputeConfCorMatInputSpec(BaseInterfaceInputSpec):
     
     labels_file = File(exists=True, desc='Name of the nodes (used only if plot = true)', mandatory=False)
     
+    method = traits.Enum("Pearson","Spearman",desc='Method used for computing correlation (default = Pearson)')
+    
 class ComputeConfCorMatOutputSpec(TraitedSpec):
     
     cor_mat_file = File(exists=True, desc="npy file containing the R values of correlation")
@@ -1375,6 +1377,7 @@ class ComputeConfCorMat(BaseInterface):
             
         plot_mat = self.inputs.plot_mat
         labels_file = self.inputs.labels_file
+        method = self.inputs.method
         
         print('load resid data')
         
@@ -1402,8 +1405,20 @@ class ComputeConfCorMat(BaseInterface):
         
         print("compute return_Z_cor_mat")
         
-        cor_mat,Z_cor_mat,conf_cor_mat,Z_conf_cor_mat = return_conf_cor_mat(data_matrix,weight_vect,conf_interval_prob)
-        
+        if method == "Pearson":
+            cor_mat,Z_cor_mat,conf_cor_mat,Z_conf_cor_mat = return_conf_cor_mat(data_matrix,weight_vect,conf_interval_prob)
+            
+        elif method == "Spearman":
+            
+            import scipy
+            print ("Computing Spearman")
+            
+            rho_mat,pval_mat = scipy.stats.spearmanr(data_matrix)
+            
+            print (rho_mat.shape)
+            
+            0/0
+            
         print(Z_cor_mat.shape)
         
         cor_mat = cor_mat + np.transpose(cor_mat)
@@ -1562,6 +1577,184 @@ class ComputeConfCorMat(BaseInterface):
         
         return outputs
 
+        ################################################################################# ComputeSpearmanMat ######################################################################################################################
+ 
+from graphpype.utils_cor import return_conf_cor_mat
+
+from graphpype.utils_plot import plot_hist,plot_cormat,plot_ranged_cormat
+        
+class ComputeSpearmanMatInputSpec(BaseInterfaceInputSpec):
+    
+    ts_file = File(exists=True, desc='Numpy files with time series to be correlated',mandatory=True)
+
+    transpose_ts = traits.Bool(True,usedefault = True,desc =  'whether to transpose timeseries', mandatory = True)
+                
+    plot_mat = traits.Bool(True, usedefault = True, desc='Using matplotlib to plot', mandatory=False)
+    
+    labels_file = File(exists=True, desc='Name of the nodes (used only if plot = true)', mandatory=False)
+    
+    method = traits.Enum("Pearson","Spearman",desc='Method used for computing correlation (default = Pearson)')
+    
+    export_csv = traits.Bool(True, usedefault = True, desc='save as CSV as well', mandatory=False)
+    
+class ComputeSpearmanMatOutputSpec(TraitedSpec):
+    
+    rho_mat_file = File(exists=True, desc="npy file containing the rho values of correlation")
+    
+    pval_mat_file = File(exists=True, desc="npy file containing the p-values")
+    
+class ComputeSpearmanMat(BaseInterface):
+    
+    """
+    
+    Description:
+    
+    Compute correlation between time series, with a given confidence interval. If weight_file is specified, used for weighted correlation
+    
+    Inputs:
+        
+        ts_file:
+            type = File, exists=True, desc='Numpy files with time series to be correlated',mandatory=True
+
+        transpose_ts:
+            type = Bool, default=True,usedefault = True,desc =  'whether to transpose timeseries', mandatory = True
+                 
+        plot_mat:
+            type = Bool, default = True, usedefault = True, desc='Confidence interval', mandatory=False
+        
+        labels_file:
+            type = File, exists=True, desc='Name of the nodes (used only if plot = true)', mandatory=False
+        
+    Outputs:
+        
+        rho_mat_file :
+            type = File, exists=True, desc="npy file containing the rho values of correlation"
+    
+        pval_mat_file:
+            type = File, exists=True, desc="npy file containing the p-values"
+    
+    """
+    
+    
+    input_spec = ComputeSpearmanMatInputSpec
+    output_spec = ComputeSpearmanMatOutputSpec
+
+    def _run_interface(self, runtime):
+                   
+                  
+        print('in compute_conf_correlation_matrix')
+        
+        ts_file = self.inputs.ts_file
+        transpose_ts = self.inputs.transpose_ts
+            
+        plot_mat = self.inputs.plot_mat
+        export_csv= self.inputs.export_csv
+        
+        labels_file = self.inputs.labels_file
+        
+        print('load resid data')
+        
+        path, fname, ext = split_f(ts_file)
+        
+        data_matrix = np.load(ts_file)
+        
+        print(data_matrix.shape)
+        
+        if transpose_ts:
+            
+            data_matrix = np.transpose(data_matrix)
+            print(data_matrix.shape)
+        
+    
+        import scipy
+        print ("Computing Spearman")
+        
+        rho_mat,pval_mat = scipy.stats.spearmanr(data_matrix)
+        
+        print (rho_mat.shape)
+        
+        np.fill_diagonal(rho_mat,0)
+        
+            #0/0
+            
+        #print(Z_cor_mat.shape)
+        
+        #cor_mat = cor_mat + np.transpose(cor_mat)
+        
+        
+        #Z_cor_mat = Z_cor_mat + np.transpose(Z_cor_mat)
+        
+        print("saving rho_mat as npy")
+        
+        rho_mat_file = os.path.abspath('rho_mat_' + fname + '.npy')
+        
+        #np.save(rho_mat_file,non_nan_rho_mat)
+        np.save(rho_mat_file,rho_mat)
+        
+        print("saving pval_mat as npy")
+        
+        pval_mat_file = os.path.abspath('pval_mat_' + fname + '.npy')
+        
+        #np.save(pval_mat_file,non_nan_pval_mat)
+        np.save(pval_mat_file,pval_mat)
+    
+        if isdefined(labels_file):
+                
+            print('extracting node labels')
+                
+            labels = [line.strip() for line in open(labels_file)]
+            print(labels)
+            
+        else:
+            labels = []
+        
+        if plot_mat:
+            
+            ############# rho_mat
+            
+            #### heatmap 
+            
+            print('plotting rho_mat heatmap')
+            
+            plot_heatmap_rho_mat_file =  os.path.abspath('heatmap_rho_mat_' + fname + '.eps')
+            
+            plot_cormat(plot_heatmap_rho_mat_file,rho_mat,list_labels = labels)
+            
+        if export_csv:
+            
+            import pandas as pd
+            
+            if len(labels) == rho_mat.shape[0] and len(labels) == rho_mat.shape[1]:
+                df_rho = pd.DataFrame(rho_mat, columns = labels, index = labels)
+                df_pval = pd.DataFrame(pval_mat, columns = labels, index = labels)
+            else:
+                
+                df_rho = pd.DataFrame(rho_mat)
+                df_pval = pd.DataFrame(pval_mat)
+            
+            df_rho.to_csv(os.path.abspath('rho_mat.csv'))
+            
+            
+            
+            df_pval.to_csv(os.path.abspath('pval_mat.csv'))
+            
+        return runtime
+        
+    def _list_outputs(self):
+        
+        outputs = self._outputs().get()
+        
+        path, fname, ext = split_f(self.inputs.ts_file)
+        
+        outputs["rho_mat_file"] = os.path.abspath('rho_mat_' + fname + '.npy')
+        
+        outputs["pval_mat_file"] = os.path.abspath('pval_mat_' + fname + '.npy')
+        
+        print(outputs)
+        
+        return outputs
+
+        
         
         ################################################################################# SelectNonNAN ######################################################################################################################
  
