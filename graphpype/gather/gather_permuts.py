@@ -133,6 +133,9 @@ def compute_rada_df(iter_path,df,radatools_version = "3.2", mapflow = [],mapflow
                 
                 df['Modularity'].append(mod_val)
                 
+            else:
+                df['Modularity'].append(np.nan)
+                
             print(df)
             
             #################### info_global 
@@ -147,6 +150,7 @@ def compute_rada_df(iter_path,df,radatools_version = "3.2", mapflow = [],mapflow
                 global_info_values = get_values_from_global_info_file(global_info_file)
                 
                 print(global_info_values)
+                print(global_info_values.items())
                 
                 for key,value in global_info_values.items():
                      
@@ -174,6 +178,12 @@ def compute_rada_df(iter_path,df,radatools_version = "3.2", mapflow = [],mapflow
                 df['Mean_path_length'].append(str(mean_path_length))
                 df['Diameter'].append(str(diameter))
                 df['Global_efficiency'].append(str(global_efficiency))
+            else:
+                
+                df['Mean_path_length'].append(str(np.nan))
+                df['Diameter'].append(str(np.nan))
+                df['Global_efficiency'].append(str(np.nan))
+                
             
             
     print(df)
