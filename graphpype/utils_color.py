@@ -128,8 +128,8 @@ def generate_igraph_colors(nb_colors):
     
     N = 1000
     
-    #RGB_tuples = cm.get_cmap('rainbow',N)
-    RGB_tuples = cm.get_cmap('spectral',N)
+    RGB_tuples = cm.get_cmap('rainbow',N)
+    #RGB_tuples = cm.get_cmap('spectral',N)
     
     print(RGB_tuples)
        

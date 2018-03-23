@@ -18,7 +18,7 @@ def plot_cormat(plot_file, cor_mat,list_labels = [],label_size =2):
     [i.set_visible(False) for i in ax.spines.values()]
     
     #im.set_cmap('binary')
-    im.set_cmap('spectral')
+    im.set_cmap('rainbow')
     ### add labels
     
     if len(list_labels) != 0:
