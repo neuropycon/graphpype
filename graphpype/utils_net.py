@@ -102,7 +102,7 @@ def read_lol_file(lol_file):
                     community_vect[index_nodes] = i
                     
                 else :
-                    community_vect[int(index_nodes)] = i
+                    community_vect[int(index_nodes) -1] = i
                 
             except ValueError:
                 print("Warning, reading lol file ")
