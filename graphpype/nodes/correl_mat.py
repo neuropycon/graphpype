@@ -1308,8 +1308,6 @@ class ComputeConfCorMatInputSpec(BaseInterfaceInputSpec):
     
     labels_file = File(exists=True, desc='Name of the nodes (used only if plot = true)', mandatory=False)
     
-    method = traits.Enum("Pearson","Spearman",desc='Method used for computing correlation (default = Pearson)')
-    
 class ComputeConfCorMatOutputSpec(TraitedSpec):
     
     cor_mat_file = File(exists=True, desc="npy file containing the R values of correlation")
@@ -1377,7 +1375,6 @@ class ComputeConfCorMat(BaseInterface):
             
         plot_mat = self.inputs.plot_mat
         labels_file = self.inputs.labels_file
-        method = self.inputs.method
         
         print('load resid data')
         
@@ -1405,19 +1402,7 @@ class ComputeConfCorMat(BaseInterface):
         
         print("compute return_Z_cor_mat")
         
-        if method == "Pearson":
-            cor_mat,Z_cor_mat,conf_cor_mat,Z_conf_cor_mat = return_conf_cor_mat(data_matrix,weight_vect,conf_interval_prob)
-            
-        elif method == "Spearman":
-            
-            import scipy
-            print ("Computing Spearman")
-            
-            rho_mat,pval_mat = scipy.stats.spearmanr(data_matrix)
-            
-            print (rho_mat.shape)
-            
-            0/0
+        cor_mat,Z_cor_mat,conf_cor_mat,Z_conf_cor_mat = return_conf_cor_mat(data_matrix,weight_vect,conf_interval_prob)
             
         print(Z_cor_mat.shape)
         
@@ -1733,9 +1718,6 @@ class ComputeSpearmanMat(BaseInterface):
                 df_pval = pd.DataFrame(pval_mat)
             
             df_rho.to_csv(os.path.abspath('rho_mat.csv'))
-            
-            
-            
             df_pval.to_csv(os.path.abspath('pval_mat.csv'))
             
         return runtime
@@ -1882,9 +1864,9 @@ class PrepareMeanCorrelInputSpec(BaseInterfaceInputSpec):
     #labels_file = File(exists=True, desc='reference labels',mandatory=False)
     
     
-    coords_files = traits.List(File(exists=True), desc='list of all coordinates in numpy space files (in txt format) for each subject (after removal of non void data)', mandatory=True, xor = ['labels_files'])
+    coords_files = traits.List(File(exists=True), desc='list of all coordinates in numpy space files (in txt format) for each subject (after removal of non void data)', mandatory=False)
     
-    labels_files = traits.List(File(exists=True), desc='list of labels (in txt format) for each subject (after removal of non void data)', mandatory=True, xor = ['coords_files'])
+    labels_files = traits.List(File(exists=True), desc='list of labels (in txt format) for each subject (after removal of non void data)', mandatory=False)
     
     gm_mask_coords_file = File(exists=True, desc='Coordinates in numpy space, corresponding to all possible nodes in the original space', mandatory=False)
     
@@ -2108,7 +2090,40 @@ class PrepareMeanCorrel(BaseInterface):
                     else:
                         print("Warning, one or more files between " + cor_mat_files[index_file] + ', ' + labels_files[index_file] + " do not exists")
                     
+            
+            else:
+                
+                print "################## no labels or coords are defined, all the matrices have to be in the same space, no checks will be done ####################"
                     
+                Z_cor_mat = np.load(cor_mat_files[0])
+                        
+                    
+                sum_cor_mat_matrix = np.zeros((Z_cor_mat.shape[0],Z_cor_mat.shape[1]),dtype = float)
+                print(sum_cor_mat_matrix.shape)
+                
+                sum_possible_edge_matrix = np.zeros((Z_cor_mat.shape[0],Z_cor_mat.shape[1]),dtype = int)*
+                print(sum_possible_edge_matrix.shape)
+                
+                        
+                group_cor_mat_matrix = np.zeros((Z_cor_mat.shape[0],Z_cor_mat.shape[1],len(cor_mat_files)),dtype = float)
+                
+                print(group_cor_mat_matrix.shape)
+                
+                for index_file in range(len(cor_mat_files)):
+                    
+                    print(cor_mat_files[index_file])
+                    
+                    Z_cor_mat = np.load(cor_mat_files[index_file])
+                    
+                    print(Z_cor_mat.shape)
+                    
+                    group_cor_mat_matrix[:,:,index_file] = Z_cor_mat
+                    
+                    sum_possible_edge_matrix += np.ones((Z_cor_mat.shape[0],Z_cor_mat.shape[1]),dtype = int)
+                    sum_cor_mat_matrix += Z_cor_mat
+                    
+                
+                
             self.group_cor_mat_matrix_file= os.path.abspath('group_cor_mat_matrix.npy')
             
             np.save(self.group_cor_mat_matrix_file,group_cor_mat_matrix)
