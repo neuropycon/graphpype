@@ -1,5 +1,5 @@
-.. image:: https://travis-ci.org/neuropycon/ephypype.svg?branch=master
-    :target: https://travis-ci.org/neuropycon/ephypype
+.. image:: https://travis-ci.org/neuropycon/graphpype.svg?branch=master
+    :target: https://travis-ci.org/neuropycon/graphpype
 
 graphpype
 =========
