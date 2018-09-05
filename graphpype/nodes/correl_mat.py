@@ -138,7 +138,7 @@ class ExtractTS(BaseInterface):
         
         ## loading ROI coordinates
         
-        if os.path.exists(self.inputs.MNI_coord_rois_file):
+        if isdefined(self.inputs.MNI_coord_rois_file):
             
             MNI_coord_rois = np.loadtxt(self.inputs.MNI_coord_rois_file)
             
@@ -148,7 +148,7 @@ class ExtractTS(BaseInterface):
             subj_MNI_coord_rois_file = os.path.abspath("subj_MNI_coord_rois.txt")
             np.savetxt(subj_MNI_coord_rois_file,subj_MNI_coord_rois, fmt = '%.3f')
             
-        if os.path.exists(self.inputs.coord_rois_file):
+        if isdefined(self.inputs.coord_rois_file):
             
             coord_rois = np.loadtxt(self.inputs.coord_rois_file)
             
@@ -158,7 +158,7 @@ class ExtractTS(BaseInterface):
             subj_coord_rois_file = os.path.abspath("subj_coord_rois.txt")
             np.savetxt(subj_coord_rois_file,subj_coord_rois,fmt = '%.3f')
             
-        if os.path.exists(self.inputs.label_rois_file):
+        if isdefined(self.inputs.label_rois_file):
             
             labels_rois = np.array([line.strip() for line in open(self.inputs.label_rois_file)],dtype = 'str')
             
