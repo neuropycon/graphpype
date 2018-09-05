@@ -1,5 +1,8 @@
+.. image:: https://travis-ci.org/neuropycon/ephypype.svg?branch=master
+    :target: https://travis-ci.org/neuropycon/ephypype
+
 graphpype
-===============
+=========
 
 Neuropycon project for graph analysis, can be used from ephypype and nipype
 
@@ -20,7 +23,8 @@ http://deim.urv.cat/~sergio.gomez/radatools.php#download
 
 3. Add following lines in your .bashrc:
 
-### For radatools 3.2:
+For radatools 3.2
+******************
 RADA_PATH=/home/david/Tools/Software/radatools-3.2-linux32
 (replace /home/david/Tools/Software by your path to radatools)
 
@@ -29,7 +33,8 @@ RADA_PATH=/home/david/Tools/Software/radatools-3.2-linux32
 * export PATH=$PATH:$RADA_PATH/03-Reformat_Results
 * export PATH=$PATH:$RADA_PATH/04-Other_Tools/
 
-### For radatools 4.0:
+For radatools 4.0
+*****************
 RADA_PATH=/home/david/Tools/Software/radatools-4.0-linux64
 (replace /home/david/Tools/Software by yout path to radatools)
 
