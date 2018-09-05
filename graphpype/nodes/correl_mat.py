@@ -32,6 +32,8 @@ class ExtractTSInputSpec(BaseInterfaceInputSpec):
     
     file_4D = File(exists=True, desc='4D volume to be extracted', mandatory=True)
     
+    MNI_coord_rois_file = File(desc='ROI MNI_coordinates')
+    
     coord_rois_file = File(desc='ROI coordinates')
     
     label_rois_file = File(desc='ROI labels')
@@ -50,6 +52,8 @@ class ExtractTSOutputSpec(TraitedSpec):
     
     subj_coord_rois_file = File(desc="ROI coordinates retained for the subject")
     
+    subj_MNI_coord_rois_file = File(desc="ROI MNI_coordinates retained for the subject")
+    
     subj_label_rois_file = File(desc="ROI labels retained for the subject")
     
 
@@ -67,6 +71,9 @@ class ExtractTS(BaseInterface):
         file_4D:
             type = File, exists=True, desc='4D volume to be extracted', mandatory=True
         
+        MNI_coord_rois_file:
+            typr = File, desc='ROI MNI_coordinates'
+    
         coord_rois_file:
             type = File, desc='ROI coordinates'
         
@@ -93,6 +100,9 @@ class ExtractTS(BaseInterface):
         subj_coord_rois_file: 
             type = File, desc="ROI coordinates retained for the subject"
             
+        subj_MNI_coord_rois_file: 
+            type = File, desc="ROI MNI_coordinates retained for the subject"
+            
             
         subj_label_rois_file: 
             type = File, desc="ROI labels retained for the subject"
@@ -114,8 +124,6 @@ class ExtractTS(BaseInterface):
         
         plot_fig = self.inputs.plot_fig
         
-        print(indexed_rois_file)
-        
         ## loading ROI indexed mask
         indexed_rois_img = nib.load(indexed_rois_file)
         indexed_mask_rois_data = indexed_rois_img.get_data()
@@ -128,11 +136,19 @@ class ExtractTS(BaseInterface):
         
         mean_masked_ts,keep_rois = mean_select_indexed_mask_data(orig_ts,indexed_mask_rois_data,min_BOLD_intensity, percent_signal = percent_signal, background_val = background_val)
         
-        print(keep_rois)
-        
         ## loading ROI coordinates
         
-        if isdefined(self.inputs.coord_rois_file):
+        if os.path.exists(self.inputs.MNI_coord_rois_file):
+            
+            MNI_coord_rois = np.loadtxt(self.inputs.MNI_coord_rois_file)
+            
+            subj_MNI_coord_rois = MNI_coord_rois[keep_rois,:]
+            
+            ### saving subject ROIs
+            subj_MNI_coord_rois_file = os.path.abspath("subj_MNI_coord_rois.txt")
+            np.savetxt(subj_MNI_coord_rois_file,subj_MNI_coord_rois, fmt = '%.3f')
+            
+        if os.path.exists(self.inputs.coord_rois_file):
             
             coord_rois = np.loadtxt(self.inputs.coord_rois_file)
             
@@ -142,24 +158,17 @@ class ExtractTS(BaseInterface):
             subj_coord_rois_file = os.path.abspath("subj_coord_rois.txt")
             np.savetxt(subj_coord_rois_file,subj_coord_rois,fmt = '%.3f')
             
-        if isdefined(self.inputs.label_rois_file):
+        if os.path.exists(self.inputs.label_rois_file):
             
             labels_rois = np.array([line.strip() for line in open(self.inputs.label_rois_file)],dtype = 'str')
             
-            print(labels_rois.shape)
-            
             subj_label_rois = labels_rois[keep_rois]
-            
-            print(labels_rois.shape)
-            print(subj_label_rois.shape)
             
             ### saving subject ROIs
             subj_label_rois_file = os.path.abspath("subj_label_rois.txt")
             np.savetxt(subj_label_rois_file,subj_label_rois,fmt = '%s')
             
         mean_masked_ts = np.array(mean_masked_ts,dtype = 'f')
-        
-        print(mean_masked_ts.shape)
             
         ### saving time series
         mean_masked_ts_file = os.path.abspath("mean_masked_ts.txt")
@@ -183,6 +192,10 @@ class ExtractTS(BaseInterface):
         
         outputs["mean_masked_ts_file"] = os.path.abspath("mean_masked_ts.txt")
         
+        if isdefined(self.inputs.MNI_coord_rois_file):
+            
+            outputs["subj_MNI_coord_rois_file"] = os.path.abspath("subj_MNI_coord_rois.txt")
+    
         if isdefined(self.inputs.coord_rois_file):
             
             outputs["subj_coord_rois_file"] = os.path.abspath("subj_coord_rois.txt")
@@ -422,8 +435,11 @@ class IntersectMask(BaseInterface):
         if isdefined(self.inputs.coords_rois_file):
             outputs["filtered_coords_rois_file"] = os.path.abspath("filtered_coords_rois.txt")
             
-        #outputs["filtered_MNI_coords_rois_file"] = os.path.abspath("filtered_MNI_coords_rois.txt")
-        outputs["filtered_labels_rois_file"] = os.path.abspath("filtered_labels_rois.txt")
+        if isdefined(self.inputs.MNI_coords_rois_file):
+            outputs["filtered_MNI_coords_rois_file"] = os.path.abspath("filtered_MNI_coords_rois.txt")
+        
+        if isdefined(self.inputs.labels_rois_file):
+            outputs["filtered_labels_rois_file"] = os.path.abspath("filtered_labels_rois.txt")
     
         return outputs
 
@@ -820,20 +836,19 @@ class SeparateTS(BaseInterface):
  
 
 #from graphpype.utils_cor import regress_movement_wm_csf_parameters
-from graphpype.utils_cor import regress_parameters,regress_filter_normalize_parameters
+from graphpype.utils_cor import regress_parameters,filter_data,normalize_data
+#regress_filter_normalize_parameters
 
 class RegressCovarInputSpec(BaseInterfaceInputSpec):
     masked_ts_file = File(exists=True, desc='time series in npy format', mandatory=True)
     
-    rp_file = File(exists=True, desc='Movement parameters', mandatory=True)
+    rp_file = File(exists=True, desc='Movement parameters', mandatory=False)
     
     mean_wm_ts_file = File(exists=True, desc='White matter signal', mandatory=False)
     
     mean_csf_ts_file = File(exists=True, desc='Cerebro-spinal fluid (ventricules) signal', mandatory=False)
     
-    filtered = traits.Bool(True, usedefault = True , desc = "Is the signal filtered after regression?")
-    
-    normalized = traits.Bool(True, usedefault = True , desc = "Is the signal normalized after regression?")
+    filtered_normalized = traits.Bool(True, usedefault = True , desc = "Is the signal filtered and normalized after regression?")
     
     plot_fig = traits.Bool(True, usedefault = True , desc = "Plotting signals?")
     
@@ -854,7 +869,7 @@ class RegressCovar(BaseInterface):
             type = File, exists=True, desc='Time series in npy format', mandatory=True
         
         rp_file: 
-            type = File, exists=True, desc='Movement parameters in txt format, SPM style', mandatory=True
+            type = File, exists=True, desc='Movement parameters in txt format, SPM style', mandatory=False
         
         mean_wm_ts_file:
             type = File: exists=True, desc='White matter signal', mandatory=False
@@ -863,12 +878,9 @@ class RegressCovar(BaseInterface):
         mean_csf_ts_file:   
             type = File, exists=True, desc='Cerebro-spinal fluid (ventricules) signal', mandatory=False
         
-        filtered:
-            type= Bool, default = True, usedefault = True , desc = "Filter the signal  after regression?"
+        filtered_normalized:
+            type= Bool, default = True, usedefault = True , desc = "Filter and Normalize the signal  after regression?"
         
-        normalized
-            type = Bool(True, usedefault = True , desc = "Normalize the signal after regression?"
-            
     Outputs:
     
         resid_ts_file:
@@ -884,26 +896,26 @@ class RegressCovar(BaseInterface):
                     
         print("in regress_covariates")
         
-        masked_ts_file = self.inputs.masked_ts_file
-        rp_file = self.inputs.rp_file
-        filtered = self.inputs.filtered
-        normalized = self.inputs.normalized
-        plot_fig = self.inputs.plot_fig
-        
         print("load masked_ts_file")
         
-        data_mask_matrix = np.loadtxt(masked_ts_file)
+        data_mask_matrix = np.loadtxt(self.inputs.masked_ts_file)
         
         print(data_mask_matrix.shape)
 
-        print("load rp parameters")
+        if isdefined(self.inputs.rp_file):
+            
+            print("load rp parameters")
+               
+            rp_file = self.inputs.rp_file
+            print(rp_file)
+            
+            rp = np.genfromtxt(rp_file)
+            
+            print(rp.shape)
         
-        print(rp_file)
-        
-        rp = np.genfromtxt(rp_file)
-        
-        print(rp.shape)
-        
+        else:
+            rp = None
+            
         if isdefined(self.inputs.mean_csf_ts_file):
             
             mean_csf_ts_file = self.inputs.mean_csf_ts_file
@@ -912,42 +924,52 @@ class RegressCovar(BaseInterface):
             
             mean_csf_ts = np.loadtxt(mean_csf_ts_file)
             
+            mean_csf_ts = mean_csf_ts.reshape(mean_csf_ts.shape[0],-1)
+            
             print(mean_csf_ts.shape)
-            
-            rp = np.concatenate((rp,mean_csf_ts.reshape(mean_csf_ts.shape[0],1)),axis = 1)
-            
-            print(rp.shape)
-            
+        
+        else:
+            mean_csf_ts = None
             
         if isdefined(self.inputs.mean_wm_ts_file):
             
-            mean_wm_ts_file = self.inputs.mean_wm_ts_file
-            
             print("load mean_wm_ts_file")
             
-            mean_wm_ts = np.loadtxt(mean_wm_ts_file)
+            mean_wm_ts = np.loadtxt(self.inputs.mean_wm_ts_file)
             
-            rp = np.concatenate((rp,mean_wm_ts.reshape(mean_wm_ts.shape[0],1)),axis = 1)
-            
-            print(rp.shape)
-            
+            mean_wm_ts = mean_csf_ts.reshape(mean_wm_ts.shape[0],-1)
         
-        if filtered == True and normalized == True:
+        else: 
+            mean_wm_ts = None
             
-            ### regression movement parameters and computing z-score on the residuals
+        if all([a is None for a in (rp,mean_csf_ts,mean_wm_ts)]):
+                   
+            resid_data_matrix = data_mask_matrix
+            
+        else:
+            rp = np.concatenate([a for a in (rp,mean_csf_ts,mean_wm_ts) if a is not None],axis = 1)
+            
+            ### regression movement parameters, return the residuals
             #resid_data_matrix = regress_movement_wm_csf_parameters(data_mask_matrix,rp,mean_wm_ts,mean_csf_ts)
-            resid_data_matrix,resid_filt_data_matrix,z_score_data_matrix = regress_filter_normalize_parameters(data_mask_matrix,rp)
+            resid_data_matrix = regress_parameters(data_mask_matrix,rp)
             
-            print(resid_data_matrix.shape)
-
-            print("saving resid_ts")
+        if self.inputs.filtered_normalized:
+            
+            ### filtering data
+            resid_filt_data_matrix = filter_data(resid_data_matrix)
+            
+            ### normalizing
+            z_score_data_matrix = normalize_data(resid_filt_data_matrix)
             
             resid_ts_file = os.path.abspath('resid_ts.npy')
             np.save(resid_ts_file,z_score_data_matrix )
 
+            resid_ts_txt_file = os.path.abspath('resid_ts.txt')
+            np.savetxt(resid_ts_txt_file,z_score_data_matrix,fmt = '%0.3f')
+
             print("plotting resid_ts")
-            
-            if plot_fig:
+          
+            if self.inputs.plot_fig:
                     
                 plot_resid_ts_file = os.path.abspath('resid_ts.eps')
                 
@@ -959,19 +981,11 @@ class RegressCovar(BaseInterface):
                 plot_diff_filt_ts_file = os.path.abspath('diff_filt_ts.eps')
                 
                 plot_signals(plot_diff_filt_ts_file,np.array(resid_filt_data_matrix - resid_data_matrix,dtype = 'float'))
-                
-        elif filtered == False and normalized == False:
+        
+        else:
             
             print("Using only regression")
         
-            ### regression movement parameters and computing z-score on the residuals
-            #resid_data_matrix = regress_movement_wm_csf_parameters(data_mask_matrix,rp,mean_wm_ts,mean_csf_ts)
-            resid_data_matrix = regress_parameters(data_mask_matrix,rp)
-            
-            print(resid_data_matrix.shape)
-
-            print("saving resid_ts")
-            
             resid_ts_file = os.path.abspath('resid_ts.npy')
             np.save(resid_ts_file,resid_data_matrix )
 
@@ -982,16 +996,13 @@ class RegressCovar(BaseInterface):
             
             print("plotting resid_ts")
             
-            if plot_fig:
+            if self.inputs.plot_fig:
                     
                 plot_resid_ts_file = os.path.abspath('resid_ts.eps')
                 
                 plot_sep_signals(plot_resid_ts_file,resid_data_matrix)
                 
-        else:
-            
-            print("Warning, not implemented (RegressCovar)")
-            
+              
         return runtime
         
         
@@ -1308,7 +1319,7 @@ class ComputeConfCorMatInputSpec(BaseInterfaceInputSpec):
     
     labels_file = File(exists=True, desc='Name of the nodes (used only if plot = true)', mandatory=False)
     
-    method = traits.Enum("Pearson","Spearman",desc='Method used for computing correlation (default = Pearson)')
+    method = traits.Enum("Pearson","Spearman",usedefault = True, desc='Method used for computing correlation (default = Pearson)')
     
 class ComputeConfCorMatOutputSpec(TraitedSpec):
     
@@ -1457,7 +1468,7 @@ class ComputeConfCorMat(BaseInterface):
         np.save(Z_conf_cor_mat_file,Z_conf_cor_mat)
         
         
-        if plot_mat == True:
+        if plot_mat:
             
             if isdefined(labels_file):
                     
@@ -1477,9 +1488,8 @@ class ComputeConfCorMat(BaseInterface):
             
             plot_heatmap_cor_mat_file =  os.path.abspath('heatmap_cor_mat_' + fname + '.eps')
             
+            print (plot_heatmap_cor_mat_file)
             plot_cormat(plot_heatmap_cor_mat_file,cor_mat,list_labels = labels)
-            
-            
             
             #### histogram 
             
@@ -1490,8 +1500,6 @@ class ComputeConfCorMat(BaseInterface):
             plot_hist(plot_hist_cor_mat_file,cor_mat,nb_bins = 100)
             
             ############ Z_cor_mat
-            
-            #Z_cor_mat = np.load(Z_cor_mat_file)
             
             #### heatmap 
             
@@ -1556,7 +1564,6 @@ class ComputeConfCorMat(BaseInterface):
             
             #plot_hist(plot_hist_Z_conf_cor_mat_file,Z_conf_cor_mat,nb_bins = 100)
             
-        
         return runtime
         
     def _list_outputs(self):

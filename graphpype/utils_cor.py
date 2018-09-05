@@ -235,11 +235,11 @@ def mean_select_indexed_mask_data(orig_ts,indexed_mask_rois_data,min_BOLD_intens
         
         for i,roi_index in enumerate(sequence_roi_index):
             
-            #print np.where(indexed_mask_rois_data == roi_index)
+            print (np.where(indexed_mask_rois_data == roi_index))
             
             index_roi_x,index_roi_y,index_roi_z = np.where(indexed_mask_rois_data == roi_index)
             
-            #print(index_roi_x,index_roi_y,index_roi_z)
+            print(index_roi_x,index_roi_y,index_roi_z)
             
             all_voxel_roi_ts = orig_ts[index_roi_x,index_roi_y,index_roi_z,:]
             
@@ -414,76 +414,100 @@ def regress_parameters(data_matrix,covariates):
     
     return resid_data_matrix
 
-def regress_filter_normalize_parameters(data_matrix,covariates):
+def filter_data(data_matrix):
 
-    import statsmodels.formula.api as smf
-    
     print(data_matrix.shape)
     
-    print(covariates.shape)
-    
-    resid_data = []
-    resid_filt_data = []
-    z_score_data = []
+    filt_data = []
     
     b,a = filt.iirfilter(N = 5, Wn = 0.04, btype = 'highpass')
+
+    filt_data_matrix = filt.filtfilt(b,a,x = data_matrix, axis = 1)
+    
+    print (filt_data_matrix.shape)
+    
+    return filt_data_matrix
+
+def normalize_data(data_matrix):
+
+    print(data_matrix.shape)
+    
+    z_score_data_matrix = stats.zscore(data_matrix, axis = 1)
+    
+    print(z_score_data_matrix.shape)
+    
+    return z_score_data_matrix
+
+#def regress_filter_normalize_parameters(data_matrix,covariates):
+
+    #import statsmodels.formula.api as smf
+    
+    #print(data_matrix.shape)
+    
+    #print(covariates.shape)
+    
+    #resid_data = []
+    #resid_filt_data = []
+    #z_score_data = []
+    
+    #b,a = filt.iirfilter(N = 5, Wn = 0.04, btype = 'highpass')
         
-    data_names = ['Var_' + str(i) for i in range(data_matrix.shape[0])]
+    #data_names = ['Var_' + str(i) for i in range(data_matrix.shape[0])]
     
-    print(data_names)
-    
-    
-    covar_names = ['Cov_' + str(i) for i in range(covariates.shape[1])]
+    #print(data_names)
     
     
-    print(np.transpose(data_matrix).shape)
-    
-    all_data = np.concatenate((np.transpose(data_matrix),covariates), axis = 1)
-    
-    print(all_data.shape)
-    
-    col_names = data_names + covar_names
-    
-    df = pd.DataFrame(all_data, columns = col_names)
-    
-    print(df)
+    #covar_names = ['Cov_' + str(i) for i in range(covariates.shape[1])]
     
     
-    for var in data_names:
+    #print(np.transpose(data_matrix).shape)
+    
+    #all_data = np.concatenate((np.transpose(data_matrix),covariates), axis = 1)
+    
+    #print(all_data.shape)
+    
+    #col_names = data_names + covar_names
+    
+    #df = pd.DataFrame(all_data, columns = col_names)
+    
+    #print(df)
+    
+    
+    #for var in data_names:
         
-        formula = var + " ~ " + " + ".join(covar_names)
+        #formula = var + " ~ " + " + ".join(covar_names)
             
-        print(formula)
+        #print(formula)
         
-        est = smf.ols(formula=formula, data=df).fit()
+        #est = smf.ols(formula=formula, data=df).fit()
         
-        ##print est.summary()
+        ###print est.summary()
         
-        #print est.resid.values
+        ##print est.resid.values
         
-        resid = est.resid.values        
-        resid_data.append(est.resid.values)
+        #resid = est.resid.values        
+        #resid_data.append(est.resid.values)
         
-        resid_filt = filt.filtfilt(b,a,x = resid)
-        resid_filt_data.append(resid_filt)
+        #resid_filt = filt.filtfilt(b,a,x = resid)
+        #resid_filt_data.append(resid_filt)
         
-        z_score  = stats.zscore(resid_filt)
-        z_score_data.append(z_score)
+        #z_score  = stats.zscore(resid_filt)
+        #z_score_data.append(z_score)
 
 
-    resid_data_matrix = np.array(resid_data,dtype = float)
+    #resid_data_matrix = np.array(resid_data,dtype = float)
     
-    print(resid_data_matrix.shape)
+    #print(resid_data_matrix.shape)
     
-    resid_filt_data_matrix = np.array(resid_filt_data, dtype = float)
+    #resid_filt_data_matrix = np.array(resid_filt_data, dtype = float)
     
-    #print resid_filt_data_matrix
+    ##print resid_filt_data_matrix
     
-    z_score_data_matrix = np.array(z_score_data, dtype = float)
+    #z_score_data_matrix = np.array(z_score_data, dtype = float)
     
-    #print z_score_data_matrix
+    ##print z_score_data_matrix
         
-    return resid_data_matrix,resid_filt_data_matrix,z_score_data_matrix
+    #return resid_data_matrix,resid_filt_data_matrix,z_score_data_matrix
 
 def regress_parameters_rpy(data_matrix,covariates):
 
