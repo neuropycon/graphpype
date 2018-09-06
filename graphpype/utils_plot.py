@@ -35,10 +35,10 @@ def plot_cormat(plot_file, cor_mat,list_labels = [],label_size =2):
         
     plt.tick_params(axis='both',          # changes apply to the x-axis
         which='both',      # both major and minor ticks are affected
-        bottom='off',      # ticks along the bottom edge are off
-        top='off',         # ticks along the top edge are off
-        left = 'off',
-        right = 'off'
+        bottom=False,      # ticks along the bottom edge are off
+        top=False,         # ticks along the top edge are off
+        left = False,
+        right = False
         )
     #ax.set_xticklabels(['']+labels)
     #plt.setp(ax.get_xticklabels(), rotation='vertical', fontsize=3)
