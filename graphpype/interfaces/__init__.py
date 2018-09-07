@@ -8,4 +8,3 @@ try:
 
 except ImportError:
     can_plot_igraph = False
-    
