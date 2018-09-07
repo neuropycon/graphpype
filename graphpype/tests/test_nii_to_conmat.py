@@ -31,23 +31,23 @@ gm_anat_file = os.path.join(data_path, "sub-test_mask-anatGM.nii")
 # Test is simple works with and without labels
 
 
-def test_nii_to_conmat_simple():
+#def test_nii_to_conmat_simple():
 
-    wf = create_pipeline_nii_to_conmat_simple(
-        main_path=data_path, pipeline_name="nii_to_conmat_simple", plot = False)
+    #wf = create_pipeline_nii_to_conmat_simple(
+        #main_path=data_path, pipeline_name="nii_to_conmat_simple", plot = False)
 
-    wf.inputs.inputnode.nii_4D_file = nii_4D_file
-    wf.inputs.inputnode.ROI_mask_file = indexed_mask_file
+    #wf.inputs.inputnode.nii_4D_file = nii_4D_file
+    #wf.inputs.inputnode.ROI_mask_file = indexed_mask_file
 
-    # Optionnal labels (can be removed)
-    wf.inputs.inputnode.ROI_labels_file = labels_file
-    wf.inputs.inputnode.ROI_coords_file = coords_file
-    wf.inputs.inputnode.ROI_MNI_coords_file = MNI_coords_file
+    ## Optionnal labels (can be removed)
+    #wf.inputs.inputnode.ROI_labels_file = labels_file
+    #wf.inputs.inputnode.ROI_coords_file = coords_file
+    #wf.inputs.inputnode.ROI_MNI_coords_file = MNI_coords_file
 
-    # Warning, is necessary, otherwise Figures are removed!
-    wf.config['execution'] = {"remove_unnecessary_outputs": False}
+    ## Warning, is necessary, otherwise Figures are removed!
+    #wf.config['execution'] = {"remove_unnecessary_outputs": False}
 
-    wf.run(plugin='MultiProc', plugin_args={'n_procs' : 1})
+    #wf.run(plugin='MultiProc', plugin_args={'n_procs' : 1})
 
 # test with white matter and csf from segmented files. Files should have the same dimensions
 
@@ -137,8 +137,8 @@ def test_nii_to_conmat_simple():
 
 #####
 if __name__ == '__main__':
-
-    test_nii_to_conmat_simple()  # OK / works with or without labels
+    pass
+    #test_nii_to_conmat_simple()  # OK / works with or without labels
     
     #test_create_pipeline_nii_to_conmat_seg_template() # OK / works with or without labels()
     #test_create_pipeline_nii_to_subj_ROI()  # OK / works with or without labels()
