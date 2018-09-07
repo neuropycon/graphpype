@@ -29,55 +29,7 @@ from graphpype.utils import show_files, show_length
 # except ImportError:
 #can_plot_igraph = False
 
-
-# def create_pipeline_nii_to_conmat_simple(main_path, pipeline_name = "nii_to_conmat",conf_interval_prob = 0.05,background_val=-1.0):
-
-# """
-# Description:
-
-# Pipeline from nifti 4D (after preprocessing) to connectivity matrices - simplest
-
-# Inputs (inputnode):
-
-# * nii_4D_file
-# * rp_file
-# * ROI_mask_file
-
-# Comments:
-
-# Typically used after nipype preprocessing pipeline and before conmat_to_graph pipeline
-# """
-
-#pipeline = pe.Workflow(name=pipeline_name)
-#pipeline.base_dir = main_path
-
-#inputnode = pe.Node(niu.IdentityInterface(fields=['nii_4D_file','rp_file','ROI_mask_file']),name='inputnode')
-
-# Nodes version: use min_BOLD_intensity and return coords where signal is strong enough
-#extract_mean_ROI_ts = pe.Node(interface = ExtractTS(plot_fig = True),name = 'extract_mean_ROI_ts')
-#extract_mean_ROI_ts.inputs.background_val = background_val
-
-#pipeline.connect(inputnode,'nii_4D_file', extract_mean_ROI_ts, 'file_4D')
-#pipeline.connect(inputnode,'ROI_mask_file', extract_mean_ROI_ts, 'indexed_rois_file')
-
-# regress covariates
-# use R linear model to regress movement parameters, white matter and ventricule signals, and compute Z-score of the residuals
-#regress_covar = pe.Node(interface = RegressCovar(),iterfield = ['masked_ts_file','rp_file'],name='regress_covar')
-
-#pipeline.connect(extract_mean_ROI_ts, 'mean_masked_ts_file', regress_covar, 'masked_ts_file')
-#pipeline.connect(inputnode, 'rp_file', regress_covar, 'rp_file')
-
-####################################### compute correlations ####################################################
-
-#compute_conf_cor_mat = pe.Node(interface = ComputeConfCorMat(),name='compute_conf_cor_mat')
-#compute_conf_cor_mat.inputs.conf_interval_prob = conf_interval_prob
-
-#pipeline.connect(regress_covar, 'resid_ts_file', compute_conf_cor_mat, 'ts_file')
-#pipeline.connect(extract_mean_ROI_ts, 'subj_label_rois_file', compute_conf_cor_mat, 'labels_file')
-
-# return pipeline
-
-def create_pipeline_nii_to_conmat_simple(main_path, pipeline_name="nii_to_conmat", conf_interval_prob=0.05, background_val=-1.0):
+def create_pipeline_nii_to_conmat_simple(main_path, pipeline_name="nii_to_conmat", conf_interval_prob=0.05, background_val=-1.0, plot = True):
     """
     Description:
 
@@ -126,7 +78,7 @@ def create_pipeline_nii_to_conmat_simple(main_path, pipeline_name="nii_to_conmat
 
     # use R linear model to regress movement parameters, white matter and ventricule signals, and compute Z-score of the residuals
     #regress_covar = pe.MapNode(interface = RegressCovar(filtered = False, normalized = False),iterfield = ['masked_ts_file','rp_file','mean_wm_ts_file','mean_csf_ts_file'],name='regress_covar')
-    regress_covar = pe.Node(interface=RegressCovar(), iterfield=[
+    regress_covar = pe.Node(interface=RegressCovar(plot_fig = plot), iterfield=[
                             'masked_ts_file', 'rp_file'], name='regress_covar')
 
     pipeline.connect(extract_mean_ROI_ts, 'mean_masked_ts_file',
@@ -136,7 +88,7 @@ def create_pipeline_nii_to_conmat_simple(main_path, pipeline_name="nii_to_conmat
     ##################################### compute correlations ####################################################
 
     compute_conf_cor_mat = pe.Node(
-        interface=ComputeConfCorMat(), name='compute_conf_cor_mat')
+        interface=ComputeConfCorMat(plot_mat = plot), name='compute_conf_cor_mat')
     compute_conf_cor_mat.inputs.conf_interval_prob = conf_interval_prob
 
     pipeline.connect(regress_covar, 'resid_ts_file',

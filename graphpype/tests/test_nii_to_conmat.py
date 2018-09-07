@@ -34,7 +34,7 @@ gm_anat_file = os.path.join(data_path, "sub-test_mask-anatGM.nii")
 def test_nii_to_conmat_simple():
 
     wf = create_pipeline_nii_to_conmat_simple(
-        main_path=data_path, pipeline_name="nii_to_conmat_simple")
+        main_path=data_path, pipeline_name="nii_to_conmat_simple", plot = False)
 
     wf.inputs.inputnode.nii_4D_file = nii_4D_file
     wf.inputs.inputnode.ROI_mask_file = indexed_mask_file
