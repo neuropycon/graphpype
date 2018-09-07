@@ -52,94 +52,94 @@ def test_nii_to_conmat_simple():
 # test with white matter and csf from segmented files. Files should have the same dimensions
 
 
-def test_create_pipeline_nii_to_conmat_seg_template():
+#def test_create_pipeline_nii_to_conmat_seg_template():
 
-    wf = create_pipeline_nii_to_conmat_seg_template(
-        main_path=data_path, pipeline_name="nii_to_conmat_seg_template")
-
-    wf.inputs.inputnode.nii_4D_file = nii_4D_file
-    wf.inputs.inputnode.ROI_mask_file = indexed_mask_file
-
-    wf.inputs.inputnode.ROI_labels_file = labels_file
-    wf.inputs.inputnode.ROI_coords_file = coords_file
-    wf.inputs.inputnode.ROI_MNI_coords_file = MNI_coords_file
-
-    wf.inputs.inputnode.wm_anat_file = wm_anat_file
-    wf.inputs.inputnode.csf_anat_file = csf_anat_file
-
-    # Warning, is necessary, otherwise Figures are removed!
-    wf.config['execution'] = {"remove_unnecessary_outputs": False}
-
-    wf.run()
-
-# including a step of selection of ROIs in the Grey matter mask (intersect mask)
-# test = if gm_anat_file = wm_anat_file, crashes because BOLD signal is not enough!
-# def test_create_pipeline_nii_to_subj_ROI():
-
-    #wf = create_pipeline_nii_to_subj_ROI(main_path = data_path, pipeline_name = "nii_to_conmat_seg_template")
+    #wf = create_pipeline_nii_to_conmat_seg_template(
+        #main_path=data_path, pipeline_name="nii_to_conmat_seg_template")
 
     #wf.inputs.inputnode.nii_4D_file = nii_4D_file
     #wf.inputs.inputnode.ROI_mask_file = indexed_mask_file
-
-    #wf.inputs.inputnode.gm_anat_file = wm_anat_file
-
-    # Warning, is necessary, otherwise Figures are removed!
-    #wf.config['execution'] = {"remove_unnecessary_outputs":False}
-
-    # wf.run()
-
-# subject time series only (no regression of wm and csf signals / no correlation matrices)
-
-
-def test_create_pipeline_nii_to_subj_ROI():
-
-    wf = create_pipeline_nii_to_subj_ROI(
-        main_path=data_path, pipeline_name="nii_to_subj_ROI")
-
-    wf.inputs.inputnode.nii_4D_file = nii_4D_file
-    wf.inputs.inputnode.ROI_mask_file = indexed_mask_file
-
-    wf.inputs.inputnode.ROI_labels_file = labels_file
-    wf.inputs.inputnode.ROI_coords_file = coords_file
-    wf.inputs.inputnode.ROI_MNI_coords_file = MNI_coords_file
-
-    wf.inputs.inputnode.gm_anat_file = gm_anat_file
-
-    # Warning, is necessary, otherwise Figures are removed!
-    wf.config['execution'] = {"remove_unnecessary_outputs": False}
-
-    wf.run()
-
-# the full pipeline
-
-
-def test_create_pipeline_nii_to_conmat():
-
-    wf = create_pipeline_nii_to_conmat(
-        main_path=data_path, pipeline_name="nii_to_conmat_full")
-
-    wf.inputs.inputnode.nii_4D_file = nii_4D_file
-    wf.inputs.inputnode.ROI_mask_file = indexed_mask_file
 
     #wf.inputs.inputnode.ROI_labels_file = labels_file
     #wf.inputs.inputnode.ROI_coords_file = coords_file
     #wf.inputs.inputnode.ROI_MNI_coords_file = MNI_coords_file
 
-    wf.inputs.inputnode.gm_anat_file = gm_anat_file
-    wf.inputs.inputnode.wm_anat_file = wm_anat_file
-    wf.inputs.inputnode.csf_anat_file = csf_anat_file
+    #wf.inputs.inputnode.wm_anat_file = wm_anat_file
+    #wf.inputs.inputnode.csf_anat_file = csf_anat_file
 
-    # Warning, is necessary, otherwise Figures are removed!
-    wf.config['execution'] = {"remove_unnecessary_outputs": False}
+    ## Warning, is necessary, otherwise Figures are removed!
+    #wf.config['execution'] = {"remove_unnecessary_outputs": False}
 
-    wf.run()
+    #wf.run()
+
+## including a step of selection of ROIs in the Grey matter mask (intersect mask)
+## test = if gm_anat_file = wm_anat_file, crashes because BOLD signal is not enough!
+## def test_create_pipeline_nii_to_subj_ROI():
+
+    ##wf = create_pipeline_nii_to_subj_ROI(main_path = data_path, pipeline_name = "nii_to_conmat_seg_template")
+
+    ##wf.inputs.inputnode.nii_4D_file = nii_4D_file
+    ##wf.inputs.inputnode.ROI_mask_file = indexed_mask_file
+
+    ##wf.inputs.inputnode.gm_anat_file = wm_anat_file
+
+    ## Warning, is necessary, otherwise Figures are removed!
+    ##wf.config['execution'] = {"remove_unnecessary_outputs":False}
+
+    ## wf.run()
+
+## subject time series only (no regression of wm and csf signals / no correlation matrices)
+
+
+#def test_create_pipeline_nii_to_subj_ROI():
+
+    #wf = create_pipeline_nii_to_subj_ROI(
+        #main_path=data_path, pipeline_name="nii_to_subj_ROI")
+
+    #wf.inputs.inputnode.nii_4D_file = nii_4D_file
+    #wf.inputs.inputnode.ROI_mask_file = indexed_mask_file
+
+    #wf.inputs.inputnode.ROI_labels_file = labels_file
+    #wf.inputs.inputnode.ROI_coords_file = coords_file
+    #wf.inputs.inputnode.ROI_MNI_coords_file = MNI_coords_file
+
+    #wf.inputs.inputnode.gm_anat_file = gm_anat_file
+
+    ## Warning, is necessary, otherwise Figures are removed!
+    #wf.config['execution'] = {"remove_unnecessary_outputs": False}
+
+    #wf.run()
+
+## the full pipeline
+
+
+#def test_create_pipeline_nii_to_conmat():
+
+    #wf = create_pipeline_nii_to_conmat(
+        #main_path=data_path, pipeline_name="nii_to_conmat_full")
+
+    #wf.inputs.inputnode.nii_4D_file = nii_4D_file
+    #wf.inputs.inputnode.ROI_mask_file = indexed_mask_file
+
+    ##wf.inputs.inputnode.ROI_labels_file = labels_file
+    ##wf.inputs.inputnode.ROI_coords_file = coords_file
+    ##wf.inputs.inputnode.ROI_MNI_coords_file = MNI_coords_file
+
+    #wf.inputs.inputnode.gm_anat_file = gm_anat_file
+    #wf.inputs.inputnode.wm_anat_file = wm_anat_file
+    #wf.inputs.inputnode.csf_anat_file = csf_anat_file
+
+    ## Warning, is necessary, otherwise Figures are removed!
+    #wf.config['execution'] = {"remove_unnecessary_outputs": False}
+
+    #wf.run()
 
 
 #####
 if __name__ == '__main__':
 
     test_nii_to_conmat_simple()  # OK / works with or without labels
-    # OK / works with or without labels()
-    test_create_pipeline_nii_to_conmat_seg_template()
-    test_create_pipeline_nii_to_subj_ROI()  # OK / works with or without labels()
-    test_create_pipeline_nii_to_conmat()
+    
+    #test_create_pipeline_nii_to_conmat_seg_template() # OK / works with or without labels()
+    #test_create_pipeline_nii_to_subj_ROI()  # OK / works with or without labels()
+    #test_create_pipeline_nii_to_conmat()
