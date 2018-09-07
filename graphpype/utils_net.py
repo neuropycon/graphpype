@@ -103,9 +103,10 @@ def read_lol_file(lol_file):
                     # print i,index_nodes
                     community_vect[index_nodes] = i
 
-                else:
-                    community_vect[int(index_nodes)] = i
-
+                    
+                else :
+                    community_vect[int(index_nodes) -1] = i
+               
             except ValueError:
                 print("Warning, reading lol file ")
 
@@ -351,5 +352,4 @@ def export_Louvain_net_from_list(Z_Louvain_file, Z_list, coords):
 
         # write edge list
         f.write('>\n')
-
         np.savetxt(f, tab_edges, fmt='%d %d %d %d')
