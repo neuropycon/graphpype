@@ -47,7 +47,7 @@ def test_nii_to_conmat_simple():
     # Warning, is necessary, otherwise Figures are removed!
     wf.config['execution'] = {"remove_unnecessary_outputs": False}
 
-    wf.run()
+    wf.run(plugin='MultiProc', plugin_args={'n_procs' : 1})
 
 # test with white matter and csf from segmented files. Files should have the same dimensions
 
