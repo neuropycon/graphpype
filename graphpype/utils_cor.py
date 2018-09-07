@@ -396,7 +396,7 @@ def return_conf_cor_mat(ts_mat, regressor_vect, conf_interval_prob):
 
         assert not np.isnan(Z_cor_mat[i, j]), "Error Z_cor_mat {}{} should not be NAN value".format(i, j)
 
-        assert not np.isinf(Z_cor_mat[i, j]), "Error Z_cor_mat {}{} should not be infinite value".format(i, j):
+        assert not np.isinf(Z_cor_mat[i, j]), "Error Z_cor_mat {}{} should not be infinite value".format(i, j)
 
         if cor_mat[i, j] > 0:
             conf_cor_mat[i, j] = cor_mat[i, j] - \
