@@ -13,7 +13,7 @@ setup(
     lisence='BSD 3',
     install_requires=['numpy>=1.3.0',
                       'statsmodels',
-                      'nipype',
+                      'nipype==0.12',
                       'configparser',
                       "pandas",
                       'networkx==1.9',
