@@ -43,19 +43,11 @@ def read_lol_file(lol_file):
 
         lines = f.readlines()[4:]
 
-        line_nb_elements = lines[0]
-
-        nb_elements = int(line_nb_elements.split(': ')[1])
-
-        # print nb_elements
+        nb_elements = int(lines[0].split(': ')[1])
 
         community_vect = np.empty((nb_elements), dtype=int)
 
-        lines = lines[3:]
-
-        # print lines
-
-        for i, line in enumerate(lines):
+        for i, line in enumerate(lines[3:]):
 
             try:
                 nb_nodes, index_nodes = line.split(': ')
@@ -73,7 +65,7 @@ def read_lol_file(lol_file):
                     community_vect[int(index_nodes) -1] = i
                
             except ValueError:
-                print("Warning, reading lol file ")
+                print("Warning, error reading lol file ")
 
         f.close()
 
