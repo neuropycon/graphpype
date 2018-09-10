@@ -154,7 +154,7 @@ class ComputeNetList(BaseInterface):
 
         outputs["net_List_file"] = os.path.abspath("Z_List.txt")
         
-        self.inputs.export_Louvain:
+        if self.inputs.export_Louvain:
             
             outputs["net_Louvain_file"] = os.path.abspath("Z_Louvain.txt")
             
