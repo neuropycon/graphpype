@@ -36,7 +36,7 @@ class ComputeNetListInputSpec(BaseInterfaceInputSpec):
 
     density = traits.Float(xor=['threshold'], mandatory=False)
 
-    export_Louvain = traits.bool(False, "whether to export data as Louvain Traag as well", usedefault = True)
+    export_Louvain = traits.Bool(False, desc = "whether to export data as Louvain Traag as well", usedefault = True)
 
 class ComputeNetListOutputSpec(TraitedSpec):
 
@@ -176,7 +176,7 @@ class ComputeIntNetListInputSpec(BaseInterfaceInputSpec):
 
     coords_file = File(exists=True, desc='Corresponding coordiantes', mandatory=False)
 
-    export_Louvain = traits.bool(False, "whether to export data as Louvain-Traag as well", usedefault = True)
+    export_Louvain = traits.Bool(False, desc = "whether to export data as Louvain-Traag as well", usedefault = True)
 
 
 class ComputeIntNetListOutputSpec(TraitedSpec):
@@ -229,7 +229,7 @@ class ComputeIntNetList(BaseInterface):
         # int correl_mat as Louvain format
         if self.inputs.export_Louvain:
             
-            print "saving net_list as Louvain format"
+            print ("saving net_list as Louvain format")
 
             coords = np.loadtxt(self.inputs.coords_file)
             
