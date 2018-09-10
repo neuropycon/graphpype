@@ -9,31 +9,22 @@ import numpy as np
 import scipy.sparse as sp
 
 
-# return cor list (raw) with integer values ( = float * 1000)
-
-def return_net_list(Z_cor_mat):
-
-    t2 = time.time()
+###################################################### return cor list (raw) with integer values ( = float * 1000)
+def return_net_list(Z_cor_mat, int_factor = 1000):
 
     print(Z_cor_mat.shape)
 
     x_sig, y_sig = np.where(Z_cor_mat != 0.0)
 
     net_list = np.array(np.column_stack(
-        (x_sig + 1, y_sig + 1, Z_cor_mat[x_sig, y_sig]*1000)), dtype=int)
+        (x_sig + 1, y_sig + 1, Z_cor_mat[x_sig, y_sig]*int_factor)), dtype=int)
 
     print(net_list.shape)
-
-    t3 = time.time()
-
-    print("Sparse Weighted correlation thresholding computation took " + str(t3-t2) + "s")
 
     return net_list
 
 
 def return_int_net_list(int_mat, min_int=0):
-
-    t2 = time.time()
 
     x_sig, y_sig = np.where(int_mat > min_int)
 
@@ -42,35 +33,9 @@ def return_int_net_list(int_mat, min_int=0):
 
     print(net_list.shape)
 
-    t3 = time.time()
-
-    print("Sparse Weighted correlation thresholding computation took " + str(t3-t2) + "s")
-
     return net_list
 
 ##################################### Formatting data for external community detection algorithm (radatools) ##############################
-
-
-def export_List_net_from_list(Z_List_file, Z_list):
-
-    print(Z_list.shape)
-
-    # print "saving file " + Z_List_file
-
-    np.savetxt(Z_List_file, Z_list, fmt='%d %d %d')
-
-
-# def read_List_net_file(Z_List_file):
-
-    #Z_list = np.loadtxt(Z_List_file,dtype = 'int64')
-
-    # return Z_list
-
-# def read_mod_file(mod_file):
-
-    #community_vect = np.loadtxt(mod_file,dtype = 'int', delimiter = '\t')
-
-    # return community_vect[:,1]
 
 def read_lol_file(lol_file):
 
@@ -78,19 +43,11 @@ def read_lol_file(lol_file):
 
         lines = f.readlines()[4:]
 
-        line_nb_elements = lines[0]
-
-        nb_elements = int(line_nb_elements.split(': ')[1])
-
-        # print nb_elements
+        nb_elements = int(lines[0].split(': ')[1])
 
         community_vect = np.empty((nb_elements), dtype=int)
 
-        lines = lines[3:]
-
-        # print lines
-
-        for i, line in enumerate(lines):
+        for i, line in enumerate(lines[3:]):
 
             try:
                 nb_nodes, index_nodes = line.split(': ')
@@ -108,7 +65,7 @@ def read_lol_file(lol_file):
                     community_vect[int(index_nodes) -1] = i
                
             except ValueError:
-                print("Warning, reading lol file ")
+                print("Warning, error reading lol file ")
 
         f.close()
 

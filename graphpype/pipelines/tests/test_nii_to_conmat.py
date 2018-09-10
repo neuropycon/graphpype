@@ -9,7 +9,7 @@ from graphpype.pipelines.nii_to_conmat import (create_pipeline_nii_to_conmat_sim
 
 # path to test data
 data_path = os.path.join(os.path.dirname(
-    os.path.realpath(__file__)), "data", "data_nii")
+    os.path.realpath(__file__)),"..","..","tests", "data", "data_nii")
 
 ##################################### Mandatory for create_pipeline_nii_to_conmat_simple ##################
 # 4D functionnal MRI volumes

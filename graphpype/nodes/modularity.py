@@ -21,8 +21,8 @@ from nipype.utils.filemanip import split_filename as split_f
 ######################################################################################## ComputeNetList ##################################################################################################################
 
 from graphpype.utils_net import return_net_list
-#from graphpype.utils_net import export_List_net_from_list,export_Louvain_net_from_list
-from graphpype.utils_net import export_List_net_from_list
+
+from graphpype.utils_net import export_Louvain_net_from_list
 
 
 class ComputeNetListInputSpec(BaseInterfaceInputSpec):
@@ -30,18 +30,19 @@ class ComputeNetListInputSpec(BaseInterfaceInputSpec):
     Z_cor_mat_file = File(
         exists=True, desc='Normalized correlation matrix', mandatory=True)
 
-    #coords_file = File(exists=True, desc='Corresponding coordiantes', mandatory=False)
+    coords_file = File(exists=True, desc='Corresponding coordiantes', mandatory=False)
 
     threshold = traits.Float(xor=['density'], mandatory=False)
 
     density = traits.Float(xor=['threshold'], mandatory=False)
 
+    export_Louvain = traits.Bool(False, desc = "whether to export data as Louvain Traag as well", usedefault = True)
 
 class ComputeNetListOutputSpec(TraitedSpec):
 
     net_List_file = File(exists=True, desc="net list for radatools")
 
-    #net_Louvain_file = File(exists=True, desc="net list for Louvain")
+    net_Louvain_file = File(desc="net list for Louvain")
 
     #out_coords_file = File(exists=True, desc='Corresponding coordiantes (copy from previous one)')
 
@@ -80,7 +81,6 @@ class ComputeNetList(BaseInterface):
     def _run_interface(self, runtime):
 
         Z_cor_mat_file = self.inputs.Z_cor_mat_file
-        #coords_file = self.inputs.coords_file
         threshold = self.inputs.threshold
         density = self.inputs.density
 
@@ -136,8 +136,16 @@ class ComputeNetList(BaseInterface):
 
         net_List_file = os.path.abspath('Z_List.txt')
 
-        export_List_net_from_list(net_List_file, Z_list)
+        np.savetxt(net_List_file, Z_list, fmt='%d %d %d')
+        
+        if self.inputs.export_Louvain:
+            
+            coords = np.loadtxt(self.inputs.coords_file)
+            
+            net_Louvain_file = os.path.abspath('Z_Louvain.txt')
 
+            export_Louvain_net_from_list(net_Louvain_file, Z_list, coords)
+        
         return runtime
 
     def _list_outputs(self):
@@ -145,31 +153,37 @@ class ComputeNetList(BaseInterface):
         outputs = self._outputs().get()
 
         outputs["net_List_file"] = os.path.abspath("Z_List.txt")
-
+        
+        if self.inputs.export_Louvain:
+            
+            outputs["net_Louvain_file"] = os.path.abspath("Z_Louvain.txt")
+            
         return outputs
 
 ######################################################################################## ComputeIntNetList ##################################################################################################################
 
 
 from graphpype.utils_net import return_int_net_list
-from graphpype.utils_net import export_List_net_from_list, export_Louvain_net_from_list
+from graphpype.utils_net import export_Louvain_net_from_list
 
 
 class ComputeIntNetListInputSpec(BaseInterfaceInputSpec):
 
     int_mat_file = File(exists=True, desc='Integer matrix', mandatory=True)
 
-    #coords_file = File(exists=True, desc='Corresponding coordiantes', mandatory=True)
-
     threshold = traits.Int(
         exists=True, desc="Interger Value (optional) for thresholding", mandatory=False)
+
+    coords_file = File(exists=True, desc='Corresponding coordiantes', mandatory=False)
+
+    export_Louvain = traits.Bool(False, desc = "whether to export data as Louvain-Traag as well", usedefault = True)
 
 
 class ComputeIntNetListOutputSpec(TraitedSpec):
 
     net_List_file = File(exists=True, desc="net list for radatools")
 
-    #net_Louvain_file = File(exists=True, desc="net list for Louvain")
+    net_Louvain_file = File(desc="net list for Louvain")
 
 
 class ComputeIntNetList(BaseInterface):
@@ -213,12 +227,16 @@ class ComputeIntNetList(BaseInterface):
         export_List_net_from_list(net_List_file, int_list)
 
         # int correl_mat as Louvain format
-        # print "saving int_list as Louvain format"
+        if self.inputs.export_Louvain:
+            
+            print ("saving net_list as Louvain format")
 
-        #net_Louvain_file = os.path.abspath('int_Louvain.txt')
+            coords = np.loadtxt(self.inputs.coords_file)
+            
+            net_Louvain_file = os.path.abspath('Z_Louvain.txt')
 
-        # export_Louvain_net_from_list(net_Louvain_file,int_list,coords)
-
+            export_Louvain_net_from_list(net_Louvain_file, Z_list, coords)
+            
         return runtime
 
     def _list_outputs(self):
@@ -226,7 +244,10 @@ class ComputeIntNetList(BaseInterface):
         outputs = self._outputs().get()
 
         outputs["net_List_file"] = os.path.abspath("int_List.txt")
-        #outputs["net_Louvain_file"] = os.path.abspath("int_Louvain.txt")
+        
+        if self.inputs.export_Louvain:
+            
+            outputs["net_Louvain_file"] = os.path.abspath("int_Louvain.txt")
 
         return outputs
 
