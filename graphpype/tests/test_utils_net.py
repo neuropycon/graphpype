@@ -10,7 +10,7 @@ import neuropycon_data as nd
 
 data_path = os.path.join(nd.__path__[0], "data", "data_con")
 
-print (data_path)
+print(data_path)
 
 conmat_file = os.path.join(data_path, "Z_cor_mat_resid_ts.npy")
 
@@ -34,6 +34,8 @@ from graphpype.utils_net import (return_net_list, read_lol_file,
                                  export_Louvain_net_from_list)
 
 # test return_net_list from conmat to sparse format
+
+
 def test_return_net_list():
 
     conmat = np.load(conmat_file)
@@ -85,7 +87,9 @@ def test_compute_modular_matrix():
 
     print(np.unique(mod_mat))
 
-#### Node properties
+# Node properties
+
+
 def test_get_strength_values_from_info_nodes_file():
 
     Strength = get_strength_values_from_info_nodes_file(info_nodes_file)
@@ -122,18 +126,19 @@ def test_get_degree_neg_values_from_info_nodes_file():
 
     print(Degree_Neg)
 
-#### testing Louvain Traag file building (for sake of compatibility of older codes)
+# testing Louvain Traag file building (for sake of compatibility of older codes)
+
+
 def test_export_Louvain_net_from_list():
 
     coords = np.loadtxt(coords_file)
-    
+
     Z_list = np.loadtxt(Z_list_file)
-    
+
     Z_Louvain_file = os.path.abspath("Z_Louvain.txt")
-    
-    export_Louvain_net_from_list(Z_Louvain_file,Z_list, coords)
-    
-    
+
+    export_Louvain_net_from_list(Z_Louvain_file, Z_list, coords)
+
 
 if __name__ == '__main__':
 
@@ -143,10 +148,10 @@ if __name__ == '__main__':
     # test_read_Pajek_corres_nodes_and_sparse_matrix()
     # test_compute_modular_matrix()
 
-    #test_get_strength_values_from_info_nodes_file()
-    #test_get_strength_pos_values_from_info_nodes_file()
-    #test_get_strength_neg_values_from_info_nodes_file()
-    #test_get_degree_pos_values_from_info_nodes_file()
-    #test_get_degree_neg_values_from_info_nodes_file()
-    
+    # test_get_strength_values_from_info_nodes_file()
+    # test_get_strength_pos_values_from_info_nodes_file()
+    # test_get_strength_neg_values_from_info_nodes_file()
+    # test_get_degree_pos_values_from_info_nodes_file()
+    # test_get_degree_neg_values_from_info_nodes_file()
+
     test_export_Louvain_net_from_list()

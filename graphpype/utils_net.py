@@ -9,8 +9,8 @@ import numpy as np
 import scipy.sparse as sp
 
 
-###################################################### return cor list (raw) with integer values ( = float * 1000)
-def return_net_list(Z_cor_mat, int_factor = 1000):
+# return cor list (raw) with integer values ( = float * 1000)
+def return_net_list(Z_cor_mat, int_factor=1000):
 
     print(Z_cor_mat.shape)
 
@@ -37,6 +37,7 @@ def return_int_net_list(int_mat, min_int=0):
 
 ##################################### Formatting data for external community detection algorithm (radatools) ##############################
 
+
 def read_lol_file(lol_file):
 
     with open(lol_file, 'r') as f:
@@ -60,10 +61,9 @@ def read_lol_file(lol_file):
                     # print i,index_nodes
                     community_vect[index_nodes] = i
 
-                    
-                else :
-                    community_vect[int(index_nodes) -1] = i
-               
+                else:
+                    community_vect[int(index_nodes) - 1] = i
+
             except ValueError:
                 print("Warning, error reading lol file ")
 
@@ -107,6 +107,7 @@ def read_Pajek_corres_nodes(Pajek_net_file):
         f.close()
 
     return node_corres
+
 
 def read_Pajek_corres_nodes_and_sparse_matrix(Pajek_net_file):
 
@@ -154,6 +155,8 @@ def read_Pajek_corres_nodes_and_sparse_matrix(Pajek_net_file):
     return node_corres, sparse_matrix
 
 # compute modular matrix from sparse matrix and community vect
+
+
 def compute_modular_matrix(sparse_matrix, community_vect):
 
     mod_mat = np.empty(sparse_matrix.todense().shape)
@@ -172,6 +175,8 @@ def compute_modular_matrix(sparse_matrix, community_vect):
     return mod_mat
 
 # read strength from Network_Properties node results
+
+
 def get_strength_values_from_info_nodes_file(info_nodes_file):
 
     from pandas.io.parsers import read_csv
@@ -227,6 +232,8 @@ def get_degree_neg_values_from_info_nodes_file(info_nodes_file):
     return info_nodes['Degree_Neg']
 
 ##################################### Formatting data for external community detection algorithm (Louvain_Traag) ##############################
+
+
 def export_Louvain_net_from_list(Z_Louvain_file, Z_list, coords):
 
     print(np.array(Z_list).shape)
