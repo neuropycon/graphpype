@@ -31,7 +31,7 @@ install:
   - "activate testenv"
   - "python -m pip install --upgrade pip"
   - "pip install pypiwin32"
-  - "pip install neuropycon_data"
+  - "pip install neuropycon-data"
   # Install graphpype
   - "pip install -e ."
   
