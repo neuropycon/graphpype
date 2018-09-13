@@ -5,7 +5,7 @@ import pandas as pd
 from visbrain.brain.brain import Brain
 
 from graphpype.utils_net import read_Pajek_corres_nodes_and_sparse_matrix
-from graphpype.utils_net import read_lol_file, compute_modular_network
+from graphpype.utils_net import read_lol_file, compute_modular_matrix
 
 
 def visu_graph_modules_roles(net_file, lol_file, coords_file, labels_file, node_roles_file, modality_type="", inter_modules=True,  c_colval={0: "red", 1: "lightblue", 2: "yellow", 3: "green", 4: "purple"}, s_textcolor="black", only_right=False):
@@ -46,7 +46,7 @@ def visu_graph_modules_roles(net_file, lol_file, coords_file, labels_file, node_
 
     print(np.unique(community_vect))
 
-    c_connect = np.array(compute_modular_network(
+    c_connect = np.array(compute_modular_matrix(
         sparse_matrix, community_vect), dtype='float64')
     print(c_connect.shape)
 
@@ -182,7 +182,7 @@ def visu_graph_modules(net_file, lol_file, coords_file, labels_file, inter_modul
 
     print(community_vect)
 
-    c_connect = np.array(compute_modular_network(
+    c_connect = np.array(compute_modular_matrix(
         sparse_matrix, community_vect), dtype='float64')
     print(c_connect.shape)
 

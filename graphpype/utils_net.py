@@ -108,46 +108,6 @@ def read_Pajek_corres_nodes(Pajek_net_file):
 
     return node_corres
 
-# from modified Pajek file, read coords
-
-# def read_Pajek_rel_coords(Pajek_net_file):
-
-    # with open(Pajek_net_file,'r') as f :
-
-    #lines = f.readlines()
-
-    #line_nb_elements = lines[0]
-
-    #nb_elements = int(line_nb_elements.split(' ')[1])
-
-    # print nb_elements
-
-    #node_rel_coords = np.empty((nb_elements,3),dtype = 'float')
-
-    #node_lines = lines[1:(nb_elements+1)]
-
-    # print lines
-
-    # for i,line in enumerate(node_lines):
-    # print line
-
-    #node_line = line.split(' ')
-
-    # print node_line
-
-    #node_rel_coords[i,0] = node_line[2]
-    #node_rel_coords[i,1] = node_line[3]
-    #node_rel_coords[i,2] = node_line[4]
-
-    # print node_rel_coords[i,:]
-
-    # f.close()
-
-    # return node_rel_coords
-
-    # " return corres_nodes and sparse matrix from pajek file
-
-
 def read_Pajek_corres_nodes_and_sparse_matrix(Pajek_net_file):
 
     with open(Pajek_net_file, 'r') as f:
@@ -193,10 +153,8 @@ def read_Pajek_corres_nodes_and_sparse_matrix(Pajek_net_file):
 
     return node_corres, sparse_matrix
 
-# " compute modular Network
-
-
-def compute_modular_network(sparse_matrix, community_vect):
+# compute modular matrix from sparse matrix and community vect
+def compute_modular_matrix(sparse_matrix, community_vect):
 
     mod_mat = np.empty(sparse_matrix.todense().shape)
 
@@ -214,8 +172,6 @@ def compute_modular_network(sparse_matrix, community_vect):
     return mod_mat
 
 # read strength from Network_Properties node results
-
-
 def get_strength_values_from_info_nodes_file(info_nodes_file):
 
     from pandas.io.parsers import read_csv
@@ -271,8 +227,6 @@ def get_degree_neg_values_from_info_nodes_file(info_nodes_file):
     return info_nodes['Degree_Neg']
 
 ##################################### Formatting data for external community detection algorithm (Louvain_Traag) ##############################
-
-
 def export_Louvain_net_from_list(Z_Louvain_file, Z_list, coords):
 
     print(np.array(Z_list).shape)
