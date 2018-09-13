@@ -2,13 +2,20 @@ import os
 
 import numpy as np
 
-data_path = os.path.join(os.path.dirname(
-    os.path.realpath(__file__)), "data", "data_nii")
+#data_path = os.path.join(os.path.dirname(
+    #os.path.realpath(__file__)), "data", "data_nii")
+
+
+import neuropycon_data as nd
+
+data_path = os.path.join(nd.__path__[0], "data", "data_nii")
+
+print (data_path)
+
 
 img_file = os.path.join(data_path, "sub-test_task-rs_bold.nii")
 
 mask_file = os.path.join(data_path, "sub-test_mask-anatGM.nii")
-
 
 indexed_mask_file = os.path.join(data_path, "Atlas","indexed_mask-Atlas.nii")
 

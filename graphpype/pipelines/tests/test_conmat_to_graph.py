@@ -31,17 +31,17 @@ coords_file = os.path.join(data_path, "ROI_MNI_coords-Atlas.txt")
     #wf.run()
 
 
-#def test_conmat_to_graph_labels_coords():
+def test_conmat_to_graph_labels_coords():
 
-    #wf = create_pipeline_conmat_to_graph_density(
-        #main_path=data_path, pipeline_name="conmat_to_graph_labels_coords", con_den=0.1, plot=True, optim_seq="WS trfr 1")
+    wf = create_pipeline_conmat_to_graph_density(
+        main_path=data_path, pipeline_name="conmat_to_graph_labels_coords", con_den=0.1, plot=True, optim_seq="WS trfr 1")
 
-    #wf.inputs.inputnode.conmat_file = conmat_file
+    wf.inputs.inputnode.conmat_file = conmat_file
 
-    #wf.inputs.inputnode.labels_file = labels_file
-    #wf.inputs.inputnode.coords_file = coords_file
+    wf.inputs.inputnode.labels_file = labels_file
+    wf.inputs.inputnode.coords_file = coords_file
 
-    #wf.run()
+    wf.run()
 
 
 if __name__ == '__main__':
@@ -49,6 +49,6 @@ if __name__ == '__main__':
     #test_conmat_to_graph_simple()
     #test_conmat_to_graph_params()
 
-    #test_conmat_to_graph_labels_coords()
+    test_conmat_to_graph_labels_coords()
     
-    pass
+    

@@ -8,8 +8,16 @@ from graphpype.pipelines.nii_to_conmat import (create_pipeline_nii_to_conmat_sim
 # create_pipeline_nii_to_conmat_no_seg
 
 # path to test data
-data_path = os.path.join(os.path.dirname(
-    os.path.realpath(__file__)),"..","..","tests", "data", "data_nii")
+#data_path = os.path.join(os.path.dirname(
+    #os.path.realpath(__file__)),"..","..","tests", "data", "data_nii")
+
+
+import neuropycon_data as nd
+
+data_path = os.path.join(nd.__path__[0], "data", "data_nii")
+
+print (data_path)
+
 
 ##################################### Mandatory for create_pipeline_nii_to_conmat_simple ##################
 # 4D functionnal MRI volumes
@@ -31,23 +39,23 @@ gm_anat_file = os.path.join(data_path, "sub-test_mask-anatGM.nii")
 # Test is simple works with and without labels
 
 
-#def test_nii_to_conmat_simple():
+def test_nii_to_conmat_simple():
 
-    #wf = create_pipeline_nii_to_conmat_simple(
-        #main_path=data_path, pipeline_name="nii_to_conmat_simple", plot = False)
+    wf = create_pipeline_nii_to_conmat_simple(
+        main_path=data_path, pipeline_name="nii_to_conmat_simple", plot = False)
 
-    #wf.inputs.inputnode.nii_4D_file = nii_4D_file
-    #wf.inputs.inputnode.ROI_mask_file = indexed_mask_file
+    wf.inputs.inputnode.nii_4D_file = nii_4D_file
+    wf.inputs.inputnode.ROI_mask_file = indexed_mask_file
 
-    ## Optionnal labels (can be removed)
-    #wf.inputs.inputnode.ROI_labels_file = labels_file
-    #wf.inputs.inputnode.ROI_coords_file = coords_file
-    #wf.inputs.inputnode.ROI_MNI_coords_file = MNI_coords_file
+    # Optionnal labels (can be removed)
+    wf.inputs.inputnode.ROI_labels_file = labels_file
+    wf.inputs.inputnode.ROI_coords_file = coords_file
+    wf.inputs.inputnode.ROI_MNI_coords_file = MNI_coords_file
 
-    ## Warning, is necessary, otherwise Figures are removed!
-    #wf.config['execution'] = {"remove_unnecessary_outputs": False}
+    # Warning, is necessary, otherwise Figures are removed!
+    wf.config['execution'] = {"remove_unnecessary_outputs": False}
 
-    #wf.run(plugin='MultiProc', plugin_args={'n_procs' : 1})
+    wf.run(plugin='MultiProc', plugin_args={'n_procs' : 1})
 
 # test with white matter and csf from segmented files. Files should have the same dimensions
 
@@ -137,8 +145,8 @@ gm_anat_file = os.path.join(data_path, "sub-test_mask-anatGM.nii")
 
 #####
 if __name__ == '__main__':
-    pass
-    #test_nii_to_conmat_simple()  # OK / works with or without labels
+    #pass
+    test_nii_to_conmat_simple()  # OK / works with or without labels
     
     #test_create_pipeline_nii_to_conmat_seg_template() # OK / works with or without labels()
     #test_create_pipeline_nii_to_subj_ROI()  # OK / works with or without labels()
