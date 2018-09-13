@@ -17,5 +17,6 @@ setup(
                       'configparser',
                       "pandas",
                       'networkx==1.9',
-                      "matplotlib"]
+                      "matplotlib",
+                      'neuropycon_data']
 )
