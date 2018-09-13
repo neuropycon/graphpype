@@ -6,7 +6,7 @@ import os
 
 import numpy as np
 
-import neuropycon_data as nd
+import neuropycon-data as nd
 
 data_path = os.path.join(nd.__path__[0], "data", "data_con")
 
@@ -36,97 +36,97 @@ from graphpype.utils_net import (return_net_list, read_lol_file,
 # test return_net_list from conmat to sparse format
 
 
-def test_return_net_list():
+#def test_return_net_list():
 
-    conmat = np.load(conmat_file)
+    #conmat = np.load(conmat_file)
 
-    print(conmat.shape)
+    #print(conmat.shape)
 
-    int_factor = 1000
+    #int_factor = 1000
 
-    list_conmat = return_net_list(conmat, int_factor)
+    #list_conmat = return_net_list(conmat, int_factor)
 
-    print(list_conmat.shape)
+    #print(list_conmat.shape)
 
-    assert list_conmat.shape[1] == 3, "Error, list_conmat should be format index_i, index_j value (sparse representation of graph) and have shape 3 instead of  {} ".format(
-        list_conmat.shape[1])
-
-
-def test_read_lol_file():
-
-    community_vect = read_lol_file(lol_file)
-
-    print(community_vect)
+    #assert list_conmat.shape[1] == 3, "Error, list_conmat should be format index_i, index_j value (sparse representation of graph) and have shape 3 instead of  {} ".format(
+        #list_conmat.shape[1])
 
 
-def test_read_Pajek_corres_nodes():
+#def test_read_lol_file():
 
-    corres = read_Pajek_corres_nodes(Pajek_net_file)
+    #community_vect = read_lol_file(lol_file)
 
-    print(corres)
-
-
-def test_read_Pajek_corres_nodes_and_sparse_matrix():
-
-    corres, sp = read_Pajek_corres_nodes_and_sparse_matrix(Pajek_net_file)
-
-    print(corres)
-
-    print(sp)
+    #print(community_vect)
 
 
-def test_compute_modular_matrix():
+#def test_read_Pajek_corres_nodes():
 
-    corres, sp = read_Pajek_corres_nodes_and_sparse_matrix(Pajek_net_file)
+    #corres = read_Pajek_corres_nodes(Pajek_net_file)
 
-    community_vect = read_lol_file(lol_file)
-
-    mod_mat = compute_modular_matrix(sp, community_vect)
-
-    print(mod_mat)
-
-    print(np.unique(mod_mat))
-
-# Node properties
+    #print(corres)
 
 
-def test_get_strength_values_from_info_nodes_file():
+#def test_read_Pajek_corres_nodes_and_sparse_matrix():
 
-    Strength = get_strength_values_from_info_nodes_file(info_nodes_file)
+    #corres, sp = read_Pajek_corres_nodes_and_sparse_matrix(Pajek_net_file)
 
-    print(Strength)
+    #print(corres)
 
-
-def test_get_strength_pos_values_from_info_nodes_file():
-
-    Strength_Pos = get_strength_pos_values_from_info_nodes_file(
-        info_nodes_file)
-
-    print(Strength_Pos)
+    #print(sp)
 
 
-def test_get_strength_neg_values_from_info_nodes_file():
+#def test_compute_modular_matrix():
 
-    Strength_Neg = get_strength_neg_values_from_info_nodes_file(
-        info_nodes_file)
+    #corres, sp = read_Pajek_corres_nodes_and_sparse_matrix(Pajek_net_file)
 
-    print(Strength_Neg)
+    #community_vect = read_lol_file(lol_file)
+
+    #mod_mat = compute_modular_matrix(sp, community_vect)
+
+    #print(mod_mat)
+
+    #print(np.unique(mod_mat))
+
+## Node properties
 
 
-def test_get_degree_pos_values_from_info_nodes_file():
+#def test_get_strength_values_from_info_nodes_file():
 
-    Degree_Pos = get_degree_pos_values_from_info_nodes_file(info_nodes_file)
+    #Strength = get_strength_values_from_info_nodes_file(info_nodes_file)
 
-    print(Degree_Pos)
+    #print(Strength)
 
 
-def test_get_degree_neg_values_from_info_nodes_file():
+#def test_get_strength_pos_values_from_info_nodes_file():
 
-    Degree_Neg = get_degree_neg_values_from_info_nodes_file(info_nodes_file)
+    #Strength_Pos = get_strength_pos_values_from_info_nodes_file(
+        #info_nodes_file)
 
-    print(Degree_Neg)
+    #print(Strength_Pos)
 
-# testing Louvain Traag file building (for sake of compatibility of older codes)
+
+#def test_get_strength_neg_values_from_info_nodes_file():
+
+    #Strength_Neg = get_strength_neg_values_from_info_nodes_file(
+        #info_nodes_file)
+
+    #print(Strength_Neg)
+
+
+#def test_get_degree_pos_values_from_info_nodes_file():
+
+    #Degree_Pos = get_degree_pos_values_from_info_nodes_file(info_nodes_file)
+
+    #print(Degree_Pos)
+
+
+#def test_get_degree_neg_values_from_info_nodes_file():
+
+    #Degree_Neg = get_degree_neg_values_from_info_nodes_file(info_nodes_file)
+
+    #print(Degree_Neg)
+
+## testing Louvain Traag file building (for sake of compatibility of older codes)
 
 
 def test_export_Louvain_net_from_list():
