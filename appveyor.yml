@@ -27,12 +27,14 @@ install:
   - "conda update -q conda"
   - "conda info -a"
   # Create conda env
-  - "conda create -q -n testenv python=%PYTHON_VERSION% numpy pip cython matplotlib pytest neuropycon_data"
+  - "conda create -q -n testenv python=%PYTHON_VERSION% numpy pip cython matplotlib pytest "
   - "activate testenv"
   - "python -m pip install --upgrade pip"
   - "pip install pypiwin32"
+  - "pip install neuropycon_data"
   # Install graphpype
   - "pip install -e ."
+  
 
 test_script:
   - "pytest"
