@@ -145,14 +145,16 @@ def test_export_Louvain_net_from_list():
     
     print(os.listdir(neuropycon_data.__path__[0]))
     
-    assert os.path.exists(os.path.join(neuropycon_data.__path__[0],'data')), "warning, could not find path {}, {}".format(os.path.join(neuropycon_data.__path__[0],'data'),os.listdir(os.path.join(neuropycon_data.__path__[0],'data')))
+    assert os.path.exists(os.path.join(neuropycon_data.__path__[0],'data')), "warning, could not find path {}, {}".format(os.path.join(neuropycon_data.__path__[0],'data'),os.listdir(os.path.join(neuropycon_data.__path__[0])))
     
-    assert os.path.exists(data_path), "warning, could not find path {}, {}".format(data_path,os.listdir(neuropycon_data.__path__[0]))
+    print(os.listdir(os.path.join(neuropycon_data.__path__[0],'data')))
+    
+    assert os.path.exists(os.path.join(neuropycon_data.__path__[0],'data','data_con')), "warning, could not find path {}, {}".format(data_path,os.listdir(os.path.join(neuropycon_data.__path__[0],'data')))
 
+    print(os.listdir(os.path.join(neuropycon_data.__path__[0],'data','data_con')))
+          
     assert os.path.exists(coords_file), "warning, could not find path {}, {}".format(coords_file,os.listdir(data_path))
 
-    print(os.listdir(data_path))
-    
     coords = np.loadtxt(coords_file)
 
     Z_list = np.loadtxt(Z_list_file)
