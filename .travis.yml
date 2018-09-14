@@ -42,7 +42,7 @@ install:
     - source activate testenv
     # Testing dependencies
     - pip install codecov pytest pytest-cov;
-    - pip install neuropycon_data==0.0.dev4
+    - pip install neuropycon_data==0.0.dev5
     # Install graphpype
     - cd ${SRC_DIR}
     - pip install -e .
