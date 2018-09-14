@@ -134,6 +134,15 @@ def test_export_Louvain_net_from_list():
     print("***************************************")
     
     print (data_path)
+    
+    try:
+        import neuropycon_data
+    except ImportError, e:
+        print ("neuropycon_data not installed")
+        
+    assert os.path.exists(data_path), "warning, could not find path {}, {}".format(data_path,neuropycon_data.__path__)
+
+        
     coords = np.loadtxt(coords_file)
 
     Z_list = np.loadtxt(Z_list_file)
