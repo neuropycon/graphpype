@@ -6,7 +6,7 @@ import os
 
 import numpy as np
 
-import neuropycon-data as nd
+import neuropycon_data as nd
 
 data_path = os.path.join(nd.__path__[0], "data", "data_con")
 
@@ -131,6 +131,9 @@ from graphpype.utils_net import (return_net_list, read_lol_file,
 
 def test_export_Louvain_net_from_list():
 
+    print("***************************************")
+    
+    print (data_path)
     coords = np.loadtxt(coords_file)
 
     Z_list = np.loadtxt(Z_list_file)

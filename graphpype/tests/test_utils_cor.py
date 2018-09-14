@@ -6,7 +6,7 @@ import numpy as np
 # os.path.realpath(__file__)), "data", "data_nii")
 
 
-import neuropycon-data as nd
+import neuropycon_data as nd
 
 data_path = os.path.join(nd.__path__[0], "data", "data_nii")
 
