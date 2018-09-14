@@ -141,6 +141,10 @@ def test_export_Louvain_net_from_list():
     except ImportError:
         print ("neuropycon_data not installed")
         
+    assert os.path.exists(neuropycon_data.__path__[0]), "warning, could not find path {}, {}".format(neuropycon_data.__path__)
+    
+    print(os.listdir(neuropycon_data.__path__[0]))
+    
     assert os.path.exists(data_path), "warning, could not find path {}, {}".format(data_path,neuropycon_data.__path__)
 
     assert os.path.exists(coords_file), "warning, could not find path {}, {}".format(coords_file,os.listdir(data_path))
