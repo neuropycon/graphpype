@@ -204,7 +204,7 @@ def compute_pairwise_oneway_ttest_fdr(X, cor_alpha, uncor_alpha, old_order=True)
         if np.isnan(p_val):
 
             print("Warning, unable to compute T-test: ")
-            print(t_stat, p_val, X_nonan, end=' ')
+            print(t_stat, p_val, X_nonan)
 
         list_diff.append([i, j, p_val, np.sign(np.mean(X_nonan)), t_stat])
 
