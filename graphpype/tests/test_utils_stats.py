@@ -1,6 +1,6 @@
-#######################################################################################################################
-### test over file handling (.net, .lol, ect) required for radatools and possibly other graph tools (Louvain-Traag) ###
-#######################################################################################################################
+##############################################################################################
+### test over statistical tests both pairwise (symetrical matrices)                        ###
+##############################################################################################
 
 import os
 
@@ -9,12 +9,11 @@ import scipy.stats as stat
 
 from graphpype.utils_stats import (return_signif_code,return_signif_code_Z,
                                    compute_pairwise_ttest_fdr, compute_pairwise_oneway_ttest_fdr,
-                                   compute_pairwise_binom_fdr, compute_pairwise_mannwhitney_fdr)
+                                   compute_pairwise_binom_fdr, compute_pairwise_mannwhitney_fdr,
+                                   compute_correl_behav)
+################################################### building objects for testing #############
 
-
-############################################# test signif_code #####################################################
-
-#### building p-values vector
+########################################## building p-values vector
 N = 100 # size of vector
 cor_alpha = 0.05
 uncor_alpha = 0.05
@@ -32,7 +31,6 @@ p_fdr = np.array([cor_alpha/N]*N_fdr, dtype = float)
 ### significance should vary between fdr, FP, and uncor
 p_fdr = p_fdr + np.array([uncor_alpha - cor_alpha/N]*N_fdr, dtype = float)*np.arange(N_fdr)/N_fdr 
 
-
 p_fdr = p_fdr.reshape(-1,1)
 
 ### uncorrected values
@@ -44,9 +42,11 @@ p_unsignif = (np.array([0.5]*N_unsignif, dtype = float)).reshape(-1,1)
 
 p_val = np.concatenate((p_bon,p_fdr,p_uncor,p_unsignif),axis = 0).reshape(-1)
 
-#### equivalent Z_val
+#################################################### equivalent Z_val
 
 Z_val = stat.norm.ppf(1-p_val/2)
+
+############################################# test signif_code #####################################################
 
 def test_return_signif_code():
 
@@ -77,7 +77,6 @@ def test_return_signif_code_Z():
 ############################################################ test pairwise testing
 
 #compute two samples of matrices to test
-
 sample_size = 20
 array_size = 10
 
@@ -89,9 +88,10 @@ new_sample_Y = np.random.rand(sample_size, array_size, array_size)*np.random.cho
 old_sample_X = np.rollaxis(new_sample_X,0,3)
 old_sample_Y = np.rollaxis(new_sample_Y,0,3)
 
-print (old_sample_X.shape)
-print (new_sample_X.shape)
-    
+# compute random regressor
+
+random_reg = np.random.rand(sample_size)
+
 def test_compute_pairwise_ttest_fdr():
     
     ### testing old order
@@ -106,6 +106,9 @@ def test_compute_pairwise_ttest_fdr():
     new_res = compute_pairwise_ttest_fdr(new_sample_X,new_sample_Y, cor_alpha = cor_alpha, uncor_alpha = uncor_alpha, old_order = False)
     
     print (new_res)
+    
+    print (old_sample_X.shape)
+    print (new_sample_X.shape)
     
     ### testing if both are equivalent
     assert (new_res[0] == old_res[0]).all(), "old and new order should be equal, but {} != {}".format(new_res[0], old_res[0])
@@ -153,24 +156,47 @@ def test_compute_pairwise_mannwhitney_fdr():
     
     print (res)
     
-#def test_compute_pairwise_binom_fdr():
+    ## TODO trouvé un assert pertinent...
     
-    #compute_pairwise_binom_fdr()
+def test_compute_correl_behav():
+
+    res = compute_correl_behav(X = new_sample_X,reg_interest = random_reg)
+    
+    print (res)
+    
+    ## TODO trouvé un assert pertinent...
+    
+######################################################################## test binomial 
+#Generating random binomial distribution
+
+new_binom_X = np.random.choice([0,1], size = (sample_size, array_size, array_size))
+new_binom_Y = np.random.choice([0,1], size = (sample_size, array_size, array_size))
+
+def test_compute_pairwise_binom_fdr():
+
+    res  = compute_pairwise_binom_fdr(new_binom_X, new_binom_Y, uncor_alpha = uncor_alpha,cor_alpha = cor_alpha, old_order = False)
+
+    print (res)
+    
 
 if __name__ == '__main__':
 
     #### test signif_code
-    #test_return_signif_code() OK
-    #test_return_signif_code_Z() # OK
+    test_return_signif_code() OK
+    test_return_signif_code_Z() # OK
     
-    ### test pairwise ttest two-way and one_way
-    #test_compute_pairwise_ttest_fdr() ## OK
-    #test_compute_pairwise_oneway_ttest_fdr() ## OK
+    #### test pairwise ttest two-way and one_way
+    test_compute_pairwise_ttest_fdr() ## OK
+    test_compute_pairwise_oneway_ttest_fdr() ## OK
     
-    ### test Mann Whitney
+    #### test Mann Whitney
     test_compute_pairwise_mannwhitney_fdr()
     
-    #test_compute_pairwise_binom_fdr
+    #### test compute_correl_behav
+    test_compute_correl_behav()
+    
+    #### test binomial
+    test_compute_pairwise_binom_fdr()
     
     
     
