@@ -4,11 +4,38 @@ import scipy.stats as stat
 import numpy as np
 import itertools as it
 
+"""
+Functions for computing statistics over symetrical matrices (pairwise)
+
+Input parameters:
+
+All functions accept two (or one for test vs 0) stack of matrices (3D objects).
+
+Old order (old_order = True) refers to a framework where the last dimension was referring to the stacking of matrices (10*10*20 for 20 samples of matrices with 10 nodes) whereas the new order (i.e. old_order = False
+
+keep_intracon=True means computing the tests of the diagonal as well. It is relevant for the test of number of inter-modular edges (in the case the diagonal will be the number of edges within a module). For fonctional connectivity the inclusion of diagonal is irrelevant.
+
+Returns:
+All the functions returns 3 objects as a tuple:
+- a matrix of significance level, with the following code:
+0 -> not significant
+1 -> uncorrected significant (according to the parameter uncor_alpha, setting the uncorrected threshold)
+2 -> FP significant (i.e., passing a threshold of 1/N_tests, given it is more stringent than the uncor_alpha)
+    This threshold is mildly accepted in the scientific community but may be justified in case of graph connectivity, see Lynall and Bassett, 2013
+3 -> FDR significant (as set as the fdr_alpha, = cor_alpha in most cases)
+4 -> Bonferroni significant (as set as the bon_alpha  = cor_alpha in most cases)
+The sign of the code (+1 or -1 give the direction of the significant: +1: X > Y, -1: Y > X)
+
+- a matrix of p-value associated with the statitical test
+
+- the statistics value (T values for t-test, R^2 for correlation, etc)
+
+"""
 
 ###################################################################################### pairwise/nodewise stats ###########################################################################################################
 
 
-def return_signif_code(p_values, uncor_alpha=0.05, fdr_alpha=0.05, bon_alpha=0.05):
+def return_signif_code(p_values, uncor_alpha=0.001, fdr_alpha=0.05, bon_alpha=0.05):
 
     N = p_values.shape[0]
 
@@ -42,7 +69,7 @@ def return_signif_code(p_values, uncor_alpha=0.05, fdr_alpha=0.05, bon_alpha=0.0
     return signif_code
 
 
-def return_signif_code_Z(Z_values, uncor_alpha=0.05, fdr_alpha = 0.05, bon_alpha = 0.05):
+def return_signif_code_Z(Z_values, uncor_alpha=0.001, fdr_alpha = 0.05, bon_alpha = 0.05):
 
     N = Z_values.shape[0]
 
@@ -168,12 +195,12 @@ def compute_pairwise_ttest_fdr(X, Y, cor_alpha, uncor_alpha, paired=True, old_or
     p_val_mat = np.zeros((N, N), dtype='float')
     T_stat_mat = np.zeros((N, N), dtype='float')
 
-    signif_i = np.array(np_list_diff[:, 0], dtype=int)
-    signif_j = np.array(np_list_diff[:, 1], dtype=int)
+    s_i = np.array(np_list_diff[:, 0], dtype=int)
+    s_j = np.array(np_list_diff[:, 1], dtype=int)
 
-    signif_mat[signif_i, signif_j] = signif_mat[signif_j,signif_i] = np_list_diff[:, 3].astype(int)
-    p_val_mat[signif_i, signif_j] = p_val_mat[signif_j,signif_i] = np_list_diff[:, 2]
-    T_stat_mat[signif_i, signif_j] = T_stat_mat[signif_j,signif_i] = np_list_diff[:, 4]
+    signif_mat[s_i, s_j] = signif_mat[s_j,s_i] = np_list_diff[:, 3].astype(int)
+    p_val_mat[s_i, s_j] = p_val_mat[s_j,s_i] = np_list_diff[:, 2]
+    T_stat_mat[s_i, s_j] = T_stat_mat[s_j,s_i] = np_list_diff[:, 4]
 
     return signif_mat, p_val_mat, T_stat_mat
 
@@ -225,12 +252,12 @@ def compute_pairwise_oneway_ttest_fdr(X, cor_alpha, uncor_alpha, old_order=True)
     p_val_mat = np.zeros((N, N), dtype='float')
     T_stat_mat = np.zeros((N, N), dtype='float')
 
-    signif_i = np.array(np_list_diff[:, 0], dtype=int)
-    signif_j = np.array(np_list_diff[:, 1], dtype=int)
+    s_i = np.array(np_list_diff[:, 0], dtype=int)
+    s_j = np.array(np_list_diff[:, 1], dtype=int)
 
-    signif_mat[signif_i, signif_j] = signif_mat[signif_j,signif_i] = np_list_diff[:, 3].astype(int)
-    p_val_mat[signif_i, signif_j] = p_val_mat[signif_j,signif_i] = np_list_diff[:, 2]
-    T_stat_mat[signif_i, signif_j] = T_stat_mat[signif_j,signif_i] = np_list_diff[:, 4]
+    signif_mat[s_i, s_j] = signif_mat[s_j,s_i] = np_list_diff[:, 3].astype(int)
+    p_val_mat[s_i, s_j] = p_val_mat[s_j,s_i] = np_list_diff[:, 2]
+    T_stat_mat[s_i, s_j] = T_stat_mat[s_j,s_i] = np_list_diff[:, 4]
 
     print(T_stat_mat)
 
@@ -282,11 +309,11 @@ def compute_pairwise_mannwhitney_fdr(X, Y, cor_alpha, uncor_alpha=0.01, old_orde
 
     signif_mat = np.zeros((N, N), dtype='int')
 
-    signif_i = np.array(np_list_diff[:, 0], dtype=int)
-    signif_j = np.array(np_list_diff[:, 1], dtype=int)
+    s_i = np.array(np_list_diff[:, 0], dtype=int)
+    s_j = np.array(np_list_diff[:, 1], dtype=int)
     signif_sign = np.array(np_list_diff[:, 3], dtype=int)
 
-    signif_mat[signif_i,signif_j] = signif_mat[signif_j, signif_i] = signif_sign
+    signif_mat[s_i,s_j] = signif_mat[s_j, s_i] = signif_sign
 
     return signif_mat
 
@@ -298,14 +325,13 @@ def _info_CI(X, Y):
     nY = len(Y) * 1.
 
     pX = np.sum(X == 1)/nX
-
     pY = np.sum(Y == 1)/nY
 
     SE = np.sqrt(pX * (1-pX)/nX + pY * (1-pY)/nY)
 
     return np.absolute(pX-pY), SE, np.sign(pX-pY)
 
-def compute_pairwise_binom_fdr(X, Y, conf_interval_binom_fdr, old_order = True):
+def compute_pairwise_binom_fdr(X, Y, uncor_alpha=0.001, cor_alpha = 0.05 , old_order = True):
     ### modified to be compatible with old_order = True (was only developed for old order) + assert
     ### TODO : test if OK with moveaxis and 'new order'? 
     
@@ -332,26 +358,24 @@ def compute_pairwise_binom_fdr(X, Y, conf_interval_binom_fdr, old_order = True):
 
     for i, j in it.combinations(list(range(N)), 2):
 
-        abs_diff, SE, sign_diff = _info_CI(X[: i, j], Y[:, i, j])
+        abs_diff, SE, sign_diff = _info_CI(X[:, i, j], Y[:, i, j])
 
         list_diff.append([i, j, abs_diff/SE, sign_diff])
 
-    print(list_diff)
-
     np_list_diff = np.array(list_diff)
 
-    signif_code = return_signif_code_Z(np_list_diff[:, 2], conf_interval_binom_fdr)
+    signif_code = return_signif_code_Z(np_list_diff[:, 2], uncor_alpha=uncor_alpha, fdr_alpha = cor_alpha, bon_alpha = cor_alpha)
 
     np_list_diff[:, 3] = np_list_diff[:, 3] * signif_code
 
-    signif_signed_adj_mat = np.zeros((N, N), dtype='int')
+    signif_mat = np.zeros((N, N), dtype='int')
 
-    signif_i = np.array(np_list_diff[:, 0], dtype=int)
-    signif_j = np.array(np_list_diff[:, 1], dtype=int)
+    s_i = np.array(np_list_diff[:, 0], dtype=int)
+    s_j = np.array(np_list_diff[:, 1], dtype=int)
 
     signif_sign = np.array(np_list_diff[:, 3], dtype=int)
 
-    signif_mat[signif_i,signif_j] = signif_mat[signif_j, signif_i] = signif_sign
+    signif_mat[s_i,s_j] = signif_mat[s_j, s_i] = signif_sign
 
     return signif_mat
 
@@ -390,29 +414,24 @@ def compute_oneway_anova_fwe(list_of_list_matrices, cor_alpha=0.05, uncor_alpha=
 
     print(np_list_diff)
 
-    signif_code = return_signif_code(
-        np_list_diff[:, 2], uncor_alpha=uncor_alpha, fdr_alpha=cor_alpha, bon_alpha=cor_alpha)
+    signif_code = return_signif_code(np_list_diff[:, 2], uncor_alpha=uncor_alpha, fdr_alpha=cor_alpha, bon_alpha=cor_alpha)
 
     signif_code[np.isnan(np_list_diff[:, 2])] = 0
 
     print(np.sum(signif_code == 0.0), np.sum(signif_code == 1.0), np.sum(
         signif_code == 2.0), np.sum(signif_code == 3.0), np.sum(signif_code == 4.0))
-
     # converting to matrix
 
     signif_adj_mat = np.zeros((N, N), dtype='int')
     p_val_mat = np.zeros((N, N), dtype='float')
     F_stat_mat = np.zeros((N, N), dtype='float')
 
-    signif_i = np.array(np_list_diff[:, 0], dtype=int)
-    signif_j = np.array(np_list_diff[:, 1], dtype=int)
+    s_i = np.array(np_list_diff[:, 0], dtype=int)
+    s_j = np.array(np_list_diff[:, 1], dtype=int)
 
-    signif_adj_mat[signif_i, signif_j] = signif_adj_mat[signif_j,
-                                                        signif_i] = signif_code
-    p_val_mat[signif_i, signif_j] = p_val_mat[signif_i,
-                                              signif_j] = np_list_diff[:, 2]
-    F_stat_mat[signif_i, signif_j] = F_stat_mat[signif_i,
-                                                signif_j] = np_list_diff[:, 3]
+    signif_adj_mat[s_i, s_j] = signif_adj_mat[s_j, s_i] = signif_code
+    p_val_mat[s_i, s_j] = p_val_mat[s_i,s_j] = np_list_diff[:, 2]
+    F_stat_mat[s_i, s_j] = F_stat_mat[s_i,s_j] = np_list_diff[:, 3]
 
     # print signif_adj_mat
     # print p_val_mat
@@ -420,7 +439,7 @@ def compute_oneway_anova_fwe(list_of_list_matrices, cor_alpha=0.05, uncor_alpha=
 
     return signif_adj_mat, p_val_mat, F_stat_mat
 
-
+######################################### correlation
 def compute_correl_behav(X, reg_interest, uncor_alpha=0.001, cor_alpha=0.05, old_order=False, keep_intracon=False):
 
     import numpy as np
@@ -466,9 +485,6 @@ def compute_correl_behav(X, reg_interest, uncor_alpha=0.001, cor_alpha=0.05, old
             print("Warning, unable to compute T-test: ")
             print(r_stat, p_val, X_nonan, Y_nonan)
 
-            # pas encore present (version scipy 0.18)
-            #t_stat,p_val = stat.ttest_rel(X[i,j,:],Y[i,j,:],nan_policy = 'omit')
-
         list_diff.append([i, j, p_val, np.sign(r_stat), r_stat])
 
     print(list_diff)
@@ -482,113 +498,20 @@ def compute_correl_behav(X, reg_interest, uncor_alpha=0.001, cor_alpha=0.05, old
     signif_code = return_signif_code(
         np_list_diff[:, 2], uncor_alpha=uncor_alpha, fdr_alpha=cor_alpha, bon_alpha=cor_alpha)
 
-    print(np.sum(signif_code == 0.0), np.sum(signif_code == 1.0), np.sum(
-        signif_code == 2.0), np.sum(signif_code == 3.0), np.sum(signif_code == 4.0))
+    np_list_diff[:, 3] *= signif_code
 
-    np_list_diff[:, 3] = np_list_diff[:, 3] * signif_code
-
-    print(np.sum(np_list_diff[:, 3] == 0.0))
-    print(np.sum(np_list_diff[:, 3] == 1.0), np.sum(np_list_diff[:, 3] == 2.0), np.sum(
-        np_list_diff[:, 3] == 3.0), np.sum(np_list_diff[:, 3] == 4.0))
-    print(np.sum(np_list_diff[:, 3] == -1.0), np.sum(np_list_diff[:, 3] == -2.0),
-          np.sum(np_list_diff[:, 3] == -3.0), np.sum(np_list_diff[:, 3] == -4.0))
-
-    signif_signed_adj_mat = np.zeros((N, N), dtype='int')
+    signif_mat = np.zeros((N, N), dtype='int')
     p_val_mat = np.zeros((N, N), dtype='float')
     r_stat_mat = np.zeros((N, N), dtype='float')
 
-    signif_i = np.array(np_list_diff[:, 0], dtype=int)
-    signif_j = np.array(np_list_diff[:, 1], dtype=int)
+    s_i = np.array(np_list_diff[:, 0], dtype=int)
+    s_j = np.array(np_list_diff[:, 1], dtype=int)
 
-    signif_signed_adj_mat[signif_i, signif_j] = signif_signed_adj_mat[signif_j,
-                                                                      signif_i] = np.array(np_list_diff[:, 3], dtype=int)
+    signif_mat[s_i, s_j] = signif_mat[s_j,s_i] = np_list_diff[:, 3].astype(int)
 
-    p_val_mat[signif_i, signif_j] = p_val_mat[signif_j,
-                                              signif_i] = np_list_diff[:, 2]
-    r_stat_mat[signif_i, signif_j] = r_stat_mat[signif_j,
-                                                signif_i] = np_list_diff[:, 4]
+    p_val_mat[s_i, s_j] = p_val_mat[s_j,s_i] = np_list_diff[:, 2]
+    r_stat_mat[s_i, s_j] = r_stat_mat[s_j,s_i] = np_list_diff[:, 4]
 
     print(r_stat_mat)
 
-    return signif_signed_adj_mat, p_val_mat, r_stat_mat
-
-
-############### nodewise stats #########################
-def compute_nodewise_t_test_vect(d_stacked, nx, ny):
-
-    print(d_stacked.shape)
-
-    assert d_stacked.shape[1] == nx + ny
-
-    t1 = time.time()
-
-    t_val_vect = compute_nodewise_t_values(
-        d_stacked[:, :nx], d_stacked[:, nx:nx+ny])
-
-    t2 = time.time()
-
-    print("computation took %f" % (t2-t1))
-
-    return t_val_vect
-
-######################## correl ######################################
-
-
-def compute_pairwise_correl_fdr(X, behav_score, correl_thresh_fdr):
-
-    from scipy.stats.stats import pearsonr
-
-    # number of nodes
-    N = X.shape[0]
-
-    list_diff = []
-
-    for i, j in it.combinations(list(range(N)), 2):
-
-        #t_stat_zalewski = ttest2(X[i,j,:],Y[i,j,:])
-
-        r_stat, p_val = pearsonr(X[i, j, :], behav_score)
-
-        # print i,j,p_val,r_stat
-
-        list_diff.append([i, j, p_val, np.sign(r_stat)])
-
-    # print list_diff
-
-    np_list_diff = np.array(list_diff)
-
-    np_list_diff = np.array(list_diff)
-
-    signif_code = return_signif_code(
-        np_list_diff[:, 2], uncor_alpha=0.001, fdr_alpha=correl_thresh_fdr, bon_alpha=0.05)
-
-    print(np.sum(signif_code == 0.0), np.sum(signif_code == 1.0), np.sum(
-        signif_code == 2.0), np.sum(signif_code == 3.0), np.sum(signif_code == 4.0))
-
-    np_list_diff[:, 3] = np_list_diff[:, 3] * signif_code
-
-    print(np.sum(np_list_diff[:, 3] == 0.0))
-    print(np.sum(np_list_diff[:, 3] == 1.0), np.sum(np_list_diff[:, 3] == 2.0), np.sum(
-        np_list_diff[:, 3] == 3.0), np.sum(np_list_diff[:, 3] == 4.0))
-    print(np.sum(np_list_diff[:, 3] == -1.0), np.sum(np_list_diff[:, 3] == -2.0),
-          np.sum(np_list_diff[:, 3] == -3.0), np.sum(np_list_diff[:, 3] == -4.0))
-
-    signif_signed_adj_mat = np.zeros((N, N), dtype='int')
-
-    signif_i = np.array(np_list_diff[:, 0], dtype=int)
-    signif_j = np.array(np_list_diff[:, 1], dtype=int)
-
-    signif_sign = np.array(np_list_diff[:, 3], dtype=int)
-
-    print(signif_i, signif_j)
-
-    print(signif_signed_adj_mat[signif_i, signif_j])
-
-    # print signif_sign
-
-    signif_signed_adj_mat[signif_i,
-                          signif_j] = signif_signed_adj_mat[signif_j, signif_i] = signif_sign
-
-    print(signif_signed_adj_mat)
-
-    return signif_signed_adj_mat
+    return signif_mat, p_val_mat, r_stat_mat
