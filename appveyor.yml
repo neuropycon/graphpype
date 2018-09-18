@@ -28,10 +28,15 @@ install:
   - "conda info -a"
   # Create conda env
   - "conda create -q -n testenv python=%PYTHON_VERSION% numpy pip cython matplotlib pytest "
+  - "conda install pyqt"
+  
   - "activate testenv"
   - "python -m pip install --upgrade pip"
   - "pip install pypiwin32"
   - "pip install neuropycon_data"
+  - "pip install git+https://github.com/vispy/vispy.git"
+  #- "pip install pandas PyOpenGL PyOpenGL_accelerate"
+  #- "pip install visbrain"
   # Install graphpype
   - "pip install -e ."
   
