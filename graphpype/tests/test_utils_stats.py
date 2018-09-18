@@ -182,7 +182,7 @@ def test_compute_pairwise_binom_fdr():
 if __name__ == '__main__':
 
     #### test signif_code
-    test_return_signif_code() OK
+    test_return_signif_code() #OK
     test_return_signif_code_Z() # OK
     
     #### test pairwise ttest two-way and one_way
