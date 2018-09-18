@@ -1514,8 +1514,6 @@ class ComputeConfCorMat(BaseInterface):
 
             print(rho_mat.shape)
 
-            0/0
-
         print(Z_cor_mat.shape)
 
         cor_mat = cor_mat + np.transpose(cor_mat)
@@ -1843,7 +1841,7 @@ class ComputeSpearmanMat(BaseInterface):
                 df_pval = pd.DataFrame(pval_mat)
 
             df_rho.to_csv(os.path.abspath('rho_mat.csv'))
-
+            
             df_pval.to_csv(os.path.abspath('pval_mat.csv'))
 
         return runtime
@@ -2322,7 +2320,7 @@ class PrepareMeanCorrel(BaseInterface):
                         avg_cor_mat_matrix, list_labels=labels)
 
         return runtime
-
+    
     def _list_outputs(self):
 
         outputs = self._outputs().get()
@@ -2447,7 +2445,5 @@ class PreparePermutMeanCorrel(BaseInterface):
         outputs = self._outputs().get()
 
         outputs["permut_mean_cormat_files"] = self.permut_mean_cormat_files
-
-        # print outputs
 
         return outputs

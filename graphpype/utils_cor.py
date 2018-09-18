@@ -38,6 +38,7 @@ import time
 
 from .utils_dtype_coord import *
 
+
 def mean_select_mask_data(data_img, data_mask):
 
     img_shape = data_img.shape
@@ -94,7 +95,7 @@ def mean_select_indexed_mask_data(orig_ts, indexed_mask_rois_data, min_BOLD_inte
         all_voxel_roi_ts = orig_ts[index_roi_x, index_roi_y, index_roi_z, :]
 
         print(all_voxel_roi_ts.shape)
-        
+
         # testing if at least 50% of the voxels in the ROIs have values always higher than min bold intensity
         nb_signal_voxels = np.sum(np.sum(
             all_voxel_roi_ts > min_BOLD_intensity, axis=1) == all_voxel_roi_ts.shape[1])
@@ -130,6 +131,7 @@ def mean_select_indexed_mask_data(orig_ts, indexed_mask_rois_data, min_BOLD_inte
     return mean_masked_ts, keep_rois
 
 ############################################# covariate regression ##############################
+
 
 def regress_parameters(data_matrix, covariates):
 
@@ -346,6 +348,7 @@ def regress_filter_normalize_parameters_rpy(data_matrix, covariates):
 
     return resid_data_matrix, resid_filt_data_matrix, z_score_data_matrix
 
+
 def return_conf_cor_mat(ts_mat, regressor_vect, conf_interval_prob):
 
     t1 = time.time()
@@ -394,9 +397,11 @@ def return_conf_cor_mat(ts_mat, regressor_vect, conf_interval_prob):
         cor_mat[i, j] = (s1*s2).sum()/np.sqrt((s1*s1).sum() * (s2*s2).sum())
         Z_cor_mat[i, j] = np.arctanh(cor_mat[i, j])
 
-        assert not np.isnan(Z_cor_mat[i, j]), "Error Z_cor_mat {}{} should not be NAN value".format(i, j)
+        assert not np.isnan(
+            Z_cor_mat[i, j]), "Error Z_cor_mat {}{} should not be NAN value".format(i, j)
 
-        assert not np.isinf(Z_cor_mat[i, j]), "Error Z_cor_mat {}{} should not be infinite value".format(i, j)
+        assert not np.isinf(
+            Z_cor_mat[i, j]), "Error Z_cor_mat {}{} should not be infinite value".format(i, j)
 
         if cor_mat[i, j] > 0:
             conf_cor_mat[i, j] = cor_mat[i, j] - \
@@ -513,7 +518,6 @@ def return_coclass_mat_labels(community_vect, corres_labels, gm_mask_labels):
         possible_edge_mat[where_in_gm[j], where_in_gm[i]] = 1
 
     return coclass_mat, possible_edge_mat
-
 
 
 def return_corres_correl_mat(Z_cor_mat, coords, gm_mask_coords):

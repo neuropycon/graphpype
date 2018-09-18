@@ -8,8 +8,16 @@ from graphpype.pipelines.nii_to_conmat import (create_pipeline_nii_to_conmat_sim
 # create_pipeline_nii_to_conmat_no_seg
 
 # path to test data
-data_path = os.path.join(os.path.dirname(
-    os.path.realpath(__file__)),"..","..","tests", "data", "data_nii")
+#data_path = os.path.join(os.path.dirname(
+    #os.path.realpath(__file__)),"..","..","tests", "data", "data_nii")
+
+
+import neuropycon_data as nd
+
+data_path = os.path.join(nd.__path__[0], "data", "data_nii")
+
+print (data_path)
+
 
 ##################################### Mandatory for create_pipeline_nii_to_conmat_simple ##################
 # 4D functionnal MRI volumes

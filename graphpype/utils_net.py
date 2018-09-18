@@ -9,8 +9,8 @@ import numpy as np
 import scipy.sparse as sp
 
 
-###################################################### return cor list (raw) with integer values ( = float * 1000)
-def return_net_list(Z_cor_mat, int_factor = 1000):
+# return cor list (raw) with integer values ( = float * 1000)
+def return_net_list(Z_cor_mat, int_factor=1000):
 
     print(Z_cor_mat.shape)
 
@@ -37,6 +37,7 @@ def return_int_net_list(int_mat, min_int=0):
 
 ##################################### Formatting data for external community detection algorithm (radatools) ##############################
 
+
 def read_lol_file(lol_file):
 
     with open(lol_file, 'r') as f:
@@ -60,10 +61,9 @@ def read_lol_file(lol_file):
                     # print i,index_nodes
                     community_vect[index_nodes] = i
 
-                    
-                else :
-                    community_vect[int(index_nodes) -1] = i
-               
+                else:
+                    community_vect[int(index_nodes) - 1] = i
+
             except ValueError:
                 print("Warning, error reading lol file ")
 
@@ -107,45 +107,6 @@ def read_Pajek_corres_nodes(Pajek_net_file):
         f.close()
 
     return node_corres
-
-# from modified Pajek file, read coords
-
-# def read_Pajek_rel_coords(Pajek_net_file):
-
-    # with open(Pajek_net_file,'r') as f :
-
-    #lines = f.readlines()
-
-    #line_nb_elements = lines[0]
-
-    #nb_elements = int(line_nb_elements.split(' ')[1])
-
-    # print nb_elements
-
-    #node_rel_coords = np.empty((nb_elements,3),dtype = 'float')
-
-    #node_lines = lines[1:(nb_elements+1)]
-
-    # print lines
-
-    # for i,line in enumerate(node_lines):
-    # print line
-
-    #node_line = line.split(' ')
-
-    # print node_line
-
-    #node_rel_coords[i,0] = node_line[2]
-    #node_rel_coords[i,1] = node_line[3]
-    #node_rel_coords[i,2] = node_line[4]
-
-    # print node_rel_coords[i,:]
-
-    # f.close()
-
-    # return node_rel_coords
-
-    # " return corres_nodes and sparse matrix from pajek file
 
 
 def read_Pajek_corres_nodes_and_sparse_matrix(Pajek_net_file):
@@ -193,10 +154,10 @@ def read_Pajek_corres_nodes_and_sparse_matrix(Pajek_net_file):
 
     return node_corres, sparse_matrix
 
-# " compute modular Network
+# compute modular matrix from sparse matrix and community vect
 
 
-def compute_modular_network(sparse_matrix, community_vect):
+def compute_modular_matrix(sparse_matrix, community_vect):
 
     mod_mat = np.empty(sparse_matrix.todense().shape)
 

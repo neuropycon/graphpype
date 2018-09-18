@@ -46,9 +46,11 @@ coords_file = os.path.join(data_path, "ROI_MNI_coords-Atlas.txt")
 
 if __name__ == '__main__':
 
+    pass
+
     #test_conmat_to_graph_simple()
     #test_conmat_to_graph_params()
 
     #test_conmat_to_graph_labels_coords()
     
-    pass
+    
