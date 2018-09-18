@@ -156,7 +156,7 @@ def test_compute_pairwise_mannwhitney_fdr():
     
     print (res)
     
-    ## TODO trouvé un assert pertinent...
+    ## TODO trouve un assert pertinent...
     
 def test_compute_correl_behav():
 
@@ -164,7 +164,7 @@ def test_compute_correl_behav():
     
     print (res)
     
-    ## TODO trouvé un assert pertinent...
+    ## TODO trouve un assert pertinent...
     
 ######################################################################## test binomial 
 #Generating random binomial distribution
@@ -182,7 +182,7 @@ def test_compute_pairwise_binom_fdr():
 if __name__ == '__main__':
 
     #### test signif_code
-    test_return_signif_code() OK
+    test_return_signif_code() #OK
     test_return_signif_code_Z() # OK
     
     #### test pairwise ttest two-way and one_way
