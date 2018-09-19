@@ -5,7 +5,7 @@ import numpy as np
 from graphpype.utils import (get_first, get_second, show_length, show_files,
                              get_multiple_indexes, random_product,
                              check_dimensions, check_np_shapes,
-                             check_np_dimension)
+                             check_np_dimension, is_symetrical)
 
 
 def test_gets():
@@ -77,3 +77,17 @@ def test_checks():
     assert check_np_dimension(mat_3D_zeros.shape, np_index_OK)
     assert check_np_dimension(mat_3D_zeros.shape, np_wrong_index) \
         is False
+
+
+def test_is_symetrical():
+    """
+    test is matrix is symmetrical
+    """
+    mat = np.random.rand(2, 2)
+    print(mat)
+    assert not is_symetrical(mat)
+
+    mat = mat + np.transpose(mat)
+    print(mat)
+
+    assert is_symetrical(mat)

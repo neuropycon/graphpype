@@ -1,5 +1,4 @@
 import os
-import neuropycon_data as nd
 
 from graphpype.utils_net import (read_Pajek_corres_nodes_and_sparse_matrix)
 from graphpype.utils_mod import (get_modularity_value_from_lol_file,
@@ -15,21 +14,22 @@ from graphpype.utils_mod import (get_modularity_value_from_lol_file,
                                  get_degree_neg_values_from_info_nodes_file,
                                  compute_roles)
 
+try:
+    import neuropycon_data as nd
+
+except ImportError:
+    print("neuropycon_data not installed")
+    exit()
+
 data_path = os.path.join(nd.__path__[0], "data", "data_con")
-
 lol_file = os.path.join(data_path, "data_graph", "Z_List.lol")
-
 Pajek_net_file = os.path.join(data_path, "data_graph", "Z_List.net")
-
 info_nodes_file = os.path.join(
     data_path, "data_graph", "Z_List-info_nodes.txt")
-
 info_global_file = os.path.join(
     data_path, "data_graph", "Z_List-info_global.txt")
-
 info_dists_file = os.path.join(
     data_path, "data_graph", "Z_List-info_dists.txt")
-
 node_roles_file = os.path.join(
     data_path, "data_graph", "node_roles.txt")
 
@@ -125,4 +125,4 @@ def test_compute_roles():
     node_corres, sparse_matrix = read_Pajek_corres_nodes_and_sparse_matrix(
         Pajek_net_file)
     val = compute_roles(community_vect, sparse_matrix, role_type='4roles')
-    return val
+    print(val)

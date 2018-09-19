@@ -208,6 +208,7 @@ class NetPropRada(CommandLine):
         path, fname, ext = split_f(self.inputs.Pajek_net_file)
 
         if "all" in self.inputs.optim_seq:
+
             outputs["global_file"] = os.path.abspath(
                 fname + '-info_global.txt')
             outputs["dists_file"] = os.path.abspath(

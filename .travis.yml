@@ -51,11 +51,11 @@ install:
 
 before_script:
     - wget https://deim.urv.cat/~sergio.gomez/download.php?f=radatools-5.0-linux64.tar.gz -O /tmp/radatools-5.0-linux64.tar.gz
-    - tar -xvf /tmp/radatools-5.0-linux64.tar.gz
-    - export PATH=$PATH:$PWD/radatools-5.0-linux64/Network_Tools
-    - export PATH=$PATH:$PWD/radatools-5.0-linux64/Network_Properties
-    - export PATH=$PATH:$PWD/radatools-5.0-linux64/Communities_Detection 
-    - export PATH=$PATH:$PWD/radatools-5.0-linux64/Communities_Tools
+    - tar -xvf /tmp/radatools-5.0-linux64.tar.gz -C /tmp
+    - export PATH="$PATH:/tmp/radatools-5.0-linux64/Network_Tools"
+    - export PATH="$PATH:/tmp/radatools-5.0-linux64/Network_Properties"
+    - export PATH="$PATH:/tmp/radatools-5.0-linux64/Communities_Detection"
+    - export PATH="$PATH:/tmp/radatools-5.0-linux64/Communities_Tools"
 
 script:
 

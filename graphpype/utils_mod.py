@@ -5,12 +5,11 @@ Author:
 """
 import pandas as pd
 import numpy as np
-
 from pandas.io.parsers import read_csv
+import itertools as iter
+
 
 # from lol_file
-
-
 def get_modularity_value_from_lol_file(lol_file):
     """get_modularity_value_from_lol_file"""
     with open(lol_file, 'r') as f:
@@ -23,10 +22,9 @@ def get_modularity_value_from_lol_file(lol_file):
         print("Unable to find modularity line in file, returning -1")
         return -1.0
 
+
 # reading info files
 # from info-nodes
-
-
 def get_max_degree_from_node_info_file(info_nodes_file):
     """Return max degree AND index and name of max degree (radatools based)"""
     df = pd.read_table(info_nodes_file)
@@ -250,24 +248,16 @@ def get_path_length_from_info_dists_file(info_dists_file):
 def read_lol_file(lol_file):
     """Formatting data for community detection algorithm radatools"""
     with open(lol_file, 'r') as f:
-
         lines = f.readlines()[4:]
-
         nb_elements = int(lines[0].split(': ')[1])
-
         community_vect = np.empty((nb_elements), dtype=int)
 
         for i, line in enumerate(lines[3:]):
-
             try:
                 nb_nodes, index_nodes = line.split(': ')
-                print(nb_nodes, index_nodes)
-
                 if int(nb_nodes) > 1:
                     index_nodes = np.array(
                         list(map(int, index_nodes.split(' '))), dtype=int) - 1
-
-                    # print i,index_nodes
                     community_vect[index_nodes] = i
 
                 else:
@@ -276,14 +266,10 @@ def read_lol_file(lol_file):
             except ValueError:
                 print("Warning, error reading lol file ")
 
-        f.close()
-
     return community_vect
 
 
 # compute modular matrix from sparse matrix and community vect
-
-
 def compute_modular_matrix(sp_mat, community_vect):
 
     mod_mat = np.empty(sp_mat.todense().shape)
@@ -451,3 +437,38 @@ def compute_roles(community_vect, sparse_mat, role_type="Amaral_roles"):
         node_roles = _return_4roles(Z_com_deg, parti_coef)
 
     return node_roles, Z_com_deg, parti_coef
+
+
+# modules and intermodules computation
+
+
+def _inter_module_avgmat(con_mat, community_vect):
+    """
+    intermodules computation
+    """
+    assert con_mat.shape[0] == community_vect.shape[0], \
+        ("Error, mat {}!= community_vect {}".format(
+            con_mat.shape[0], community_vect.shape[0]))
+
+    index_mod = np.unique(community_vect)
+    nb_mod = index_mod.shape[0]
+
+    avgmat = np.zeros(shape=(nb_mod, nb_mod))
+
+    for i, j in iter.product(index_mod, repeat=2):
+        ind_i = np.where(community_vect == i)
+        ind_j = np.where(community_vect == j)
+        mod_mat = con_mat[ind_i[0], :][:, ind_j[0]]
+
+        if i == j:
+            triu = np.triu_indices(mod_mat.shape[0], k=1)
+            tri_mod_mat = mod_mat[triu[0], triu[1]]
+            if tri_mod_mat.shape[0]:
+                avgmat[i, j] = np.mean(tri_mod_mat)
+        else:
+
+            avgmat[i, j] = np.mean(mod_mat)
+
+    mod_labels = ["module_"+str(i) for i in np.unique(community_vect)]
+    df_avgmat = pd.DataFrame(avgmat, columns=mod_labels)
+    return df_avgmat

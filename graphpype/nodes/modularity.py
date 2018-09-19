@@ -11,8 +11,10 @@ from graphpype.utils_net import (return_net_list, return_int_net_list,
                                  export_List_net_from_list)
 
 from graphpype.utils_net import read_Pajek_corres_nodes_and_sparse_matrix
-from graphpype.utils_mod import compute_roles, read_lol_file
+from graphpype.utils_mod import (compute_roles, read_lol_file,
+                                 _inter_module_avgmat)
 
+from graphpype.utils import is_symetrical
 # ComputeNetList
 
 
@@ -321,5 +323,125 @@ class ComputeNodeRoles(BaseInterface):
             'all_Z_com_degree.txt')
         outputs["all_participation_coeff_file"] = os.path.abspath(
             'all_participation_coeff.txt')
+
+        return outputs
+
+
+# ComputeModuleMatProp
+
+
+class ComputeModuleMatPropInputSpec(BaseInterfaceInputSpec):
+
+    rada_lol_file = File(
+        exists=True,
+        desc='lol file, describing modular structure of the network',
+        mandatory=True)
+
+    Pajek_net_file = File(
+        exists=True,
+        desc='net description in Pajek format', mandatory=True)
+
+    conmat_file = File(
+        exists=True,
+        desc='full matrix in npy format', mandatory=True)
+
+    export_excel = traits.Bool(
+        False, desc="export data as xls (as well as csv)",
+        usedefault=True)
+
+
+class ComputeModuleMatPropOutputSpec(TraitedSpec):
+
+    df_avgmat_file = File(
+        exists=True,
+        desc="module properties")
+
+    df_avgmat_excel_file = File(
+        desc="module properties in xls format")
+
+
+class ComputeModuleMatProp(BaseInterface):
+    """
+    Description:
+
+    Compute module and intermodule properties from Mat
+
+    Inputs:
+
+        rada_lol_file:
+            type = File, exists=True,
+            desc='lol file, describing modular structure of the network',
+            mandatory=True
+
+        conmat_file:
+            #type = File, exists=True, desc='full matrix in npy format',
+            #mandatory=True
+
+        Pajek_net_file:
+            type = File, exists=True, desc='net description in Pajek format',
+            mandatory=True
+
+        export_excel:
+            type = File
+
+        corres:
+
+    Outputs:
+
+    df_avgmat_file:
+        type = File,
+        exists=True,
+        desc="module properties"
+
+    optional if export_excel:
+
+    df_avgmat_excel_file:
+        type = File
+        desc="module properties in xls format"
+
+    """
+    input_spec = ComputeModuleMatPropInputSpec
+    output_spec = ComputeModuleMatPropOutputSpec
+
+    def _run_interface(self, runtime):
+
+        rada_lol_file = self.inputs.rada_lol_file
+        Pajek_net_file = self.inputs.Pajek_net_file
+        conmat_file = self.inputs.conmat_file
+        export_excel = self.inputs.export_excel
+
+        community_vect = read_lol_file(rada_lol_file)
+        corres_nodes, sparse_mat = \
+            read_Pajek_corres_nodes_and_sparse_matrix(Pajek_net_file)
+
+        # density
+        conmat = np.load(conmat_file)
+        corres_mat = conmat[:, corres_nodes][corres_nodes, :]
+
+        # intermodule
+        if not is_symetrical(corres_mat):
+            corres_mat = corres_mat + np.transpose(corres_mat)
+
+        df_avgmat = _inter_module_avgmat(corres_mat, community_vect)
+        df_avgmat_file = os.path.abspath("res_avgmat.csv")
+        df_avgmat.to_csv(df_avgmat_file)
+
+        if export_excel:
+            try:
+                import xlwt # noqa
+                df_avgmat_excel_file = os.path.abspath("res_avgmat.xls")
+                df_avgmat.to_excel(df_avgmat_excel_file)
+
+            except ImportError:
+                print("Error, xlwt not installed, cannot export Excel file")
+
+        return runtime
+
+    def _list_outputs(self):
+        outputs = self._outputs().get()
+        outputs["df_avgmat_file"] = os.path.abspath("res_avgmat.csv")
+
+        if self.inputs.export_excel:
+            outputs["df_avgmat_excel_file"] = os.path.abspath("res_avgmat.xls")
 
         return outputs
