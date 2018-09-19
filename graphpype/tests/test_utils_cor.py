@@ -1,7 +1,14 @@
 import os
 
 import numpy as np
+import nibabel as nib
 
+
+from graphpype.utils_cor import (mean_select_mask_data, mean_select_indexed_mask_data,
+                                 regress_parameters, filter_data,normalize_data,
+                                 return_conf_cor_mat,
+                                 return_corres_correl_mat,
+                                 where_in_labels,return_corres_correl_mat_labels)
 # data_path = os.path.join(os.path.dirname(
 # os.path.realpath(__file__)), "data", "data_nii")
 
@@ -35,11 +42,11 @@ def test_neuropycon_data():
    
     assert os.path.exists(img_file), "warning, could not find path {}, {}".format(img_file,os.listdir(data_path))
 
+
+
+
 ########################################### test selecting signal from ROIs
 def test_mean_select_mask_data():
-
-    import nibabel as nib
-    from graphpype.utils_cor import mean_select_mask_data
 
     data_img = nib.load(img_file).get_data()
 
@@ -57,9 +64,6 @@ def test_mean_select_mask_data():
 
 
 def test_mean_select_indexed_mask_data():
-
-    import nibabel as nib
-    from graphpype.utils_cor import mean_select_indexed_mask_data
 
     data_img = nib.load(img_file).get_data()
 
@@ -81,8 +85,104 @@ def test_mean_select_indexed_mask_data():
 
 ###################################### test regressing out signals
 
+time_length = 100
+nb_ROI = 10
+nb_reg = 5
+
+ts_mat = np.random.rand(nb_ROI,time_length)*np.random.choice([-1,1], size = (nb_ROI,time_length))
+ts_covar = np.random.rand(time_length,nb_reg) ### read in columns, for example from rp files
+
+def test_regress_parameters():
+    resid_mat = regress_parameters(ts_mat,ts_covar)
+    assert np.all(resid_mat.shape == ts_mat.shape),"Error, residuals shape {} should match original ts shape {}".format(resid_mat.shape,ts_mat.shape)
+
+def test_filter_data():
+    filt_mat = filter_data(ts_mat)
+    assert np.all(filt_mat.shape == ts_mat.shape),"Error, filtered ts shape {} should match original ts shape {}".format(filt_mat.shape,ts_mat.shape)
+    
+def test_normalize_data():
+    norm_mat = normalize_data(ts_mat)
+    assert np.all(norm_mat.shape == ts_mat.shape),"Error, normalized ts shape {} should match original ts shape {}".format(norm_mat.shape,ts_mat.shape)
+    
+######################################## test correlation matrices
+
+def test_return_conf_cor_mat():
+
+    resid_mat = regress_parameters(ts_mat,ts_covar)
+    filt_mat = filter_data(resid_mat)
+    norm_mat = normalize_data(filt_mat)
+    
+    weight_vect = np.ones(time_length)
+    res = return_conf_cor_mat(norm_mat, weight_vect)
+
+    print (res)
+        
+####################################### test return_corres_correl_mat with coords and labels
+
+mat = np.random.rand(nb_ROI,nb_ROI)
+
+nb_ref_ROI = nb_ROI + 5
+
+coords = np.random.rand(nb_ROI,3)
+
+print (coords)
+
+ref_coords = np.concatenate((np.random.rand(5,3),coords),axis = 0)
+
+np.random.shuffle(ref_coords)
+
+print (ref_coords)
+
+import string
+
+
+labels = [let for let in string.ascii_letters[:nb_ROI]]
+ref_labels = [let for let in string.ascii_letters[:nb_ref_ROI]]
+
+np_labels = np.array(labels,dtype = 'str')
+print (np_labels)
+
+np_ref_labels = np.array(ref_labels,dtype = 'str')
+np.random.shuffle(np_ref_labels)
+print (np_ref_labels)
+
+def test_return_corres_correl_mat():
+
+    ref_mat = return_corres_correl_mat(mat,coords,ref_coords)
+    
+    print (ref_mat)
+    
+
+def test_where_in_labels():
+
+    where_in_corres = where_in_labels(labels,np_ref_labels.tolist())
+    
+    print (where_in_corres)
+    
+def test_return_corres_correl_mat_labels():
+
+    ref_mat = return_corres_correl_mat_labels(mat,labels,np_ref_labels.tolist())
+    
+    print (ref_mat)
+    
 if __name__ == '__main__':
 
+    
+    ### select ts from mask
     test_neuropycon_data()
     test_mean_select_mask_data()  # OK
     test_mean_select_indexed_mask_data()
+    
+    ### regress
+    test_regress_parameters()
+    test_filter_data()
+    test_normalize_data()
+    
+    ### cormat
+    test_return_conf_cor_mat()
+    
+    ### corres 
+    test_return_corres_correl_mat()
+    test_where_in_labels()
+    test_return_corres_correl_mat_labels()
+    
