@@ -39,10 +39,14 @@ before_install:
 install:
     # Create the python environment ;
     - conda create -q -n testenv python=$TRAVIS_PYTHON_VERSION numpy pip cython matplotlib;
+    - conda install pyqt
     - source activate testenv
     # Testing dependencies
     - pip install codecov pytest pytest-cov;
     - pip install neuropycon_data
+    - pip install git+https://github.com/vispy/vispy.git
+    - pip install pandas PyOpenGL PyOpenGL_accelerate
+    - pip install visbrain
     # Install graphpype
     - cd ${SRC_DIR}
     - pip install -e .

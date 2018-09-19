@@ -43,16 +43,16 @@ def test_vispy():
     except ImportError:
         print ("vispy not installed")
         
-#def test_visbrain():
+def test_visbrain():
     
-    #try:
-        #import visbrain
+    try:
+        import visbrain
         
-    #except ImportError:
-        #print ("visbrain not installed")
+    except ImportError:
+        print ("visbrain not installed")
         
         
 if __name__ == '__main__':
 
     test_vispy()
-    #test_visbrain()
+    test_visbrain()
