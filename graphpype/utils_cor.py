@@ -41,10 +41,7 @@ from .utils_dtype_coord import *
 
 def mean_select_mask_data(data_img, data_mask):
 
-    img_shape = data_img.shape
-    mask_shape = data_mask.shape
-
-    if img_shape[:3] == mask_shape:
+    if np.all(data_img.shape[:3] == data_mask.shape):
         print("Image and mask are compatible")
 
         masked_data_matrix = data_img[data_mask == 1, :]
@@ -56,15 +53,10 @@ def mean_select_mask_data(data_img, data_mask):
 
         except AttributeError:
 
-            print("no nanmean")
+            print("no nanmean (version of numpy is too old), using mean only")
             mean_mask_data_matrix = np.mean(masked_data_matrix, axis=0)
-
-        print(mean_mask_data_matrix.shape)
-
     else:
-        print("Warning, Image and mask are incompatible")
-        print(img_shape)
-        print(mask_shape)
+        print("Warning, Image and mask are incompatible {} {}".format(data_img.shape,data_mask.shape))
         return
 
     return np.array(mean_mask_data_matrix)
@@ -72,15 +64,13 @@ def mean_select_mask_data(data_img, data_mask):
 
 def mean_select_indexed_mask_data(orig_ts, indexed_mask_rois_data, min_BOLD_intensity=50, percent_signal=0.5, background_val=-1.0):
 
-        # extrating ts by averaging the time series of all voxel with the same index
+    # extrating ts by averaging the time series of all voxel with the same index
     sequence_roi_index = np.unique(indexed_mask_rois_data)
-
-    print(sequence_roi_index)
 
     if sequence_roi_index[0] == background_val:
         sequence_roi_index = sequence_roi_index[1:]
 
-    # print "sequence_roi_index:"
+    print "sequence_roi_index:"
     print(sequence_roi_index)
 
     mean_masked_ts = []
@@ -94,8 +84,6 @@ def mean_select_indexed_mask_data(orig_ts, indexed_mask_rois_data, min_BOLD_inte
 
         all_voxel_roi_ts = orig_ts[index_roi_x, index_roi_y, index_roi_z, :]
 
-        print(all_voxel_roi_ts.shape)
-
         # testing if at least 50% of the voxels in the ROIs have values always higher than min bold intensity
         nb_signal_voxels = np.sum(np.sum(
             all_voxel_roi_ts > min_BOLD_intensity, axis=1) == all_voxel_roi_ts.shape[1])
@@ -103,9 +91,9 @@ def mean_select_indexed_mask_data(orig_ts, indexed_mask_rois_data, min_BOLD_inte
         non_nan_voxels = np.sum(np.sum(np.logical_not(
             np.isnan(all_voxel_roi_ts)), axis=1) == all_voxel_roi_ts.shape[1])
 
-        print(nb_signal_voxels, non_nan_voxels, all_voxel_roi_ts.shape[0])
-
-        if nb_signal_voxels/float(all_voxel_roi_ts.shape[0]) > percent_signal:
+        percent_sig_vox = nb_signal_voxels/float(all_voxel_roi_ts.shape[0])
+        
+        if  percent_sig_vox > percent_signal:
 
             keep_rois[i] = True
 
@@ -114,15 +102,14 @@ def mean_select_indexed_mask_data(orig_ts, indexed_mask_rois_data, min_BOLD_inte
 
             except AttributeError:
 
+                print("Warning, no nanmean (version of numpy is too old), using mean only")
                 mean_all_voxel_roi_ts = np.mean(all_voxel_roi_ts, axis=0)
 
             mean_masked_ts.append(mean_all_voxel_roi_ts)
         else:
-            print("ROI {} was not selected : {} {} ".format(roi_index, np.sum(np.sum(all_voxel_roi_ts > min_BOLD_intensity, axis=1) == all_voxel_roi_ts.shape[1]), np.sum(
-                np.sum(all_voxel_roi_ts > min_BOLD_intensity, axis=1) == all_voxel_roi_ts.shape[1])/float(all_voxel_roi_ts.shape[0])))
+            print("ROI {} was not selected : {} {} ".format(roi_index, nb_signal_voxels , percent_sig_vox))
 
-    assert len(mean_masked_ts) != 0, "min_BOLD_intensity {} and percent_signal are to restrictive".format(
-        min_BOLD_intensity, percent_signal)
+    assert len(mean_masked_ts) != 0, "min_BOLD_intensity {} and percent_signal {} are to restrictive".format(min_BOLD_intensity, percent_signal)
 
     mean_masked_ts = np.array(mean_masked_ts, dtype='f')
 
@@ -131,7 +118,6 @@ def mean_select_indexed_mask_data(orig_ts, indexed_mask_rois_data, min_BOLD_inte
     return mean_masked_ts, keep_rois
 
 ############################################# covariate regression ##############################
-
 
 def regress_parameters(data_matrix, covariates):
 

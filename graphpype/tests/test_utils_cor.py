@@ -35,6 +35,7 @@ def test_neuropycon_data():
    
     assert os.path.exists(img_file), "warning, could not find path {}, {}".format(img_file,os.listdir(data_path))
 
+########################################### test selecting signal from ROIs
 def test_mean_select_mask_data():
 
     import nibabel as nib
@@ -78,6 +79,7 @@ def test_mean_select_indexed_mask_data():
     assert keep_rois.shape[0] == len(np.unique(data_indexed_mask)) - 1, "Error, keep_rois does not have the same length as unique indexes{} != {}".format(
         keep_rois.shape[0],  len(np.unique(data_indexed_mask)) - 1)
 
+###################################### test regressing out signals
 
 if __name__ == '__main__':
 
