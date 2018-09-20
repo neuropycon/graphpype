@@ -2172,21 +2172,17 @@ class PrepareMeanCorrel(BaseInterface):
             gm_mask_labels = [line.strip()
                               for line in open(gm_mask_labels_file)]
 
-            print(len(gm_mask_labels))
+            gm_size = len(gm_mask_labels)
 
-            gm_mask_labels = np.array(
-                [line.strip() for line in open(gm_mask_labels_file)], dtype='str')
-
-            sum_cor_mat_matrix = np.zeros(
-                (gm_mask_labels.shape[0], gm_mask_labels.shape[0]), dtype=float)
+            
+            sum_cor_mat_matrix = np.zeros((gm_size, gm_size), dtype=float)
             print(sum_cor_mat_matrix.shape)
 
-            sum_possible_edge_matrix = np.zeros(
-                (gm_mask_labels.shape[0], gm_mask_labels.shape[0]), dtype=int)
+            sum_possible_edge_matrix = np.zeros((gm_size, gm_size), dtype=int)
             print(sum_possible_edge_matrix.shape)
 
             group_cor_mat_matrix = np.zeros(
-                (gm_mask_labels.shape[0], gm_mask_labels.shape[0], len(cor_mat_files)), dtype=float)
+                (gm_size, gm_size, len(cor_mat_files)), dtype=float)
             print(group_cor_mat_matrix.shape)
 
             if len(cor_mat_files) != len(labels_files):
@@ -2202,17 +2198,11 @@ class PrepareMeanCorrel(BaseInterface):
                     Z_cor_mat = np.load(cor_mat_files[index_file])
                     print(Z_cor_mat.shape)
 
-                    labels = [line.strip()
-                              for line in open(gm_mask_labels_file)]
+                    labels = [line.strip() for line in open(labels_files[i])]
                     print(labels)
 
-                    np_labels = np.array(labels, dtype=str)
-
-                    print(np_labels)
-                    print(np_labels.shape)
-
                     corres_cor_mat, possible_edge_mat = return_corres_correl_mat_labels(
-                        Z_cor_mat, np_labels, gm_mask_labels)
+                        Z_cor_mat, labels, gm_mask_labels)
 
                     np.fill_diagonal(corres_cor_mat, 0)
 
