@@ -294,7 +294,7 @@ def compute_pairwise_mannwhitney_fdr(X, Y, cor_alpha, uncor_alpha=0.01, old_orde
         #### TODO: handles nan correctly??
         X_val = X[:, i, j]
         Y_val = Y[:, i, j]
-        u_stat, p_val = stat.mannwhitneyu(X_val, Y_val, use_continuity=False)
+        u_stat, p_val = stat.mannwhitneyu(X_val, Y_val, use_continuity=False, alternative = "two-sided")
 
         sign_diff = np.sign(np.mean(X_val)-np.mean(Y_val))
                             
