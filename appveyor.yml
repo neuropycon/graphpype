@@ -33,6 +33,7 @@ install:
   - "activate testenv"
   - "python -m pip install --upgrade pip"
   - "pip install pypiwin32"
+  - "pip install patsy"
   - "pip install neuropycon_data"
   - "pip install git+https://github.com/vispy/vispy.git"
   #- "pip install pandas PyOpenGL PyOpenGL_accelerate"
