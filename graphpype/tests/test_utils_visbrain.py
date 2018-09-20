@@ -6,47 +6,50 @@ import os
 
 import numpy as np
 
+try:
+    import neuropycon_data
+except ImportError:
+    print ("neuropycon_data is not installed")
+    
+
 import neuropycon_data as nd
+
+from graphpype.utils_visbrain import (visu_graph,visu_graph_modules)
+    
+
+######### data
 
 data_path = os.path.join(nd.__path__[0], "data", "data_con")
 
 print(data_path)
 
-conmat_file = os.path.join(data_path, "Z_cor_mat_resid_ts.npy")
-
 coords_file = os.path.join(data_path, "ROI_MNI_coords-Atlas.txt")
+
+labels_file = os.path.join(data_path, "ROI_labels-Atlas.txt")
 
 lol_file = os.path.join(data_path, "data_graph", "Z_List.lol")
 
-Z_list_file = os.path.join(data_path, "data_graph", "Z_List.txt")
-
 Pajek_net_file = os.path.join(data_path, "data_graph", "Z_List.net")
 
-################################################ test if vispy and visbrain package are available
+######### tests
 
-def test_vispy():
+def test_visu_graph():
     """
-    testing if vispy is installed
+    testing if visualisation of graph is available
     """
+    visu_graph(net_file = Pajek_net_file, coords_file = coords_file, labels_file = labels_file)
     
-    try:
-        import vispy
-        
-    except ImportError:
-        print ("vispy not installed")
-        
-def test_visbrain():
+def test_visu_graph_modules():
     """
-    testing if vispy is installed
+    testing if visualisation of graph + module  is available
     """
-    try:
-        import visbrain
-        
-    except ImportError:
-        print ("visbrain not installed")
-        
-        
-if __name__ == '__main__':
+    visu_graph_modules(net_file = Pajek_net_file, 
+                             lol_file = lol_file, coords_file = coords_file, labels_file = labels_file)
+    
+############# signif matrices (from .npy files)
 
-    test_vispy()
-    test_visbrain()
+if __name__ == '__main__':
+    
+    test_visu_graph()
+    test_visu_graph_modules()
+    
