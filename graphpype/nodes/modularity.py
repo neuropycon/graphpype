@@ -259,8 +259,8 @@ class ComputeIntNetList(BaseInterface):
 ######################################################################################## ComputeNodeRoles ##################################################################################################################
 
 
-from graphpype.utils_net import read_lol_file, read_Pajek_corres_nodes_and_sparse_matrix
-from graphpype.utils_mod import compute_roles
+from graphpype.utils_net import read_Pajek_corres_nodes_and_sparse_matrix
+from graphpype.utils_mod import compute_roles, read_lol_file
 
 
 class ComputeNodeRolesInputSpec(BaseInterfaceInputSpec):
