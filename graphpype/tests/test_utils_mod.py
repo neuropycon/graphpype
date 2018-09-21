@@ -38,6 +38,8 @@ node_roles_file = os.path.join(
 from graphpype.utils_net import (read_Pajek_corres_nodes_and_sparse_matrix)
 
 from graphpype.utils_mod import (get_modularity_value_from_lol_file, read_lol_file,compute_modular_matrix,
+                                 get_max_degree_from_node_info_file, get_values_from_global_info_file, get_values_from_signed_global_info_file,
+                                 get_path_length_from_info_dists_file, get_path_length_from_info_dists_file,    
                                  get_strength_values_from_info_nodes_file,
                                  get_strength_pos_values_from_info_nodes_file, get_strength_neg_values_from_info_nodes_file,
                                  get_degree_pos_values_from_info_nodes_file, get_degree_neg_values_from_info_nodes_file,
@@ -78,9 +80,6 @@ def test_compute_modular_matrix():
 
     print(mod_mat)
 
-    print(np.unique(mod_mat))
-
-
 
 #### Global properties (info_global) #########################################################
 
@@ -88,7 +87,7 @@ def test_get_max_degree_from_node_info_file():
     """
     get_max_degree_from_node_info_file
     """
-    val = get_max_degree_from_node_info_file(info_global_file)
+    val = get_max_degree_from_node_info_file(info_nodes_file)
     
     print (val)
     
@@ -192,13 +191,13 @@ if __name__ == '__main__':
     test_compute_modular_matrix()
     
     ### info_global
-    test_get_max_degree_from_node_info_file
-    test_get_values_from_global_info_file
-    test_get_values_from_signed_global_info_file
+    test_get_max_degree_from_node_info_file()
+    test_get_values_from_global_info_file()
+    test_get_values_from_signed_global_info_file()
     
-    ### info_dists
-    test_get_path_length_from_info_dists_file
-    test_get_path_length_from_info_dists_file
+    #### info_dists
+    test_get_path_length_from_info_dists_file()
+    test_get_path_length_from_info_dists_file()
 
     ### info_dists
     test_get_strength_values_from_info_nodes_file()
