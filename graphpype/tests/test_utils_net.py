@@ -71,8 +71,8 @@ def test_return_net_list():
 
     print(list_conmat.shape)
 
-    assert list_conmat.shape[1] == 3, "Error, list_conmat should be format index_i, index_j value (sparse representation of graph) and have shape 3 instead of  {} ".format(
-        list_conmat.shape[1])
+    assert list_conmat.shape[1] == 3, "Error, list_conmat should be format index_i, index_j value (sparse representation of graph)"\
+                                        "and have shape 3 instead of  {}".format(list_conmat.shape[1])
 
 
 def test_read_Pajek_corres_nodes():
