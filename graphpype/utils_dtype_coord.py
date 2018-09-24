@@ -30,6 +30,8 @@ def is_in_coords(np_coords1, np_coords2):
 
 def where_in_coords(np_coords1, np_coords2):
 
+    print (np.where(is_in_coords(np_coords1, np_coords2)))
+    print (np.array(np.where(is_in_coords(np_coords1, np_coords2)), dtype='int64'))
     return np.array(np.where(is_in_coords(np_coords1, np_coords2)), dtype='int64').reshape(-1)
 
 def coords_dt_equals(coords_dt1, coords_dt2):
