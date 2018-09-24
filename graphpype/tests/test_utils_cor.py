@@ -3,7 +3,7 @@ import os
 import numpy as np
 import nibabel as nib
 
-
+from graphpype.utils_dtype_coord import where_in_coords
 from graphpype.utils_cor import (mean_select_mask_data, mean_select_indexed_mask_data,
                                  regress_parameters, filter_data, normalize_data,
                                  return_conf_cor_mat,
@@ -154,11 +154,12 @@ mat = np.random.rand(nb_ROI, nb_ROI)
 
 nb_ref_ROI = nb_ROI + 5
 
-coords = np.random.rand(nb_ROI, 3)
+coords = np.random.randint(low=-70, high=70, size=(nb_ROI, 3))
 
 print(coords)
 
-ref_coords = np.concatenate((np.random.rand(5, 3), coords), axis=0)
+ref_coords = np.concatenate(
+    (np.random.randint(low=-70, high=70, size=(5, 3)), coords), axis=0)
 
 np.random.shuffle(ref_coords)
 
@@ -176,6 +177,18 @@ print(np_labels)
 np_ref_labels = np.array(ref_labels, dtype='str')
 np.random.shuffle(np_ref_labels)
 print(np_ref_labels)
+
+
+def test_where_in_coords():
+    """
+    test_where_in_coords
+    """
+    where_in_corres = where_in_coords(coords, ref_coords)
+
+    assert np.max(where_in_corres) < ref_coords.shape[0], "Error, max value {} higher than coord length {}".format(
+        np.max(where_in_corres), ref_coords.shape[0])
+
+    print(where_in_corres)
 
 
 def test_return_corres_correl_mat():
@@ -208,20 +221,21 @@ def test_return_corres_correl_mat_labels():
 
 if __name__ == '__main__':
 
-    # select ts from mask
+    #### select ts from mask
     test_neuropycon_data()
     test_mean_select_mask_data()  # OK
     test_mean_select_indexed_mask_data()
 
-    # regress
+    #### regress
     test_regress_parameters()
     test_filter_data()
     test_normalize_data()
 
-    # cormat
+    #### cormat
     test_return_conf_cor_mat()
 
-    # corres
+    #### corres
+    test_where_in_coords()
     test_return_corres_correl_mat()
     test_where_in_labels()
     test_return_corres_correl_mat_labels()

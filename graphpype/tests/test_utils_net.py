@@ -26,11 +26,8 @@ info_nodes_file = os.path.join(
     data_path, "data_graph", "Z_List-info_nodes.txt")
 
 
-from graphpype.utils_net import (return_net_list, read_lol_file,
+from graphpype.utils_net import (return_net_list,
                                  read_Pajek_corres_nodes, read_Pajek_corres_nodes_and_sparse_matrix,
-                                 compute_modular_matrix, get_strength_values_from_info_nodes_file,
-                                 get_strength_pos_values_from_info_nodes_file, get_strength_neg_values_from_info_nodes_file,
-                                 get_degree_pos_values_from_info_nodes_file, get_degree_neg_values_from_info_nodes_file,
                                  export_Louvain_net_from_list)
 
 # test if neuropycon_data package and data are available
@@ -74,17 +71,8 @@ def test_return_net_list():
 
     print(list_conmat.shape)
 
-    assert list_conmat.shape[1] == 3, "Error, list_conmat should be format index_i, index_j value (sparse representation of graph) and have shape 3 instead of  {} ".format(
-        list_conmat.shape[1])
-
-
-def test_read_lol_file():
-    """
-    Test reading modular partition as radatools representation to a 
-    """
-    community_vect = read_lol_file(lol_file)
-
-    print(community_vect)
+    assert list_conmat.shape[1] == 3, "Error, list_conmat should be format index_i, index_j value (sparse representation of graph)"\
+                                        "and have shape 3 instead of  {}".format(list_conmat.shape[1])
 
 
 def test_read_Pajek_corres_nodes():
@@ -106,74 +94,6 @@ def test_read_Pajek_corres_nodes_and_sparse_matrix():
 
     print(sp)
 
-
-def test_compute_modular_matrix():
-    """
-    Test computing modular matrix where edges between nodes belonging to the same module are 
-    given the same value
-    """
-    corres, sp = read_Pajek_corres_nodes_and_sparse_matrix(Pajek_net_file)
-
-    community_vect = read_lol_file(lol_file)
-
-    mod_mat = compute_modular_matrix(sp, community_vect)
-
-    print(mod_mat)
-
-    print(np.unique(mod_mat))
-
-################################################################## Node properties #########################################################
-
-
-def test_get_strength_values_from_info_nodes_file():
-    """
-    Test get Strength vector in radatools info-nodes.txt file
-    """
-    Strength = get_strength_values_from_info_nodes_file(info_nodes_file)
-
-    print(Strength)
-
-
-def test_get_strength_pos_values_from_info_nodes_file():
-    """
-    Test get Strength_Pos vector in radatools info-nodes.txt file
-    """
-    Strength_Pos = get_strength_pos_values_from_info_nodes_file(
-        info_nodes_file)
-
-    print(Strength_Pos)
-
-
-def test_get_strength_neg_values_from_info_nodes_file():
-    """
-    Test get Strength_Neg vector in radatools info-nodes.txt file
-    """
-    Strength_Neg = get_strength_neg_values_from_info_nodes_file(
-        info_nodes_file)
-
-    print(Strength_Neg)
-
-
-def test_get_degree_pos_values_from_info_nodes_file():
-    """
-    Test get Degree_Pos vector in radatools info-nodes.txt file
-    """
-    Degree_Pos = get_degree_pos_values_from_info_nodes_file(info_nodes_file)
-
-    print(Degree_Pos)
-
-
-def test_get_degree_neg_values_from_info_nodes_file():
-    """
-    Test get Degree_Neg vector in radatools info-nodes.txt file
-    """
-    Degree_Neg = get_degree_neg_values_from_info_nodes_file(info_nodes_file)
-
-    print(Degree_Neg)
-
-# maybe to remove
-
-
 def test_export_Louvain_net_from_list():
     """
     testing Louvain Traag file building (for sake of compatibility of older codes)
@@ -188,17 +108,10 @@ def test_export_Louvain_net_from_list():
 
 
 if __name__ == '__main__':
-
+    test_neuropycon_data()
+    
     test_return_net_list()
-    test_read_lol_file()
     test_read_Pajek_corres_nodes()
     test_read_Pajek_corres_nodes_and_sparse_matrix()
-    test_compute_modular_matrix()
-
-    test_get_strength_values_from_info_nodes_file()
-    test_get_strength_pos_values_from_info_nodes_file()
-    test_get_strength_neg_values_from_info_nodes_file()
-    test_get_degree_pos_values_from_info_nodes_file()
-    test_get_degree_neg_values_from_info_nodes_file()
 
     test_export_Louvain_net_from_list()
