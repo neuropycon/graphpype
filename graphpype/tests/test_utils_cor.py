@@ -160,7 +160,7 @@ print(coords)
 
 ref_coords = np.concatenate((np.random.rand(5, 3), coords), axis=0)
 
-np.random.shuffle(ref_coords)
+#np.random.shuffle(ref_coords)
 
 print(ref_coords)
 
@@ -207,8 +207,7 @@ def test_return_corres_correl_mat_labels():
     """
     test corres matrix based on coords 
     """
-    ref_mat = return_corres_correl_mat_labels(
-        mat, labels, np_ref_labels.tolist())
+    ref_mat = return_corres_correl_mat_labels(mat, labels, np_ref_labels.tolist())
 
     print(ref_mat)
 
