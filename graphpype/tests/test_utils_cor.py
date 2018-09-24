@@ -154,13 +154,13 @@ mat = np.random.rand(nb_ROI, nb_ROI)
 
 nb_ref_ROI = nb_ROI + 5
 
-coords = np.random.rand(nb_ROI, 3)
+coords = np.random.randint(low = -70, high = 70, size =(nb_ROI, 3))
 
 print(coords)
 
-ref_coords = np.concatenate((np.random.rand(5, 3), coords), axis=0)
+ref_coords = np.concatenate((np.random.randint(low = -70, high = 70, size =(5, 3)), coords), axis=0)
 
-#np.random.shuffle(ref_coords)
+np.random.shuffle(ref_coords)
 
 print(ref_coords)
 
@@ -183,6 +183,8 @@ def test_where_in_coords():
     """
     where_in_corres = where_in_coords(coords,ref_coords)
     
+    assert np.max(where_in_corres) < ref_coords.shape[0], "Error, max value {} higher than coord length {}".format( np.max(where_in_corres), ref_coords.shape[0])
+
     print(where_in_corres)
 
 def test_return_corres_correl_mat():
