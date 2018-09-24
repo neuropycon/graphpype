@@ -20,24 +20,17 @@ def convert_coords_dt_to_np_coords(coords_dt):
 
     return np_coords
 
-
 def is_in_coords(np_coords1, np_coords2):
 
     coords_dt1 = convert_np_coords_to_coords_dt(np_coords1)
     coords_dt2 = convert_np_coords_to_coords_dt(np_coords2)
 
-    print (coords_dt1)
-    print (coords_dt2)
-    
     tab = np.array([e in coords_dt1 for e in coords_dt2], dtype=bool)
     
-    print(tab)
     return tab
 
 def where_in_coords(np_coords1, np_coords2):
 
-    print (np.where(is_in_coords(np_coords1, np_coords2)))
-    print (np.array(np.where(is_in_coords(np_coords1, np_coords2)), dtype='int64'))
     return np.array(np.where(is_in_coords(np_coords1, np_coords2)), dtype='int64').reshape(-1)
 
 def coords_dt_equals(coords_dt1, coords_dt2):
