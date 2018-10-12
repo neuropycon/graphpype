@@ -1,8 +1,8 @@
 .. image:: https://travis-ci.org/neuropycon/graphpype.svg?branch=master
     :target: https://travis-ci.org/neuropycon/graphpype
   
-.. image:: 
-https://codecov.io/gh/neuropycon/graphpype/branch/master/graph/badge.svg
+
+.. image:: https://codecov.io/gh/neuropycon/graphpype/branch/master/graph/badge.svg #noqa
     :target: https://codecov.io/gh/neuropycon/graphpype
     
 graphpype
