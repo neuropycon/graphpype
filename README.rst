@@ -1,6 +1,10 @@
 .. image:: https://travis-ci.org/neuropycon/graphpype.svg?branch=master
     :target: https://travis-ci.org/neuropycon/graphpype
-
+  
+.. image:: 
+https://codecov.io/gh/neuropycon/graphpype/branch/master/graph/badge.svg
+    :target: https://codecov.io/gh/neuropycon/graphpype
+    
 graphpype
 =========
 
