@@ -102,7 +102,7 @@ def plot_signals(plot_signals_file, signals_matrix, colors=[],
                  ylim=[], labels=[], add_zero_line=False):
     """ plot signals"""
     import matplotlib.pyplot as plt
-    
+
     assert len(signals_matrix.shape) <= 2, ("Error, signals_matrix should be \
         at most 2D")
     fig2 = plt.figure()
