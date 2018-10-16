@@ -796,7 +796,6 @@ def compute_signif_permut_con_values(df, res_path, cond, alpha, labels, coords=n
 
     from graphpype.gather.gather_permuts import compute_signif_permuts
     from graphpype.utils_plot import plot_int_mat
-    from graphpype.plot_igraph import plot_3D_igraph_bin_mat
 
     print(len(cond))
 
@@ -851,14 +850,6 @@ def compute_signif_permut_con_values(df, res_path, cond, alpha, labels, coords=n
     print(signif_mat_higher)
     print(np.sum(signif_mat_higher == 1))
 
-    #signif_mat_higher_plot_file = os.path.join(res_path, "signif_higher_" + cond + '_permut_con_values.eps')
-
-    #plot_int_mat(plot_file = signif_mat_higher_plot_file, cor_mat = signif_mat_higher,list_labels = labels, fix_full_range = [0,1],label_size = 2)
-
-    #signif_mat_lower_plot_file = os.path.join(res_path, "signif_lower_" + cond + '_permut_con_values.eps')
-
-    #plot_int_mat(plot_file = signif_mat_lower_plot_file, cor_mat = signif_mat_lower,list_labels = labels, fix_full_range = [0,1],label_size = 2)
-
     if coords.size != 0:
 
         print("Adding coords")
@@ -866,14 +857,8 @@ def compute_signif_permut_con_values(df, res_path, cond, alpha, labels, coords=n
         plot_signif_higher_file = os.path.join(
             res_path, "plot_3D_signif_higher_" + cond + "_permut_con_values.eps")
 
-        plot_3D_igraph_bin_mat(plot_signif_higher_file, int_matrix=np.array(
-            signif_mat_higher, dtype=int), coords=coords, labels=labels, color="red")
-
         plot_signif_lower_file = os.path.join(
             res_path, "plot_3D_signif_lower_" + cond + "_permut_con_values.eps")
-
-        plot_3D_igraph_bin_mat(plot_signif_lower_file, int_matrix=np.array(
-            signif_mat_lower, dtype=int), coords=coords, labels=labels, color="blue")
 
     # diff_mat
     diff_mat = np.array(signif_mat_higher - signif_mat_lower, dtype=int)

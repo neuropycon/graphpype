@@ -1,13 +1,7 @@
-# -*- coding: utf-8 -*-
+
 """
 From nifti file to conmat
 """
-import sys
-import time
-
-import numpy as np
-import scipy.sparse as sp
-
 import nipype.pipeline.engine as pe
 
 import nipype.interfaces.utility as niu
@@ -15,26 +9,22 @@ import nipype.interfaces.spm.utils as spmu
 
 from nipype.interfaces.niftyreg.regutils import RegResample
 
-from graphpype.nodes.correl_mat import IntersectMask, ExtractTS, ExtractMeanTS, RegressCovar, FindSPMRegressor, MergeRuns, ComputeConfCorMat
+from graphpype.nodes.correl_mat import (
+    IntersectMask, ExtractTS, ExtractMeanTS, RegressCovar, FindSPMRegressor,
+    ComputeConfCorMat)
 
-from graphpype.utils import show_files, show_length
-
-#import imp
-
-# try:
-# imp.find_module('igraph')
-#can_plot_igraph = True
-#from graphpype.nodes.igraph_plots import PlotIGraphModules
-
-# except ImportError:
-#can_plot_igraph = False
+from graphpype.utils import show_files
 
 
-def create_pipeline_nii_to_conmat_simple(main_path, pipeline_name="nii_to_conmat", conf_interval_prob=0.05, background_val=-1.0, plot=True):
+def create_pipeline_nii_to_conmat_simple(
+        main_path, pipeline_name="nii_to_conmat", conf_interval_prob=0.05,
+        background_val=-1.0, plot=True):
     """
     Description:
 
-    Pipeline from nifti 4D (after preprocessing) to connectivity matrices, no segmentation in tissues given, but coords for wm and csf are available and regressed. coords / labels o indexed mask are also available
+    Pipeline from nifti 4D (after preprocessing) to connectivity matrices,
+    no segmentation in tissues given, but coords for wm and csf are available
+    and regressed. coords / labels o indexed mask are also available
 
     Inputs (inputnode):
 
@@ -49,17 +39,20 @@ def create_pipeline_nii_to_conmat_simple(main_path, pipeline_name="nii_to_conmat
 
     Comments:
 
-    Typically used after nipype preprocessing pipeline and before conmat_to_graph pipeline
+    Typically used after nipype preprocessing pipeline and before
+    conmat_to_graph pipeline
 
     """
 
     pipeline = pe.Workflow(name=pipeline_name)
     pipeline.base_dir = main_path
 
-    inputnode = pe.Node(niu.IdentityInterface(fields=['nii_4D_file', 'ROI_mask_file', 'rp_file', 'ROI_coords_file', 'ROI_MNI_coords_file', 'ROI_labels_file']),
-                        name='inputnode')
+    inputnode = pe.Node(niu.IdentityInterface(fields=[
+        'nii_4D_file', 'ROI_mask_file', 'rp_file', 'ROI_coords_file',
+        'ROI_MNI_coords_file', 'ROI_labels_file']), name='inputnode')
 
-    # Nodes version: use min_BOLD_intensity and return coords where signal is strong enough
+    # Nodes version: use min_BOLD_intensity and
+    # return coords where signal is strong enough
     extract_mean_ROI_ts = pe.Node(interface=ExtractTS(
         plot_fig=False), name='extract_mean_ROI_ts')
 
@@ -76,9 +69,6 @@ def create_pipeline_nii_to_conmat_simple(main_path, pipeline_name="nii_to_conmat
                      extract_mean_ROI_ts, 'label_rois_file')
 
     # regress covariates
-
-    # use R linear model to regress movement parameters, white matter and ventricule signals, and compute Z-score of the residuals
-    #regress_covar = pe.MapNode(interface = RegressCovar(filtered = False, normalized = False),iterfield = ['masked_ts_file','rp_file','mean_wm_ts_file','mean_csf_ts_file'],name='regress_covar')
     regress_covar = pe.Node(interface=RegressCovar(plot_fig=plot), iterfield=[
                             'masked_ts_file', 'rp_file'], name='regress_covar')
 
@@ -86,10 +76,10 @@ def create_pipeline_nii_to_conmat_simple(main_path, pipeline_name="nii_to_conmat
                      regress_covar, 'masked_ts_file')
     pipeline.connect(inputnode, 'rp_file', regress_covar, 'rp_file')
 
-    ##################################### compute correlations ####################################################
-
+    # compute correlations
     compute_conf_cor_mat = pe.Node(
-        interface=ComputeConfCorMat(plot_mat=plot), name='compute_conf_cor_mat')
+        interface=ComputeConfCorMat(plot_mat=plot),
+        name='compute_conf_cor_mat')
     compute_conf_cor_mat.inputs.conf_interval_prob = conf_interval_prob
 
     pipeline.connect(regress_covar, 'resid_ts_file',
@@ -100,78 +90,8 @@ def create_pipeline_nii_to_conmat_simple(main_path, pipeline_name="nii_to_conmat
     return pipeline
 
 
-# def create_pipeline_nii_to_conmat_no_seg(main_path, pipeline_name = "nii_to_conmat",conf_interval_prob = 0.05, wm_coord = [46,40,76], csf_coord = [47,18,83]):
-
-    # """
-    # Description:
-
-    # Pipeline from nifti 4D (after preprocessing) to connectivity matrices, no segmentation in tissues given, but coords for wm and csf are available and regressed. coords / labels of indexed mask are also available
-
-    # Inputs (inputnode):
-
-    # * nii_4D_file
-    # * rp_file
-    # * ROI_mask_file
-    # * ROI_coords_file
-    # * ROI_MNI_coords_file
-    # * ROI_labels_file
-
-    # Comments:
-
-    # Typically used after nipype preprocessing pipeline and before conmat_to_graph pipeline
-
-    # """
-
-    #pipeline = pe.Workflow(name=pipeline_name)
-    #pipeline.base_dir = main_path
-
-    # inputnode = pe.Node(niu.IdentityInterface(fields=['nii_4D_file','rp_file','ROI_mask_file','ROI_coords_file','ROI_MNI_coords_file','ROI_labels_file']),
-    # name='inputnode')
-
-    # Nodes version: use min_BOLD_intensity and return coords where signal is strong enough
-    #extract_mean_ROI_ts = pe.Node(interface = ExtractTS(plot_fig = False),name = 'extract_mean_ROI_ts')
-
-    #pipeline.connect(inputnode,'nii_4D_file', extract_mean_ROI_ts, 'file_4D')
-    #pipeline.connect(inputnode, 'ROI_mask_file', extract_mean_ROI_ts, 'indexed_rois_file')
-    #pipeline.connect(inputnode, 'ROI_coords_file', extract_mean_ROI_ts, 'coord_rois_file')
-    #pipeline.connect(inputnode, 'ROI_labels_file', extract_mean_ROI_ts, 'label_rois_file')
-
-    # extract white matter signal
-    #compute_wm_ts = pe.Node(interface = ExtractMeanTS(plot_fig = False),name = 'extract_wm_ts')
-    #compute_wm_ts.inputs.suffix = 'wm'
-
-    #pipeline.connect(inputnode,'nii_4D_file', compute_wm_ts, 'file_4D')
-    #compute_wm_ts.inputs.ROI_coord = wm_coord
-
-    # extract csf signal
-    #compute_csf_ts = pe.Node(interface = ExtractMeanTS(plot_fig = False),name = 'extract_csf_ts')
-    #compute_csf_ts.inputs.suffix = 'csf'
-
-    #pipeline.connect(inputnode,'nii_4D_file', compute_csf_ts, 'file_4D')
-    #compute_csf_ts.inputs.ROI_coord = csf_coord
-
-    # regress covariates
-
-    # use R linear model to regress movement parameters, white matter and ventricule signals, and compute Z-score of the residuals
-    ##regress_covar = pe.MapNode(interface = RegressCovar(filtered = False, normalized = False),iterfield = ['masked_ts_file','rp_file','mean_wm_ts_file','mean_csf_ts_file'],name='regress_covar')
-    #regress_covar = pe.Node(interface = RegressCovar(),iterfield = ['masked_ts_file','rp_file'],name='regress_covar')
-
-    #pipeline.connect(extract_mean_ROI_ts, 'mean_masked_ts_file', regress_covar, 'masked_ts_file')
-    #pipeline.connect(compute_wm_ts, 'mean_masked_ts_file', regress_covar, 'mean_wm_ts_file')
-    #pipeline.connect(compute_csf_ts, 'mean_masked_ts_file', regress_covar, 'mean_csf_ts_file')
-    #pipeline.connect(inputnode, 'rp_file', regress_covar, 'rp_file')
-
-    ###################################### compute correlations ####################################################
-
-    #compute_conf_cor_mat = pe.Node(interface = ComputeConfCorMat(),name='compute_conf_cor_mat')
-    #compute_conf_cor_mat.inputs.conf_interval_prob = conf_interval_prob
-
-    #pipeline.connect(regress_covar, 'resid_ts_file', compute_conf_cor_mat, 'ts_file')
-    #pipeline.connect(extract_mean_ROI_ts, 'subj_label_rois_file', compute_conf_cor_mat, 'labels_file')
-
-    # return pipeline
-
-def create_pipeline_nii_to_conmat_seg_template(main_path, pipeline_name="nii_to_conmat", conf_interval_prob=0.05):
+def create_pipeline_nii_to_conmat_seg_template(
+        main_path, pipeline_name="nii_to_conmat", conf_interval_prob=0.05):
     """
     Description:
 
@@ -192,17 +112,21 @@ def create_pipeline_nii_to_conmat_seg_template(main_path, pipeline_name="nii_to_
 
     Comments:
 
-    Typically used after nipype preprocessing pipeline and before conmat_to_graph pipeline
+    Typically used after nipype preprocessing pipeline and
+    before conmat_to_graph pipeline
 
     """
 
     pipeline = pe.Workflow(name=pipeline_name)
     pipeline.base_dir = main_path
 
-    inputnode = pe.Node(niu.IdentityInterface(fields=['nii_4D_file', 'rp_file', 'wm_anat_file', 'csf_anat_file', 'ROI_mask_file', 'ROI_coords_file', 'ROI_MNI_coords_file', 'ROI_labels_file']),
-                        name='inputnode')
+    inputnode = pe.Node(niu.IdentityInterface(fields=[
+        'nii_4D_file', 'rp_file', 'wm_anat_file', 'csf_anat_file',
+        'ROI_mask_file', 'ROI_coords_file', 'ROI_MNI_coords_file',
+        'ROI_labels_file']), name='inputnode')
 
-    # Nodes version: use min_BOLD_intensity and return coords where signal is strong enough
+    # Nodes version: use min_BOLD_intensity and
+    # return coords where signal is strong enough
     extract_mean_ROI_ts = pe.Node(interface=ExtractTS(
         plot_fig=False), name='extract_mean_ROI_ts')
 
@@ -245,7 +169,7 @@ def create_pipeline_nii_to_conmat_seg_template(main_path, pipeline_name="nii_to_
                      regress_covar, 'mean_csf_ts_file')
     pipeline.connect(inputnode, 'rp_file', regress_covar, 'rp_file')
 
-    ##################################### compute correlations ####################################################
+    # compute correlations
 
     compute_conf_cor_mat = pe.Node(
         interface=ComputeConfCorMat(), name='compute_conf_cor_mat')
@@ -259,7 +183,10 @@ def create_pipeline_nii_to_conmat_seg_template(main_path, pipeline_name="nii_to_
     return pipeline
 
 
-def create_pipeline_nii_to_subj_ROI(main_path, filter_gm_threshold=0.9, pipeline_name="nii_to_subj_ROI", background_val=-1.0, plot=True, reslice=False, resample=False, min_BOLD_intensity=50, percent_signal=0.5):
+def create_pipeline_nii_to_subj_ROI(
+        main_path, filter_gm_threshold=0.9, pipeline_name="nii_to_subj_ROI",
+        background_val=-1.0, plot=True, reslice=False, resample=False,
+        min_BOLD_intensity=50, percent_signal=0.5):
     """
     Description:
 
@@ -277,7 +204,8 @@ def create_pipeline_nii_to_subj_ROI(main_path, filter_gm_threshold=0.9, pipeline
 
     Comments:
 
-    Typically used after nipype preprocessing pipeline and before conmat_to_graph pipeline
+    Typically used after nipype preprocessing pipeline and
+    before conmat_to_graph pipeline
 
     """
     if reslice and resample:
@@ -287,22 +215,22 @@ def create_pipeline_nii_to_subj_ROI(main_path, filter_gm_threshold=0.9, pipeline
     pipeline = pe.Workflow(name=pipeline_name)
     pipeline.base_dir = main_path
 
-    inputnode = pe.Node(niu.IdentityInterface(fields=['nii_4D_file', 'ROI_mask_file', 'gm_anat_file',
-                                                      'ROI_coords_file', 'ROI_MNI_coords_file', 'ROI_labels_file']),
-                        name='inputnode')
+    inputnode = pe.Node(niu.IdentityInterface(fields=[
+        'nii_4D_file', 'ROI_mask_file', 'gm_anat_file', 'ROI_coords_file',
+        'ROI_MNI_coords_file', 'ROI_labels_file']), name='inputnode')
 
     # reslice gm
     if reslice:
 
         reslice_gm = pe.Node(interface=spmu.Reslice(), name='reslice_gm')
-        reslice_gm.inputs.space_defining = ROI_mask_file
-
+        pipeline.connect(inputnode, 'ROI_mask_file',
+                         reslice_gm, 'space_defining')
         pipeline.connect(inputnode, 'gm_anat_file', reslice_gm, 'in_file')
 
     if resample:
 
         resample_gm = pe.Node(interface=RegResample(), name='resample_gm')
-        resample_gm.inputs.ref_file = ROI_mask_file
+        pipeline.connect(inputnode, 'ROI_mask_file', resample_gm, 'ref_file')
         pipeline.connect(inputnode, 'gm_anat_file', resample_gm, 'flo_file')
 
     # Preprocess pipeline,
@@ -333,13 +261,11 @@ def create_pipeline_nii_to_subj_ROI(main_path, filter_gm_threshold=0.9, pipeline
         pipeline.connect(inputnode, 'gm_anat_file',
                          filter_ROI_mask_with_GM, 'filter_mask_file')
 
-    # Nodes version: use min_BOLD_intensity and return coords where signal is strong enough
+    # Nodes version: use min_BOLD_intensity and
+    # return coords where signal is strong enough
     extract_mean_ROI_ts = pe.Node(interface=ExtractTS(
         plot_fig=plot), name='extract_mean_ROI_ts')
 
-    #extract_mean_ROI_ts.inputs.background_val = background_val
-
-    #extract_mean_ROI_ts.inputs.indexed_rois_file = ROI_mask_file
     extract_mean_ROI_ts.inputs.percent_signal = percent_signal
     extract_mean_ROI_ts.inputs.min_BOLD_intensity = min_BOLD_intensity
 
@@ -356,7 +282,11 @@ def create_pipeline_nii_to_subj_ROI(main_path, filter_gm_threshold=0.9, pipeline
     return pipeline
 
 
-def create_pipeline_nii_to_conmat(main_path, filter_gm_threshold=0.9, pipeline_name="nii_to_conmat", conf_interval_prob=0.05, background_val=-1.0, plot=True, reslice=False, resample=False, min_BOLD_intensity=50, percent_signal=0.5):
+def create_pipeline_nii_to_conmat(
+        main_path, filter_gm_threshold=0.9, pipeline_name="nii_to_conmat",
+        conf_interval_prob=0.05, background_val=-1.0, plot=True,
+        reslice=False, resample=False, min_BOLD_intensity=50,
+        percent_signal=0.5):
     """
     Description:
 
@@ -376,7 +306,8 @@ def create_pipeline_nii_to_conmat(main_path, filter_gm_threshold=0.9, pipeline_n
 
     Comments:
 
-    Typically used after nipype preprocessing pipeline and before conmat_to_graph pipeline
+    Typically used after nipype preprocessing pipeline and
+    before conmat_to_graph pipeline
 
     """
     if reslice and resample:
@@ -386,50 +317,54 @@ def create_pipeline_nii_to_conmat(main_path, filter_gm_threshold=0.9, pipeline_n
     pipeline = pe.Workflow(name=pipeline_name)
     pipeline.base_dir = main_path
 
-    inputnode = pe.Node(niu.IdentityInterface(fields=['nii_4D_file', 'ROI_mask_file', 'rp_file', 'gm_anat_file', 'wm_anat_file', 'csf_anat_file',
-                                                      'ROI_coords_file', 'ROI_MNI_coords_file', 'ROI_labels_file']),
-                        name='inputnode')
+    inputnode = pe.Node(niu.IdentityInterface(fields=[
+        'nii_4D_file', 'ROI_mask_file', 'rp_file', 'gm_anat_file',
+        'wm_anat_file', 'csf_anat_file', 'ROI_coords_file',
+        'ROI_MNI_coords_file', 'ROI_labels_file']), name='inputnode')
 
     # reslice gm
     if reslice:
 
         reslice_gm = pe.Node(interface=spmu.Reslice(), name='reslice_gm')
-        reslice_gm.inputs.space_defining = ROI_mask_file
-
+        pipeline.connect(inputnode, 'ROI_mask_file', reslice_gm,
+                         'space_defining')
         pipeline.connect(inputnode, 'gm_anat_file', reslice_gm, 'in_file')
 
     if resample:
 
         resample_gm = pe.Node(interface=RegResample(), name='resample_gm')
-        resample_gm.inputs.ref_file = ROI_mask_file
+        pipeline.connect(inputnode, 'ROI_mask_file', resample_gm,
+                         'ref_file')
         pipeline.connect(inputnode, 'gm_anat_file', resample_gm, 'flo_file')
 
-     # reslice wm
+    # reslice wm
     if reslice:
 
         reslice_wm = pe.Node(interface=spmu.Reslice(), name='reslice_wm')
-        reslice_wm.inputs.space_defining = ROI_mask_file
-
+        pipeline.connect(inputnode, 'ROI_mask_file', reslice_wm,
+                         'space_defining')
         pipeline.connect(inputnode, 'wm_anat_file', reslice_wm, 'in_file')
 
     if resample:
 
         resample_wm = pe.Node(interface=RegResample(), name='resample_wm')
-        resample_wm.inputs.ref_file = ROI_mask_file
+        pipeline.connect(inputnode, 'ROI_mask_file', resample_wm,
+                         'ref_file')
         pipeline.connect(inputnode, 'wm_anat_file', resample_wm, 'flo_file')
-
-     # reslice csf
+    # reslice csf
     if reslice:
 
         reslice_csf = pe.Node(interface=spmu.Reslice(), name='reslice_csf')
-        reslice_csf.inputs.space_defining = ROI_mask_file
+        pipeline.connect(inputnode, 'ROI_mask_file', reslice_csf,
+                         'space_defining')
 
         pipeline.connect(inputnode, 'csf_anat_file', reslice_csf, 'in_file')
 
     if resample:
 
         resample_csf = pe.Node(interface=RegResample(), name='resample_csf')
-        resample_csf.inputs.ref_file = ROI_mask_file
+        pipeline.connect(inputnode, 'ROI_mask_file', resample_csf,
+                         'ref_file')
         pipeline.connect(inputnode, 'csf_anat_file', resample_csf, 'flo_file')
 
     # Preprocess pipeline,
@@ -460,14 +395,13 @@ def create_pipeline_nii_to_conmat(main_path, filter_gm_threshold=0.9, pipeline_n
         pipeline.connect(inputnode, 'gm_anat_file',
                          filter_ROI_mask_with_GM, 'filter_mask_file')
 
-    # Nodes version: use min_BOLD_intensity and return coords where signal is strong enough
+    # Nodes version: use min_BOLD_intensity and
+    # return coords where signal is strong enough
     extract_mean_ROI_ts = pe.Node(interface=ExtractTS(
         plot_fig=plot), name='extract_mean_ROI_ts')
 
     extract_mean_ROI_ts.inputs.percent_signal = percent_signal
     extract_mean_ROI_ts.inputs.min_BOLD_intensity = min_BOLD_intensity
-
-    #extract_mean_ROI_ts.inputs.background_val = background_val
 
     pipeline.connect(inputnode, 'nii_4D_file', extract_mean_ROI_ts, 'file_4D')
     pipeline.connect(filter_ROI_mask_with_GM, 'filtered_indexed_rois_file',
@@ -518,11 +452,9 @@ def create_pipeline_nii_to_conmat(main_path, filter_gm_threshold=0.9, pipeline_n
                          compute_csf_ts, 'filter_mask_file')
 
     # regress covariates
-
-    # use R linear model to regress movement parameters, white matter and ventricule signals, and compute Z-score of the residuals
-    #regress_covar = pe.MapNode(interface = RegressCovar(filtered = False, normalized = False),iterfield = ['masked_ts_file','rp_file','mean_wm_ts_file','mean_csf_ts_file'],name='regress_covar')
     regress_covar = pe.Node(interface=RegressCovar(plot_fig=plot), iterfield=[
-                            'masked_ts_file', 'rp_file', 'mean_wm_ts_file', 'mean_csf_ts_file'], name='regress_covar')
+        'masked_ts_file', 'rp_file', 'mean_wm_ts_file', 'mean_csf_ts_file'],
+        name='regress_covar')
 
     pipeline.connect(extract_mean_ROI_ts, 'mean_masked_ts_file',
                      regress_covar, 'masked_ts_file')
@@ -533,8 +465,7 @@ def create_pipeline_nii_to_conmat(main_path, filter_gm_threshold=0.9, pipeline_n
     pipeline.connect(compute_csf_ts, 'mean_masked_ts_file',
                      regress_covar, 'mean_csf_ts_file')
 
-    ##################################### compute correlations ####################################################
-
+    # compute correlations
     compute_conf_cor_mat = pe.Node(interface=ComputeConfCorMat(
         plot_mat=plot), name='compute_conf_cor_mat')
     compute_conf_cor_mat.inputs.conf_interval_prob = conf_interval_prob
@@ -547,20 +478,32 @@ def create_pipeline_nii_to_conmat(main_path, filter_gm_threshold=0.9, pipeline_n
     return pipeline
 
 
-def create_pipeline_nii_to_weighted_conmat(main_path, pipeline_name="nii_to_weighted_conmat", concatenated_runs=True, conf_interval_prob=0.05, mult_regnames=True, spm_reg=True):
+def create_pipeline_nii_to_weighted_conmat(
+        main_path, pipeline_name="nii_to_weighted_conmat",
+        concatenated_runs=True, conf_interval_prob=0.05, mult_regnames=True,
+        spm_reg=True):
     """
     Description:
 
-    Pipeline from resid_ts_file (after preprocessing) to weighted connectivity matrices
+    Pipeline from resid_ts_file (after preprocessing) to weighted connectivity
+    matrices
     Involves a regressor file as wiehgt for computing weighted correlations
 
     Parameters:
-        * main_path: path where the analysis will be located (base_dir of workflow)
-        * pipeline_name (default = "nii_to_weighted_conmat"): name of the workflow that will be created for this analysis
-        * concatenated_runs (default = True): If several sessions are contained in the same SPM.mat
-        * conf_interval_prob (default = 0.05): default confidence interval value for thresholding connectivity matrix
-        * mult_regnames (default = True): if reg_names is a list (instead of the instance of an iterable at the higher level)
-        * spm_reg (default = True) : either use spm_mat_file or reg_txt (the latter containing directly the weighting use for computing weighted correlation)
+        * main_path: path where the analysis will be located
+        (base_dir of workflow)
+        * pipeline_name (default = "nii_to_weighted_conmat"):
+        name of the workflow that will be created for this analysis
+        * concatenated_runs (default = True):
+        If several sessions are contained in the same SPM.mat
+        * conf_interval_prob (default = 0.05):
+        default confidence interval value for thresholding connectivity matrix
+        * mult_regnames (default = True):
+        if reg_names is a list
+        (instead of the instance of an iterable at the higher level)
+        * spm_reg (default = True) : either use spm_mat_file or reg_txt
+        (the latter containing directly the weighting use for computing
+       weighted correlation)
 
     Inputs (inputnode):
 
@@ -573,39 +516,38 @@ def create_pipeline_nii_to_weighted_conmat(main_path, pipeline_name="nii_to_weig
 
     Comments:
 
-    Typically used after previous pipeline (create_pipeline_nii_to_conmat) and before conmat_to_graph pipeline
+    Typically used after previous pipeline (create_pipeline_nii_to_conmat)
+    and before conmat_to_graph pipeline
 
     """
-
     pipeline = pe.Workflow(name=pipeline_name)
     pipeline.base_dir = main_path
 
-    inputnode = pe.Node(niu.IdentityInterface(fields=['resid_ts_file', 'spm_mat_file', 'regress_names', 'run_index', 'ROI_labels_file', 'reg_txt']),
-                        name='inputnode')
+    inputnode = pe.Node(niu.IdentityInterface(fields=[
+        'resid_ts_file', 'spm_mat_file', 'regress_names', 'run_index',
+        'ROI_labels_file', 'reg_txt']), name='inputnode')
 
     if spm_reg:
         if mult_regnames:
-
             # extract regressor of interest from SPM.mat
             extract_cond = pe.MapNode(interface=FindSPMRegressor(
-                only_positive_values=True), iterfield=['regressor_name'], name='extract_cond')
+                only_positive_values=True), iterfield=['regressor_name'],
+                name='extract_cond')
 
-            pipeline.connect(inputnode, ('spm_mat_file',
-                                         show_files), extract_cond, 'spm_mat_file')
+            pipeline.connect(inputnode, ('spm_mat_file', show_files),
+                             extract_cond, 'spm_mat_file')
             pipeline.connect(inputnode, 'regress_names',
                              extract_cond, 'regressor_name')
             pipeline.connect(inputnode, 'run_index', extract_cond, 'run_index')
 
-            #extract_cond.inputs.run_index = 0
+            # extract_cond.inputs.run_index = 0
             extract_cond.inputs.concatenated_runs = concatenated_runs
 
-            ##################################### compute weighted correlations ####################################################
-
-            # confidence interval
-
-            compute_conf_cor_mat = pe.MapNode(interface=ComputeConfCorMat(), iterfield=[
-                                              'weight_file'], name='compute_conf_cor_mat')
-
+            # compute weighted correlations
+            compute_conf_cor_mat = pe.MapNode(interface=ComputeConfCorMat(),
+                                              iterfield=['weight_file'],
+                                              name='compute_conf_cor_mat')
+            # with confidence interval
             compute_conf_cor_mat.inputs.conf_interval_prob = conf_interval_prob
 
             pipeline.connect(inputnode, 'resid_ts_file',
@@ -628,10 +570,9 @@ def create_pipeline_nii_to_weighted_conmat(main_path, pipeline_name="nii_to_weig
                              extract_cond, 'regressor_name')
             pipeline.connect(inputnode, 'run_index', extract_cond, 'run_index')
 
-            #extract_cond.inputs.run_index = 0
             extract_cond.inputs.concatenated_runs = concatenated_runs
 
-            ##################################### compute weighted correlations ####################################################
+            # compute weighted correlations
 
             # confidence interval
 
@@ -649,8 +590,9 @@ def create_pipeline_nii_to_weighted_conmat(main_path, pipeline_name="nii_to_weig
                              compute_conf_cor_mat, 'labels_file')
     else:
         if mult_regnames:
-            compute_conf_cor_mat = pe.MapNode(interface=ComputeConfCorMat(), iterfield=[
-                                              'weight_file'], name='compute_conf_cor_mat')
+            compute_conf_cor_mat = pe.MapNode(interface=ComputeConfCorMat(),
+                                              iterfield=['weight_file'],
+                                              name='compute_conf_cor_mat')
 
             compute_conf_cor_mat.inputs.conf_interval_prob = conf_interval_prob
 

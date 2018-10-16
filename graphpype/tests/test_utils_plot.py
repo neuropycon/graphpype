@@ -20,7 +20,7 @@ signals_matrix = np.random.rand(nb_nodes, nb_timepoints)
 
 if os.path.exists(tmp_dir):
     shutil.rmtree(tmp_dir)
-    
+
 os.makedirs(tmp_dir)
 
 
