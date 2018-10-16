@@ -81,8 +81,10 @@ def get_values_from_global_info_file(global_info_file):
         for i, line in enumerate(lines):
 
             split_line = line.strip().split(' ')
+
             cur_last_val = line.strip().split('\t')[-1]
-            next_last_val = lines[i+1].strip().split('\t')[-1]
+            if i < (len(lines)-1):
+                next_last_val = lines[i+1].strip().split('\t')[-1]
 
             if split_line[0] == 'Vertices':
                 global_values['Vertices'] = cur_last_val
