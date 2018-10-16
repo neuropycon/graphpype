@@ -23,14 +23,18 @@ import nibabel as nib
 
 from graphpype.utils_plot import plot_signals, plot_sep_signals
 
-######################################################################################## ExtractTS ##################################################################################################################
 
-from graphpype.utils_cor import mean_select_indexed_mask_data
+from graphpype.utils_cor import (return_corres_correl_mat, 
+                                 return_corres_correl_mat_labels, 
+                                 mean_select_indexed_mask_data)
+
+# ExtractTS
 
 
 class ExtractTSInputSpec(BaseInterfaceInputSpec):
     indexed_rois_file = File(
-        exists=True, desc='indexed mask where all voxels belonging to the same ROI have the same value (! starting from 1)', mandatory=True)
+        exists=True, desc='indexed mask where all voxels belonging to the same\
+            ROI have the same value (! starting from 1)', mandatory=True)
 
     file_4D = File(
         exists=True, desc='4D volume to be extracted', mandatory=True)
@@ -42,16 +46,19 @@ class ExtractTSInputSpec(BaseInterfaceInputSpec):
     label_rois_file = File(desc='ROI labels')
 
     min_BOLD_intensity = traits.Float(
-        50.0, desc='BOLD signal below this value will be set to zero', usedefault=True)
+        50.0, desc='BOLD signal below this value will be set to zero', 
+        usedefault=True)
 
     percent_signal = traits.Float(
-        0.5, desc="Percent of voxels in a ROI with signal higher that min_BOLD_intensity to keep this ROI", usedefault=True)
+        0.5, desc="Percent of voxels in a ROI with signal higher that \
+        min_BOLD_intensity to keep this ROI", usedefault=True)
 
     plot_fig = traits.Bool(
         False, desc="Plotting mean signal or not", usedefault=True)
 
     background_val = traits.Float(
-        -1.0, desc='value for background (i.e. outside brain)', usedefault=True)
+        -1.0, desc='value for background (i.e. outside brain)', 
+        usedefault=True)
 
 
 class ExtractTSOutputSpec(TraitedSpec):
@@ -72,15 +79,19 @@ class ExtractTS(BaseInterface):
 
     """
 
-    Description: Extract time series from a labelled mask in Nifti Format where all ROIs have the same index
+    Description: Extract time series from a labelled mask in Nifti Format
+    where all ROIs have the same index
 
     Inputs:
 
         indexed_rois_file:
-            type = File, exists=True, desc='indexed mask where all voxels belonging to the same ROI have the same value (! starting from 1)', mandatory=True
+            type = File, exists=True, desc='indexed mask where all voxels
+            belonging to the same ROI have the same value (! starting from 
+1)', mandatory=True
 
         file_4D:
-            type = File, exists=True, desc='4D volume to be extracted', mandatory=True
+            type = File, exists=True, desc='4D volume to be extracted', 
+            mandatory=True
 
         MNI_coord_rois_file:
             typr = File, desc='ROI MNI_coordinates'
@@ -92,16 +103,25 @@ class ExtractTS(BaseInterface):
             type = File, desc='ROI labels')
 
         min_BOLD_intensity:
-            type = Float, default = 50.0, desc='BOLD signal below this value will be set to zero',usedefault = True
+            type = Float, default = 50.0, 
+            desc='BOLD signal below this value will be set to zero',
+            usedefault = True
 
         percent_signal:
-            type = Float, default = 0.5, desc  = "Percent of voxels in a ROI with signal higher that min_BOLD_intensity to keep this ROI",usedefault = True
+            type = Float, default = 0.5, 
+            desc  = "Percent of voxels in a ROI with signal higher that 
+            min_BOLD_intensity to keep this ROI",
+            usedefault = True
 
         plot_fig:
-            type = Bool, defaults = False, desc = "Plotting mean signal or not", usedefault = True)
+            type = Bool, defaults = False, 
+            desc = "Plotting mean signal or not", 
+            usedefault = True)
 
         background_val:
-            type = Float, -1.0, desc='value for background (i.e. outside brain)',usedefault = True
+            type = Float, -1.0, 
+            desc='value for background (i.e. outside brain)',
+            usedefault = True
 
     Outputs:
 
@@ -146,7 +166,8 @@ class ExtractTS(BaseInterface):
         print(orig_ts.shape)
 
         mean_masked_ts, keep_rois = mean_select_indexed_mask_data(
-            orig_ts, indexed_mask_rois_data, min_BOLD_intensity, percent_signal=percent_signal, background_val=background_val)
+            orig_ts, indexed_mask_rois_data, min_BOLD_intensity, 
+            percent_signal=percent_signal, background_val=background_val)
 
         # loading ROI coordinates
 
@@ -225,15 +246,17 @@ class ExtractTS(BaseInterface):
         return outputs
 
 
-######################################################################################## IntersectMask ##################################################################################################################
-
+# IntersectMask
 from graphpype.utils_cor import mean_select_indexed_mask_data
 
 
 class IntersectMaskInputSpec(BaseInterfaceInputSpec):
 
     indexed_rois_file = File(
-        exists=True, desc='nii file with indexed mask where all voxels belonging to the same ROI have the same value (! starting from 0)', mandatory=True)
+        exists=True, 
+        desc='nii file with indexed mask where all voxels belonging to the\
+            same ROI have the same value (! starting from 0)', 
+        mandatory=True)
 
     filter_mask_file = File(
         exists=True, desc='nii file with (binary) mask - e.g. grey matter mask', mandatory=True)
@@ -1911,21 +1934,11 @@ class SelectNonNAN(BaseInterface):
 
         for ts_file in sess_ts_files:
 
-            print('load data')
-
             data_matrix = np.load(ts_file)
-
-            print(data_matrix.shape)
 
             list_sess_ts.append(data_matrix)
 
-        subj_ts = np.concatenate(tuple(list_sess_ts), axis=0)
-
-        print(subj_ts.shape)
-
-        print(np.sum(np.isnan(subj_ts) == True, axis=(1, 2)))
-        print(np.sum(np.isnan(subj_ts) == True, axis=(0, 2)))
-        print(np.sum(np.isnan(subj_ts) == True, axis=(0, 1)))
+        subj_ts = np.concatenate(list_sess_ts, axis=0)
 
         good_trigs = np.sum(np.isnan(subj_ts) == True, axis=(1, 2)) == 0
 
@@ -1937,73 +1950,52 @@ class SelectNonNAN(BaseInterface):
 
         for i_trig in range(select_subj_ts.shape[0]):
 
-            select_ts_file = os.path.abspath(
-                'select_' + fname + '_' + str(i_trig) + '.npy')
-
+            select_ts_file = os.path.abspath("select_{}_{}.npy".format(
+                fname, str(i_trig))
+            
             np.save(select_ts_file, select_subj_ts[i_trig, :, :])
-
             self.select_ts_files.append(select_ts_file)
-
-        # check if all labels_files are identical
-
-        if len(labels_files) == 0:
-
-            print("Warning, could not find sess_ts_files")
-
-            return runtime
-
-        select_labels_file = labels_files[0]
-
-        select_labels = np.array(np.loadtxt(select_labels_file), dtype='str')
-
-        print(select_labels)
-        0/0
-        labels_files
 
         return runtime
 
     def _list_outputs(self):
-
         outputs = self._outputs().get()
-
         outputs["select_ts_files"] = self.select_ts_files
-
-        print(outputs)
-
         return outputs
 
-############################################# used in run_mean_correl ###############################################################################
-
-##################################################### PrepareMeanCorrel ###############################################################################
-
-
-from graphpype.utils_cor import return_corres_correl_mat, return_corres_correl_mat_labels
+# used in run_mean_correl
+# PrepareMeanCorrel
 
 
 class PrepareMeanCorrelInputSpec(BaseInterfaceInputSpec):
 
-    # print "in PrepareMeanCorrelInputSpec"
+    cor_mat_files = traits.List(
+        File(exists=True),
+        desc='Numpy files with correlation matrices gm_mask_coords',
+        mandatory=True)
 
-    #gm_mask_coords_file = File(exists=True, desc='reference coordinates',mandatory=True)
+    coords_files = traits.List(
+        File(exists=True), desc='list of all coordinates in numpy space files \
+            for each subject (after removal of non void data)',
+        mandatory=True,
+        xor=['labels_files'])
 
-    cor_mat_files = traits.List(File(
-        exists=True), desc='Numpy files with correlation matrices gm_mask_coords', mandatory=True)
-
-    #coords_files = traits.List(File(exists=True), desc='Txt files with coordinates (corresponding to the space also described in ', mandatory=True)
-
-    #labels_file = File(exists=True, desc='reference labels',mandatory=False)
-
-    coords_files = traits.List(File(
-        exists=True), desc='list of all coordinates in numpy space files (in txt format) for each subject (after removal of non void data)', mandatory=True, xor=['labels_files'])
-
-    labels_files = traits.List(File(
-        exists=True), desc='list of labels (in txt format) for each subject (after removal of non void data)', mandatory=True, xor=['coords_files'])
+    labels_files = traits.List(
+        File(exists=True), desc='list of labels (in txt format) for each \
+            subject (after removal of non void data)',
+        mandatory=True,
+        xor=['coords_files'])
 
     gm_mask_coords_file = File(
-        exists=True, desc='Coordinates in numpy space, corresponding to all possible nodes in the original space', mandatory=False)
+        exists=True,
+        desc='Coordinates in numpy space, corresponding to all possible nodes \
+            in the original space', mandatory=False)
 
     gm_mask_labels_file = File(
-        exists=True, desc='Labels for all possible nodes - in case coords are varying from one indiv to the other (source space for example)', mandatory=False)
+        exists=True,
+        desc='Labels for all possible nodes - in case coords are varying from \
+            one indiv to the other (source space for example)',
+        mandatory=False)
 
     plot_mat = traits.Bool(True, usedefault=True, mandatory=False)
 
@@ -2012,65 +2004,70 @@ class PrepareMeanCorrelInputSpec(BaseInterfaceInputSpec):
 
 class PrepareMeanCorrelOutputSpec(TraitedSpec):
 
-    # print "in PrepareMeanCorrelOutputSpec"
-
     group_cor_mat_matrix_file = File(
         exists=True, desc="npy file containing all correlation matrices in 3D")
 
     sum_cor_mat_matrix_file = File(
-        exists=True, desc="npy file containing the sum of all correlation matrices")
+        exists=True,
+        desc="npy file containing the sum of all correlation matrices")
 
     sum_possible_edge_matrix_file = File(
-        exists=True, desc="npy file containing the number of correlation matrices where both nodes where actually defined in the mask")
+        exists=True, desc="npy file containing the number of correlation \
+            matrices where both nodes where actually defined in the mask")
 
     avg_cor_mat_matrix_file = File(
-        exists=True, desc="npy file containing the average of all correlation matrices")
+        exists=True,
+        desc="npy file containing the average of all correlation matrices")
 
 
 class PrepareMeanCorrel(BaseInterface):
 
-    import numpy as np
-    import os
-
-    #import nibabel as nib
-
     """
     Decription:
-    
-    Return average of correlation values within the same common space (defined in gm_mask_coords), only when the nodes are defined for a given values 
-    
+
+    Return average of correlation values within the same common space
+    (defined in gm_mask_coords), only when the nodes are defined for a given
+    values
+
     Input:
-    
+
     gm_mask_coords_file
         type = File, exists=True, desc='reference coordinates',mandatory=True
-                
+
     cor_mat_files
-        type = List of Files, exists=True, desc='Numpy files with correlation matrices gm_mask_coords',mandatory=True
+        type = List of Files, exists=True,
+        desc='Numpy files with correlation matrices ', mandatory=True
 
     coords_files:
-        type = List of Files, exists=True, desc='Txt files with coordinates (corresponding to the space also described in ', mandatory=True
-    
+        type = List of Files, exists=True,
+        desc='Txt files with coordinates (corresponding to the space also
+        described in gm_mask_coords)', mandatory=True
+
     gm_mask_labels_file:
         type = File, exists=True, desc='reference labels',mandatory=False
-    
+
     plot_mat:
         type = Bool; default = True, usedefault = True, mandatory = False
-        
-        
-    Outputs: 
-    
-    group_cor_mat_matrix_file: 
-        type = File,exists=True, desc="npy file containing all correlation matrices in 3D"
-    
+
+
+    Outputs:
+
+    group_cor_mat_matrix_file:
+        type = File,exists=True,
+        desc="npy file containing all correlation matrices in 3D"
+
     sum_cor_mat_matrix_file
-        type = File,exists=True, desc="npy file containing the sum of all correlation matrices"
-    
+        type = File,exists=True,
+        desc="npy file containing the sum of all correlation matrices"
+
     sum_possible_edge_matrix_file:
-        type = File, exists=True, desc="npy file containing the number of correlation matrices where both nodes where actually defined in the mask"
-    
+        type = File, exists=True,
+        desc="npy file containing the number of correlation matrices where both
+        nodes where actually defined in the mask"
+
     avg_cor_mat_matrix_file:
-        type = File, exists=True, desc="npy file containing the average of all correlation matrices"
-    
+        type = File, exists=True,
+        desc="npy file containing the average of all correlation matrices"
     """
 
     input_spec = PrepareMeanCorrelInputSpec
@@ -2095,114 +2092,92 @@ class PrepareMeanCorrel(BaseInterface):
         else:
             labels = []
 
-        if isdefined(self.inputs.gm_mask_coords_file) and isdefined(self.inputs.coords_files):
+        if isdefined(self.inputs.gm_mask_coords_file) and\
+                isdefined(self.inputs.coords_files):
 
             coords_files = self.inputs.coords_files
-
             gm_mask_coords_file = self.inputs.gm_mask_coords_file
-
-            print('loading gm mask corres')
 
             gm_mask_coords = np.array(
                 np.loadtxt(gm_mask_coords_file), dtype=int)
 
-            print(gm_mask_coords.shape)
-
             sum_cor_mat_matrix = np.zeros(
-                (gm_mask_coords.shape[0], gm_mask_coords.shape[0]), dtype=float)
-            print(sum_cor_mat_matrix.shape)
+                (gm_mask_coords.shape[0], gm_mask_coords.shape[0]),
+                dtype=float)
 
             sum_possible_edge_matrix = np.zeros(
                 (gm_mask_coords.shape[0], gm_mask_coords.shape[0]), dtype=int)
-            print(sum_possible_edge_matrix.shape)
 
             group_cor_mat_matrix = np.zeros(
-                (gm_mask_coords.shape[0], gm_mask_coords.shape[0], len(cor_mat_files)), dtype=float)
-            print(group_cor_mat_matrix.shape)
+                (gm_mask_coords.shape[0], gm_mask_coords.shape[0],
+                 len(cor_mat_files)), dtype=float)
 
-            if len(cor_mat_files) != len(coords_files):
-                print("warning, length of cor_mat_files, coords_files are imcompatible {} {} {}".format(
-                    len(cor_mat_files), len(coords_files)))
+            assert len(cor_mat_files) == len(coords_files), \
+                ("Error, length of cor_mat_files and coords_files are \
+                    imcompatible {} {}".format(len(cor_mat_files),
+                                               len(coords_files)))
 
             for index_file in range(len(cor_mat_files)):
 
                 print(cor_mat_files[index_file])
 
-                if os.path.exists(cor_mat_files[index_file]) and os.path.exists(coords_files[index_file]):
+                if os.path.exists(cor_mat_files[index_file]) and\
+                        os.path.exists(coords_files[index_file]):
 
                     Z_cor_mat = np.load(cor_mat_files[index_file])
-                    print(Z_cor_mat.shape)
 
                     coords = np.array(np.loadtxt(
                         coords_files[index_file]), dtype=int)
 
-                    print(coords)
-                    print(coords.shape)
-
-                    print(Z_cor_mat)
-
-                    corres_cor_mat, possible_edge_mat = return_corres_correl_mat(
-                        Z_cor_mat, coords, gm_mask_coords)
-
-                    print(corres_cor_mat)
-                    print(possible_edge_mat)
+                    corres_cor_mat, possible_edge_mat = \
+                        return_corres_correl_mat(Z_cor_mat, coords,
+                                                 gm_mask_coords)
 
                     np.fill_diagonal(corres_cor_mat, 0)
-
                     np.fill_diagonal(possible_edge_mat, 1)
-
                     sum_cor_mat_matrix += corres_cor_mat
-
                     sum_possible_edge_matrix += possible_edge_mat
-
                     group_cor_mat_matrix[:, :, index_file] = corres_cor_mat
 
                 else:
-                    print("Warning, one or more files between " +
-                          cor_mat_files[index_file] + ', ' + coords_files[index_file] + " do not exists")
+                    print("Warning, one or more files between {} and {} is \
+                        missing".format(cor_mat_files[index_file],
+                                        coords_files[index_file]))
 
-        elif isdefined(self.inputs.gm_mask_labels_file) and isdefined(self.inputs.labels_files):
+        elif isdefined(self.inputs.gm_mask_labels_file) and \
+                isdefined(self.inputs.labels_files):
 
             labels_files = self.inputs.labels_files
-
             gm_mask_labels_file = self.inputs.gm_mask_labels_file
-
-            print('loading gm mask labels')
-
             gm_mask_labels = [line.strip()
                               for line in open(gm_mask_labels_file)]
 
             gm_size = len(gm_mask_labels)
-
-            
             sum_cor_mat_matrix = np.zeros((gm_size, gm_size), dtype=float)
-            print(sum_cor_mat_matrix.shape)
-
             sum_possible_edge_matrix = np.zeros((gm_size, gm_size), dtype=int)
-            print(sum_possible_edge_matrix.shape)
 
             group_cor_mat_matrix = np.zeros(
                 (gm_size, gm_size, len(cor_mat_files)), dtype=float)
-            print(group_cor_mat_matrix.shape)
 
-            if len(cor_mat_files) != len(labels_files):
-                print("warning, length of cor_mat_files, labels_files are imcompatible {} {} {}".format(
-                    len(cor_mat_files), len(labels_files)))
+            assert len(cor_mat_files) == len(labels_files), \
+                ("warning, length of cor_mat_files, labels_files are \
+                    imcompatible {} {} {}".format(len(cor_mat_files),
+                                                  len(labels_files)))
 
-            for index_file in range(len(cor_mat_files)):
+            for i in range(len(cor_mat_files)):
 
-                print(cor_mat_files[index_file])
+                if os.path.exists(cor_mat_files[i]) and \
+                        os.path.exists(labels_files[i]):
 
-                if os.path.exists(cor_mat_files[index_file]) and os.path.exists(labels_files[index_file]):
-
-                    Z_cor_mat = np.load(cor_mat_files[index_file])
+                    Z_cor_mat = np.load(cor_mat_files[i])
                     print(Z_cor_mat.shape)
 
                     labels = [line.strip() for line in open(labels_files[i])]
                     print(labels)
 
-                    corres_cor_mat, possible_edge_mat = return_corres_correl_mat_labels(
-                        Z_cor_mat, labels, gm_mask_labels)
+                    corres_cor_mat, possible_edge_mat = \
+                        return_corres_correl_mat_labels(
+                            Z_cor_mat, labels, gm_mask_labels)
 
                     np.fill_diagonal(corres_cor_mat, 0)
 
@@ -2212,78 +2187,54 @@ class PrepareMeanCorrel(BaseInterface):
 
                     sum_possible_edge_matrix += possible_edge_mat
 
-                    group_cor_mat_matrix[:, :, index_file] = corres_cor_mat
+                    group_cor_mat_matrix[:, :, i] = corres_cor_mat
 
                 else:
-                    print("Warning, one or more files between " +
-                          cor_mat_files[index_file] + ', ' + labels_files[index_file] + " do not exists")
+                    print("Warning, one or more files between {} {} do not \
+                        exists".format(cor_mat_files[i], labels_files[i]))
 
         self.group_cor_mat_matrix_file = os.path.abspath(
             'group_cor_mat_matrix.npy')
 
         np.save(self.group_cor_mat_matrix_file, group_cor_mat_matrix)
 
-        print('saving sum cor_mat matrix')
-
         self.sum_cor_mat_matrix_file = os.path.abspath(
             'sum_cor_mat_matrix.npy')
 
         np.save(self.sum_cor_mat_matrix_file, sum_cor_mat_matrix)
-
-        print('saving sum_possible_edge matrix')
 
         self.sum_possible_edge_matrix_file = os.path.abspath(
             'sum_possible_edge_matrix.npy')
 
         np.save(self.sum_possible_edge_matrix_file, sum_possible_edge_matrix)
 
-        print('saving avg_cor_mat_matrix')
-
         self.avg_cor_mat_matrix_file = os.path.abspath(
             'avg_cor_mat_matrix.npy')
 
-        #avg_cor_mat_matrix = np.zeros((gm_mask_coords.shape[0],gm_mask_coords.shape[0]),dtype = float)
-
         if np.sum(np.array(sum_possible_edge_matrix == 0)) == 0:
 
-            avg_cor_mat_matrix = np.divide(np.array(sum_cor_mat_matrix, dtype=float), np.array(
-                sum_possible_edge_matrix, dtype=float))
+            avg_cor_mat_matrix = np.divide(
+                np.array(sum_cor_mat_matrix, dtype=float),
+                np.array(sum_possible_edge_matrix, dtype=float))
 
             avg_cor_mat_matrix[np.isnan(avg_cor_mat_matrix)] = 0.0
-
-            print(np.amin(avg_cor_mat_matrix), np.amax(avg_cor_mat_matrix))
 
             np.save(self.avg_cor_mat_matrix_file, avg_cor_mat_matrix)
 
             if export_csv:
-
                 csv_avg_cor_mat_matrix_file = os.path.abspath(
                     'avg_cor_mat_matrix.csv')
-
                 df = pd.DataFrame(avg_cor_mat_matrix,
                                   index=labels, columns=labels)
-
                 df.to_csv(csv_avg_cor_mat_matrix_file)
 
         else:
 
-            # print "!!!!!!!!!!!!!!!!!!!!!!Breaking!!!!!!!!!!!!!!!!!!!!!!!!, found 0 elements in sum_cor_mat_matrix"
-
-            # print sum_possible_edge_matrix
-            # print np.array(sum_possible_edge_matrix == 0)
-            # print np.array(sum_possible_edge_matrix == 0)
-            # print np.sum(np.array(sum_possible_edge_matrix == 0))
-
-            # print np.unique(sum_possible_edge_matrix)
-
-            # return
-
-            avg_cor_mat_matrix = np.divide(np.array(sum_cor_mat_matrix, dtype=float), np.array(
-                sum_possible_edge_matrix, dtype=float))
+            avg_cor_mat_matrix = np.divide(
+                np.array(sum_cor_mat_matrix, dtype=float),
+                np.array(sum_possible_edge_matrix, dtype=float))
 
             avg_cor_mat_matrix[np.isnan(avg_cor_mat_matrix)] = 0.0
-
-            print(np.amin(avg_cor_mat_matrix), np.amax(avg_cor_mat_matrix))
 
             np.save(self.avg_cor_mat_matrix_file, avg_cor_mat_matrix)
 
@@ -2297,143 +2248,94 @@ class PrepareMeanCorrel(BaseInterface):
 
                 df.to_csv(csv_avg_cor_mat_matrix_file)
 
-        if plot_mat == True:
+        if plot_mat:
 
             # heatmap
-
-            print('plotting Z_cor_mat heatmap')
-
             plot_heatmap_avg_cor_mat_file = os.path.abspath(
                 'heatmap_avg_cor_mat.eps')
-
             plot_cormat(plot_heatmap_avg_cor_mat_file,
                         avg_cor_mat_matrix, list_labels=labels)
 
         return runtime
-    
+
     def _list_outputs(self):
 
         outputs = self._outputs().get()
 
         outputs["group_cor_mat_matrix_file"] = self.group_cor_mat_matrix_file
         outputs["sum_cor_mat_matrix_file"] = self.sum_cor_mat_matrix_file
-        outputs["sum_possible_edge_matrix_file"] = self.sum_possible_edge_matrix_file
+        outputs["sum_possible_edge_matrix_file"] = \
+            self.sum_possible_edge_matrix_file
         outputs["avg_cor_mat_matrix_file"] = self.avg_cor_mat_matrix_file
-
-        # print outputs
 
         return outputs
 
 
-##################################################### PreparePermutMeanCorrel ###############################################################################
+# PreparePermutMeanCorrel
+
 
 class PreparePermutMeanCorrelInputSpec(BaseInterfaceInputSpec):
 
-    cor_mat_files = traits.List(File(
-        exists=True), desc='Numpy files with correlation matrices gm_mask_coords', mandatory=True)
+    cor_mat_files = traits.List(
+        File(exists=True),
+        desc='Numpy files with correlation matrices gm_mask_coords',
+        mandatory=True)
 
     permut_group_sizes = traits.List(
-        traits.Int, desc='How to split the groups after shuffling', mandatory=True)
+        traits.Int,
+        desc='How to split the groups after shuffling',
+        mandatory=True)
 
     seed = traits.Int(0, usedefault=True, decs='Start of random process')
-
-    #variance_adjst = traits.Bool(False, usedefault = True, desc = "is between-subject variance adjusted taken into account?")
 
 
 class PreparePermutMeanCorrelOutputSpec(TraitedSpec):
 
-    permut_mean_cormat_files = traits.List(File(
-        exists=True), desc="npy files containing the average of permuted correlation matrices")
+    permut_mean_cormat_files = traits.List(
+        File(exists=True),
+        desc="npy files with the average of permuted correlation matrices")
 
 
 class PreparePermutMeanCorrel(BaseInterface):
-
-    import numpy as np
-    import os
-
-    #import nibabel as nib
-
     """
     Return average of correlation values after shuffling orig datasets
     """
-
     input_spec = PreparePermutMeanCorrelInputSpec
     output_spec = PreparePermutMeanCorrelOutputSpec
 
     def _run_interface(self, runtime):
-
-        print(self.inputs.seed)
-
         np.random.seed(self.inputs.seed)
-
         cormats = [np.load(cor_mat_file)
                    for cor_mat_file in self.inputs.cor_mat_files]
 
-        print(cormats)
-
-        assert len(cormats) == sum(self.inputs.permut_group_sizes), "Warning, len(cormats) {0} != sum permut_group_sizes {1}".format(
-            len(cormats), sum(self.inputs.permut_group_sizes))
+        assert len(cormats) == sum(self.inputs.permut_group_sizes), ("Error,\
+            len(cormats) {} != sum permut_group_sizes {1}".format(
+            len(cormats), sum(self.inputs.permut_group_sizes)))
 
         subj_indexes = np.arange(len(cormats))
-
         np.random.shuffle(subj_indexes)
-
-        print(subj_indexes)
-
         subj_indexes_file = os.path.abspath("subj_indexes.txt")
-
         f = open(subj_indexes_file, "w+")
-
-        # f.write(subj_indexes.tolist())
-
         np.savetxt(f, subj_indexes, fmt="%d")
-
         min_index = 0
-
         cormats = np.array(cormats)
 
-        print(cormats.shape)
-
         self.permut_mean_cormat_files = []
-
-        for i, cur_nb_subj_by_gender in enumerate(self.inputs.permut_group_sizes):
-
-            print(cur_nb_subj_by_gender)
-
-            cur_range = np.arange(min_index, min_index+cur_nb_subj_by_gender)
-
-            print(cur_range)
-
+        for i, cur_nb_subj in enumerate(self.inputs.permut_group_sizes):
+            cur_range = np.arange(min_index, min_index+cur_nb_subj)
             rand_indexes = subj_indexes[cur_range]
-
-            print(rand_indexes)
-
-            # f.write(rand_indexes)
-
             np.savetxt(f, rand_indexes, fmt="%d")
-
             permut_cormats = cormats[rand_indexes, :, :]
-
             permut_mean_cormat = np.mean(permut_cormats, axis=0)
-
-            print(permut_mean_cormat.shape)
-
             permut_mean_cormat_file = os.path.abspath(
                 "permut_mean_cormat_" + str(i) + ".npy")
-
             np.save(permut_mean_cormat_file, permut_mean_cormat)
-
             self.permut_mean_cormat_files.append(permut_mean_cormat_file)
-
-            min_index += cur_nb_subj_by_gender
+            min_index += cur_nb_subj
         f.close()
-
         return runtime
 
     def _list_outputs(self):
-
         outputs = self._outputs().get()
-
         outputs["permut_mean_cormat_files"] = self.permut_mean_cormat_files
-
         return outputs

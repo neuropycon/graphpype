@@ -86,6 +86,13 @@ def read_Pajek_corres_nodes_and_sparse_matrix(Pajek_net_file):
     return node_corres, sparse_matrix
 
 
+def export_List_net_from_list(Z_Louvain_file, Z_list):
+    """
+    saving list as net
+    """
+    np.savetxt(Z_Louvain_file, Z_list, fmt="%d %d %d")
+
+
 def export_Louvain_net_from_list(Z_Louvain_file, Z_list, coords):
     """
     Formatting data for external community detection algorithm (Louvain_Traag)
