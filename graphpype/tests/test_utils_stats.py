@@ -1,4 +1,4 @@
-from graphpype.utils_stats import (return_signif_code, return_signif_code_Z,
+from graphpype.utils_stats import (_return_signif_code, _return_signif_code_Z,
                                    compute_pairwise_ttest_fdr,
                                    compute_pairwise_oneway_ttest_fdr,
                                    compute_pairwise_binom_fdr,
@@ -49,7 +49,7 @@ def test_return_signif_code():
     """test if signif codes are correct given a vector of p-values"""
     print(p_val)
 
-    res = return_signif_code(
+    res = _return_signif_code(
         p_val, uncor_alpha=uncor_alpha, fdr_alpha=cor_alpha,
         bon_alpha=cor_alpha)
 
@@ -62,7 +62,7 @@ def test_return_signif_code():
 
 def test_return_signif_code_Z():
     """test if signif codes are correct given a vector of Zscores"""
-    res = return_signif_code_Z(
+    res = _return_signif_code_Z(
         Z_val, uncor_alpha=uncor_alpha, fdr_alpha=cor_alpha,
         bon_alpha=cor_alpha)
 

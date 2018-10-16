@@ -144,8 +144,11 @@ def get_values_from_signed_global_info_file(global_info_file):
             split_line = line.strip().split(' ')
 
             cur_last_val = line.strip().split('\t')[-1]
-            next_last_val = lines[i+1].strip().split('\t')[-1]
-            fol_next_last_val = lines[i+2].strip().split('\t')[-1]
+            
+            if i < (len(lines)-1):
+                next_last_val = lines[i+1].strip().split('\t')[-1]
+            if i < (len(lines)-2):
+                fol_next_last_val = lines[i+2].strip().split('\t')[-1]
 
             if split_line[0] == 'Vertices':
 
