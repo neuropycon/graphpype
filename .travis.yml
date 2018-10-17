@@ -48,14 +48,14 @@ install:
     - cd ${SRC_DIR}
     - pip install -e .
     - pip install flake8
-    
+
 script:
-    
+
     # Run test with coverage
     - if [[ "${TEST}" == "standard" ]]; then
           py.test --cov;
       fi;
-    - flake8 --count graphpype/*
+    - flake8 --count graphpype
 
 notifications:
     email: false
