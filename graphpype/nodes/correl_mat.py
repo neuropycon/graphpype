@@ -1256,9 +1256,9 @@ class MergeRuns(BaseInterface):
                 # TODO Finish case
                 assert False, "Error, not implemented yet.... "
 
-                # Suite à tester....
-                # finir également la partie avec data_matrix_all_runs,
-                # en supprimant les colonnes qui ne sont pas communes à tous
+                # Suite a tester....
+                # finir egalement la partie avec data_matrix_all_runs,
+                # en supprimant les colonnes qui ne sont pas communes a tous
                 # les runs...
 
                 A = coord_rois_all_runs

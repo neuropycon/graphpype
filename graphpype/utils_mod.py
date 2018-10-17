@@ -233,7 +233,7 @@ def get_path_length_from_info_dists_file(info_dists_file):
     assert len(dist_mat.shape) == 2, ("Error, only works with 2d arrays \
         (matrices), now array has {} dimensions".format(len(dist_mat.shape)))
 
-    assert dist_mat.shape[0] != dist_mat.shape[1], ("Error, only works with \
+    assert dist_mat.shape[0] == dist_mat.shape[1], ("Error, only works with \
         squred matrices, now array  dimensions {} != \
         {}".format(dist_mat.shape[0], dist_mat.shape[1]))
 

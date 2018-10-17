@@ -89,8 +89,8 @@ def _return_signif_code_Z(Z_values, uncor_alpha=0.001, fdr_alpha=0.05,
     seq = np.arange(N, 0, -1)
     seq_fdr_p_values = fdr_alpha/seq
     seq_Z_val = stat.norm.ppf(1-seq_fdr_p_values/2)
-    order = (-Z_values).argsort()  # classé dans l'ordre inverse
-    sorted_Z_values = Z_values[order]  # classé dans l'ordre inverse
+    order = (-Z_values).argsort()  # sorted in reversed order
+    sorted_Z_values = Z_values[order]  # sorted in reversed order
     signif_sorted = sorted_Z_values > seq_Z_val
     signif_code[order[signif_sorted]] = 3
 
