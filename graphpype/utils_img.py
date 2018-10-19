@@ -15,7 +15,7 @@ def return_data_img_from_roi_mask(roi_mask_file, data_vect):
 
     # skipping background and transforming to integer indexes
     unique_vals = np.unique(roi_mask_data)[1:].astype(int)
-
+    
     err_msg = "warning, ROI roi_mask not compatible with data_vect"
 
     assert np.all(np.arange(data_vect.shape[0]) == unique_vals), err_msg
