@@ -26,7 +26,7 @@ from scipy import ndimage as ndimg
 from scipy.spatial.distance import cdist
 
 
-def coord_transform(x, y, z, affine):
+def _coord_transform(x, y, z, affine):
     """copied from nipy project"""
     """
     Convert the x, y, z coordinates from one image space to another space.
@@ -66,7 +66,7 @@ def coord_transform(x, y, z, affine):
 
 
 def create_indexed_mask(ref_img_file, MNI_coords_list, ROI_dir,
-                        ROI_mask_prefix, ROI_shape="cube", ROI_size=10):
+                        ROI_mask_prefix="def", ROI_shape="cube", ROI_size=10):
     """
     Create indexed mask at the around ROI coords
 
@@ -96,6 +96,8 @@ def create_indexed_mask(ref_img_file, MNI_coords_list, ROI_dir,
         print("using 4D image for computing 3D mask, reducing shape")
 
         ref_img_shape = ref_img_shape[:-1]
+
+    print(ref_img_shape)
 
     # affine
     ref_img_affine = ref_img.get_affine()
@@ -141,33 +143,33 @@ def create_indexed_mask(ref_img_file, MNI_coords_list, ROI_dir,
 
             neigh_range.append(cur_range)
 
+        ROI_coords = []
+
         for index_mask, MNI_coords in enumerate(MNI_coords_list):
 
-            print(MNI_coords)
+            ijk_coord = _coord_transform(MNI_coords[0], MNI_coords[1],
+                                         MNI_coords[2], inv_affine)
 
-            ijk_coord = np.dot(inv_affine, np.array(
-                MNI_coords + [1], dtype='int'))[:-1]
+            neigh_coords = np.array(
+                [list(i) for i in iter.product(*neigh_range)], dtype=int)
 
-            print(ijk_coord)
+            cur_coords = np.array([list(map(int, ijk_coord + neigh_coord))
+                                   for neigh_coord in neigh_coords])
 
-            coord_i = np.array(
-                ijk_coord[0] + neigh_range[0], dtype='int64').tolist()
+            max_i, max_j, max_k = indexed_mask_data.shape
 
-            print(coord_i)
+            keep = (0 <= cur_coords[:, 0]) & (cur_coords[:, 0] < max_i) & \
+                (0 <= cur_coords[:, 1]) & (cur_coords[:, 1] < max_j) & \
+                (0 <= cur_coords[:, 2]) & (cur_coords[:, 2] < max_k)
 
-            coord_j = np.array(
-                ijk_coord[1] + neigh_range[1], dtype='int64').tolist()
+            if np.all(keep is False):
+                continue
 
-            print(coord_j)
-
-            coord_k = np.array(
-                ijk_coord[2] + neigh_range[2], dtype='int64').tolist()
-
-            print(coord_k)
-
-            indexed_mask_data[coord_i, coord_j, coord_k] = index_mask
+            indexed_mask_data[cur_coords[keep, 0], cur_coords[keep, 1],
+                              cur_coords[keep, 2]] = index_mask
 
             print(np.sum(indexed_mask_data == index_mask))
+            ROI_coords.append(ijk_coord)
 
     elif ROI_shape == "sphere":
 
@@ -269,7 +271,7 @@ def compute_ROI_nii_from_ROI_coords_files(
     # transform MNI coords to numpy coords
     mni_sform_inv = np.linalg.inv(ref_image_data_sform)
 
-    ROI_coords = np.array([coord_transform(x, y, z, mni_sform_inv)
+    ROI_coords = np.array([_coord_transform(x, y, z, mni_sform_inv)
                            for x, y, z in ROI_MNI_coords_list], dtype="int64")
 
     for i, ROI_coord in enumerate(ROI_coords):
@@ -516,12 +518,13 @@ def compute_MNI_coords_from_indexed_template(indexed_template_file):
 
 
 def segment_mask_in_ROI(
-        mask_file, segment_type, mask_thr, min_count_voxel_in_ROI=100,
-        cub_size=1, min_frac_vox_in_bin_mask=0.5):
+        mask_file, save_dir=0, segment_type="cube", mask_thr=0.99,
+        min_count_voxel_in_ROI=100, cub_size=1, min_frac_vox_in_bin_mask=0.5):
 
     print(mask_file)
 
-    path, fnmae, ext = split_f(mask_file)
+    if not save_dir:
+        save_dir, fname, ext = split_f(mask_file)
 
     # load mask
     mask = nib.load(mask_file)
@@ -531,43 +534,47 @@ def segment_mask_in_ROI(
 
     i_mask, j_mask, k_mask = mask_data.shape
 
-    print(segment_type)
+    if 'int' in str(mask_data.dtype):
+        bin_mask_data = mask_data
 
-    bin_mask_data = np.zeros(shape=mask_data.shape, dtype='int64')
-    bin_mask_data[mask_data > mask_thr] = 1
-
-    print(np.sum(bin_mask_data == 1))
+    else:
+        bin_mask_data = np.zeros(shape=mask_data.shape, dtype='int64')
+        bin_mask_data[mask_data > mask_thr] = 1
 
     if segment_type == "cube":
 
         indexed_mask_data = np.zeros(
-            shape=bin_mask_data.shape, dtype='int64')
+            shape=bin_mask_data.shape, dtype='int64')-1
 
         i_coords = np.arange(cub_size, i_mask-cub_size, step=2*cub_size+1)
         j_coords = np.arange(cub_size, j_mask-cub_size, step=2*cub_size+1)
         k_coords = np.arange(cub_size, k_mask-cub_size, step=2*cub_size+1)
 
-        val = 1
+        cub_range = np.arange(-cub_size, cub_size+1)
+        print(cub_range)
 
+        val = 0
         for x, y, z in iter.product(i_coords, j_coords, k_coords):
 
-            cub_range = np.arange(-cub_size, cub_size+1)
-            iter_range = iter.product(cub_range, repeat=3)
+            vox = []
+            vox_in_bin = []
 
-            vox = [neigh for neigh in iter_range]
-            vox_in_bin = [neigh for neigh in iter_range if
-                          bin_mask_data[x+neigh[0], y+neigh[1], z+neigh[2]]
-                          == 1.0]
+            for neigh in iter.product(cub_range, repeat=3):
+                if bin_mask_data[x+neigh[0], y+neigh[1], z+neigh[2]] == 1:
+                    vox_in_bin.append(neigh)
+                vox.append(neigh)
+
+            if len(vox_in_bin) == 0:
+                continue
 
             frac_vox_in_bin_mask = len(vox)/float(len(vox_in_bin))
 
             if frac_vox_in_bin_mask > min_frac_vox_in_bin_mask:
-                for neigh in iter_range:
+                for neigh in iter.product(cub_range, repeat=3):
                     indexed_mask_data[x+neigh[0], y+neigh[1], z+neigh[2]] = val
                 val = val + 1
 
             else:
-
                 print("not enough voxels in bin_mask, percent = {}".format(
                     frac_vox_in_bin_mask))
 
@@ -603,14 +610,15 @@ def segment_mask_in_ROI(
             shape=raw_indexed_mask_rois_data.shape)
 
         for i, index_ROI in enumerate(np.unique(raw_indexed_mask_rois_data)):
-            indexed_mask_data[raw_indexed_mask_rois_data == index_ROI] = i
+            indexed_mask_data[raw_indexed_mask_rois_data == index_ROI] = i-1
 
-    indexed_mask_data = indexed_mask_data - 1
+    else:
+        raise ValueError("Error, could not find segment_type {}".format(
+            segment_type))
 
-    # TODO if segment_type == "voxel":
-
+    # TODO if segment_type == "voxel"
     indexed_mask_rois_file = os.path.join(
-        path, "indexed_mask-" + ROI_mask_prefix + ".nii")
+        save_dir, "indexed_mask-" + ROI_mask_prefix + ".nii")
 
     nib.save(nib.Nifti1Image(
         dataobj=indexed_mask_data, header=mask_header,

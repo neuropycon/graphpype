@@ -295,8 +295,6 @@ def compute_pairwise_mannwhitney_fdr(X, Y, cor_alpha, uncor_alpha=0.01,
 
     np_list_diff = np.array(list_diff)
 
-    print(np_list_diff)
-
     signif_code = _return_signif_code(np_list_diff[:, 2],
                                       uncor_alpha=uncor_alpha,
                                       fdr_alpha=cor_alpha, bon_alpha=cor_alpha)

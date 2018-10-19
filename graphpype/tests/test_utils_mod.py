@@ -1,3 +1,6 @@
+import os
+import neuropycon_data as nd
+
 from graphpype.utils_net import (read_Pajek_corres_nodes_and_sparse_matrix)
 from graphpype.utils_mod import (get_modularity_value_from_lol_file,
                                  read_lol_file, compute_modular_matrix,
@@ -11,8 +14,6 @@ from graphpype.utils_mod import (get_modularity_value_from_lol_file,
                                  get_degree_pos_values_from_info_nodes_file,
                                  get_degree_neg_values_from_info_nodes_file,
                                  compute_roles)
-import os
-import neuropycon_data as nd
 
 data_path = os.path.join(nd.__path__[0], "data", "data_con")
 

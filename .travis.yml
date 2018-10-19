@@ -41,13 +41,21 @@ install:
     - conda create -q -n testenv python=$TRAVIS_PYTHON_VERSION numpy pip cython matplotlib;
     - source activate testenv
     # Testing dependencies
-    - pip install patsy
+    #- pip install patsy
     - pip install codecov pytest pytest-cov;
     - pip install neuropycon_data
     # Install graphpype
     - cd ${SRC_DIR}
     - pip install -e .
     - pip install flake8
+
+before_script:
+    - wget https://deim.urv.cat/~sergio.gomez/download.php?f=radatools-5.0-linux64.tar.gz -O /tmp/radatools-5.0-linux64.tar.gz
+    - tar -xvf /tmp/radatools-5.0-linux64.tar.gz
+    - export PATH=$PATH:$PWD/radatools-5.0-linux64/Network_Tools
+    - export PATH=$PATH:$PWD/radatools-5.0-linux64/Network_Properties
+    - export PATH=$PATH:$PWD/radatools-5.0-linux64/Communities_Detection 
+    - export PATH=$PATH:$PWD/radatools-5.0-linux64/Communities_Tools
 
 script:
 

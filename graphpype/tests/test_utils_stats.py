@@ -1,3 +1,6 @@
+import numpy as np
+import scipy.stats as stat
+
 from graphpype.utils_stats import (_return_signif_code, _return_signif_code_Z,
                                    compute_pairwise_ttest_fdr,
                                    compute_pairwise_oneway_ttest_fdr,
@@ -5,8 +8,6 @@ from graphpype.utils_stats import (_return_signif_code, _return_signif_code_Z,
                                    compute_pairwise_mannwhitney_fdr,
                                    compute_correl_behav)
 
-import numpy as np
-import scipy.stats as stat
 
 # building objects for testing
 # building p-values vector
@@ -104,8 +105,7 @@ def test_compute_pairwise_ttest_fdr():
         uncor_alpha=uncor_alpha, old_order=False)
 
     # testing if both are equivalent
-    assert (new_res[0] == old_res[0]).all(), ("old and new order should be \
-        equal, but {} != {}".format(new_res[0], old_res[0]))
+    assert (new_res[0] == old_res[0]).all()
 
 
 def test_compute_pairwise_oneway_ttest_fdr():
@@ -128,8 +128,7 @@ def test_compute_pairwise_oneway_ttest_fdr():
     print(new_res)
 
     # testing if both are equivalent
-    assert (new_res[0] == old_res[0]).all(), ("old and new order should be \
-        equal, but {} != {}".format(new_res[0], old_res[0]))
+    assert (new_res[0] == old_res[0]).all()
 
 
 def test_compute_pairwise_mannwhitney_fdr():
@@ -140,16 +139,20 @@ def test_compute_pairwise_mannwhitney_fdr():
     res = compute_pairwise_mannwhitney_fdr(
         new_sample_X, new_sample_Y, cor_alpha=cor_alpha,
         uncor_alpha=uncor_alpha, old_order=False)
-    print(res)
+
+    assert res.shape == new_sample_X.shape[1:]
 
 
 def test_compute_correl_behav():
     """
     test if pairwise correlation with a behavioural vector is correct
     """
-    # TODO relevant tests should be added
     res = compute_correl_behav(X=new_sample_X, reg_interest=random_reg)
-    print(res)
+
+    # TODO relevant tests should be added
+    assert res[0].shape == new_sample_X.shape[1:]
+    assert res[1].shape == new_sample_X.shape[1:]
+    assert res[2].shape == new_sample_X.shape[1:]
 
 
 # test binomial
@@ -167,4 +170,4 @@ def test_compute_pairwise_binom_fdr():
         new_binom_X, new_binom_Y, uncor_alpha=uncor_alpha,
         cor_alpha=cor_alpha, old_order=False)
 
-    print(res)
+    assert res.shape == new_binom_X.shape[1:]
