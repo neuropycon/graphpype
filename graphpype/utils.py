@@ -15,22 +15,41 @@ import numpy as np
 
 def get_first(string_list):
     """get first element"""
+    if not isinstance(string_list, (list, tuple)):
+        raise ValueError("{} should be iterables".format(string_list))
+
+    if len(string_list) == 0:
+        raise ValueError("{} should have at least one \
+            element".format(string_list))
+
     return string_list[0]
 
 
 def get_second(string_list):
     """get second element"""
+    if not isinstance(string_list, (list, tuple)):
+        raise ValueError("{} should be iterables".format(string_list))
+
+    if len(string_list) < 2:
+        raise ValueError("{} should have at least 2 \
+            elements".format(string_list))
     return string_list[1]
 
 
 def show_length(files):
     """check length of list (without creating a new node)"""
+    if not isinstance(files, (list, tuple)):
+        raise ValueError("{} should be iterables".format(files))
+
     print(len(files))
     return files
 
 
 def show_files(files):
     """ check content of list (filenames) (without creating a new node)"""
+    if not isinstance(files, (list, tuple)):
+        raise ValueError("{} should be iterables".format(files))
+
     print(files)
     return files
 
@@ -42,9 +61,8 @@ def get_multiple_indexes(cur_list, item):
 
 
 def random_product(*args, **kwds):
-    """generate itertools.product in a random order"""
     # Taken from somewhere I do not recall....
-    "Random selection from itertools.product(*args, **kwds)"
+    """Random selection from itertools.product(*args, **kwds)"""
     pools = list(map(tuple, args)) * kwds.get('repeat', 1)
     return tuple(random.choice(pool) for pool in pools)
 
@@ -64,13 +82,16 @@ def check_np_shapes(np_shape1, np_shape2):
     """ check if both shapes have the same length and the same values"""
     # TODO check if the modified function is compatible with previous
     # implementation
+    assert isinstance(np_shape1, tuple) and isinstance(np_shape2, tuple), \
+        ("Error, arguments passed to check_np_shapes should be shapes")
+
     if len(np_shape1) == len(np_shape2):
         if np.all(np_shape1 == np_shape2):
-            return 1
+            return True
         else:
             print("Warning, number of elements for dimension {} is different \
-                  {}".format(np_shape1 == np_shape2))
-    return 0
+                  {}".format(np_shape1, np_shape2))
+    return False
 
 
 def check_np_dimension(np_shape, np_coords):
@@ -80,7 +101,7 @@ def check_np_dimension(np_shape, np_coords):
     if len(np_shape) != np_coords.shape[0]:
         print("Warning dimensions for nd array {} and coords {} do not \
                match".format(len(np_shape), np_coords.shape[0]))
-        return 0
+        return False
 
     for dim in range(len(np_shape)):
 
@@ -89,11 +110,10 @@ def check_np_dimension(np_shape, np_coords):
             print("Warning nb elements for nd array {} and coord {} do not \
                   match (dimension %d)".format(np_shape[dim], np_coords[dim],
                                                dim))
-            return 0
+            return False
 
         if np_coords[dim] < 0:
-
             print("Warning negative coord {} (dimension \
                   {})".format(np_coords[dim], dim))
-            return 0
-    return 1
+            return False
+    return True

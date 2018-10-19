@@ -1,13 +1,13 @@
-
 """test over plots (with matplotlib)"""
+
+from graphpype.utils_plot import (plot_cormat, plot_ranged_cormat,
+                                  plot_int_mat, plot_hist, plot_signals,
+                                  plot_sep_signals)
 
 import os
 import shutil
 import numpy as np
 
-from graphpype.utils_plot import (plot_cormat, plot_ranged_cormat,
-                                  plot_int_mat, plot_hist, plot_signals,
-                                  plot_sep_signals)
 import matplotlib
 matplotlib.use('Agg')
 
@@ -29,8 +29,7 @@ def test_plot_cormat():
     plot_file = os.path.join(tmp_dir, "test_plot_cormat.png")
     plot_cormat(plot_file, cor_mat=cor_mat)
 
-    assert os.path.exists(plot_file), "Error, {} was not created".format(
-        plot_file)
+    assert os.path.exists(plot_file)
 
 
 def test_plot_ranged_cormat():
@@ -38,8 +37,7 @@ def test_plot_ranged_cormat():
     plot_file = os.path.join(tmp_dir, "test_plot_ranged_cormat.png")
     plot_ranged_cormat(plot_file, cor_mat=cor_mat)
 
-    assert os.path.exists(plot_file), "Error, {} was not created".format(
-        plot_file)
+    assert os.path.exists(plot_file)
 
 
 def test_plot_int_mat():
@@ -47,8 +45,7 @@ def test_plot_int_mat():
     plot_file = os.path.join(tmp_dir, "test_plot_int_mat.png")
     plot_int_mat(plot_file, cor_mat=int_mat)
 
-    assert os.path.exists(plot_file), "Error, {} was not created".format(
-        plot_file)
+    assert os.path.exists(plot_file)
 
 
 def test_plot_hist():
@@ -56,8 +53,7 @@ def test_plot_hist():
     plot_file = os.path.join(tmp_dir, "test_plot_hist.png")
     plot_hist(plot_file, data=cor_mat)
 
-    assert os.path.exists(plot_file), "Error, {} was not created".format(
-        plot_file)
+    assert os.path.exists(plot_file)
 
 
 def test_plot_signals():
@@ -65,28 +61,26 @@ def test_plot_signals():
     plot_file = os.path.join(tmp_dir, "test_plot_signals.png")
     plot_signals(plot_file, signals_matrix)
 
-    assert os.path.exists(plot_file), "Error, {} was not created".format(
-        plot_file)
+    assert os.path.exists(plot_file)
 
     # test one color
     one_col_file = os.path.join(tmp_dir, "test_plot_one_col.png")
     plot_signals(one_col_file, signals_matrix, colors=['red'])
-    assert os.path.exists(one_col_file), "Error, {} was not created".format(
-        one_col_file)
+    assert os.path.exists(one_col_file)
 
     # test multiple colors
     mult_col_file = os.path.join(tmp_dir, "test_plot_mult_col.png")
     colors = ['blue', 'red']*int(nb_nodes/2)
     plot_signals(mult_col_file, signals_matrix, colors=colors)
-    assert os.path.exists(mult_col_file), "Error, {} was not created".format(
-        mult_col_file)
+
+    assert os.path.exists(mult_col_file)
 
     # test_label
     labels_file = os.path.join(tmp_dir, "test_plot_labels.png")
     labels = [str(i) for i in range(nb_nodes)]
     plot_signals(labels_file, signals_matrix, labels=labels)
-    assert os.path.exists(labels_file), "Error, {} was not created".format(
-        labels_file)
+
+    assert os.path.exists(labels_file)
 
 
 def test_plot_sep_signals():
@@ -94,5 +88,4 @@ def test_plot_sep_signals():
     plot_file = os.path.join(tmp_dir, "test_plot_sep_signals.eps")
     plot_sep_signals(plot_file, signals_matrix, range_signal=10)
 
-    assert os.path.exists(plot_file), "Error, {} was not created".format(
-        plot_file)
+    assert os.path.exists(plot_file)
