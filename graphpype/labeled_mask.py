@@ -100,11 +100,11 @@ def create_indexed_mask(ref_img_file, MNI_coords_list, ROI_dir,
     print(ref_img_shape)
 
     # affine
-    ref_img_affine = ref_img.get_affine()
+    ref_img_affine = ref_img.affine
     inv_affine = np.linalg.inv(ref_img_affine)
 
     # header
-    ref_img_hd = ref_img.get_header()
+    ref_img_hd = ref_img.header
     pixdims = ref_img_hd['pixdim'][1:4]
 
     # building indexed mask
@@ -303,8 +303,8 @@ def compute_ROI_nii_from_ROI_coords_files(
 
         # save ROI_coords_labelled_mask
         nib.save(nib.Nifti1Image(
-            ROI_coords_labelled_mask, ref_image.get_affine(),
-            ref_image.get_header()), ROI_coords_labelled_mask_file)
+            ROI_coords_labelled_mask, ref_image.affine,
+            ref_image.header), ROI_coords_labelled_mask_file)
 
     return ROI_coords_labelled_mask_file
 
@@ -332,8 +332,8 @@ def compute_labelled_mask_from_anat_ROIs(
 
         mean_ref_img_file = os.path.join(ROI_dir, "mean_ref.nii")
 
-        nib.save(nib.Nifti1Image(mean_ref_data, ref_image.get_affine(),
-                                 ref_image.get_header()), mean_ref_img_file)
+        nib.save(nib.Nifti1Image(mean_ref_data, ref_image.affine,
+                                 ref_image.header), mean_ref_img_file)
 
         # reloading mean_file as ref_file
         ref_image = nib.load(mean_ref_img_file)
@@ -443,8 +443,8 @@ def compute_labelled_mask_from_anat_ROIs(
     labelled_mask_data_file = os.path.join(
         ROI_dir, "all_ROIs_labelled_mask.nii")
 
-    nib.save(nib.Nifti1Image(labelled_mask_data, ref_image.get_affine(),
-                             ref_image.get_header()), labelled_mask_data_file)
+    nib.save(nib.Nifti1Image(labelled_mask_data, ref_image.affine,
+                             ref_image.header), labelled_mask_data_file)
 
     # save labels
     labels_list_file = os.path.join(ROI_dir, "labels_all_ROIs.txt")
@@ -529,8 +529,8 @@ def segment_mask_in_ROI(
     # load mask
     mask = nib.load(mask_file)
     mask_data = mask.get_data()
-    mask_header = mask.get_header()
-    mask_affine = mask.get_affine()
+    mask_header = mask.header
+    mask_affine = mask.affine
 
     i_mask, j_mask, k_mask = mask_data.shape
 
