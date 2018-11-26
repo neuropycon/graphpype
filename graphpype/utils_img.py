@@ -25,6 +25,5 @@ def return_data_img_from_roi_mask(roi_mask_file, data_vect):
     for roi_index in unique_vals:
         data[roi_mask_data == roi_index] = data_vect[roi_index]
 
-    data_img = nib.Nifti1Image(data, roi_mask.get_affine(),
-                               roi_mask.get_header())
+    data_img = nib.Nifti1Image(data, roi_mask.affine, roi_mask.header)
     return data_img
