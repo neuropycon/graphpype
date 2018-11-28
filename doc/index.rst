@@ -66,7 +66,7 @@ graphpype works with **python3**
 
 .. code-block:: bash
 
-    $ git clone https://github.com/neuropycon/graphpype.git
+    $ pip install https://api.github.com/repos/neuropycon/graphpype/zipball/master
 
 Or with pip:
     
