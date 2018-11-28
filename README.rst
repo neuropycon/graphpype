@@ -13,7 +13,7 @@ Neuropycon project for graph analysis, can be used from ephypype and nipype
 Documentation
 -------------
 
-http://neuropycon.github.io/neuropycon_doc/graphpype/
+https://neuropycon.github.io/graphpype/
 
 Installation
 ------------
