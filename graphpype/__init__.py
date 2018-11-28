@@ -1,2 +1,2 @@
-# from . import pipelines
-# from . import interfaces
+from . import pipelines  # noqa
+from . import interfaces  # noqa
