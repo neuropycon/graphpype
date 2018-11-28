@@ -18,7 +18,7 @@ http://neuropycon.github.io/neuropycon_doc/graphpype/
 Installation
 ------------
 
-git clone https://github.com/neuropycon/graphpype.git
+pip install https://api.github.com/repos/neuropycon/graphpype/zipball/master
 
 Or with pip:
     
