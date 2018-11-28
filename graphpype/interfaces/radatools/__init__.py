@@ -1,1 +1,1 @@
-# from .rada import (PrepRada, NetPropRada, CommRada)
+from .rada import (PrepRada, NetPropRada, CommRada)  # noqa
