@@ -1,4 +1,6 @@
 from . import conmat_to_graph
+from . import intmat_to_graph
+from . import nii_to_conmat
 from .conmat_to_graph import create_pipeline_conmat_to_graph_density  # noqa
 from .conmat_to_graph import create_pipeline_conmat_to_graph_threshold  # noqa
 from .conmat_to_graph import create_pipeline_net_list_to_graph  # noqa
