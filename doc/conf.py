@@ -198,6 +198,7 @@ sphinx_gallery_conf = {
         'scipy': 'http://docs.scipy.org/doc/scipy-0.17.0/reference',
         'nipype': 'https://nipype.readthedocs.io/en/latest/api',
         'ephypype': 'http://neuropycon.github.io/ephypype/',
+        'graphpype': 'http://neuropycon.github.io/graphpype/'
     }
 }
 
