@@ -181,7 +181,7 @@ texinfo_documents = [
      author, 'graphpype', 'One line description of project.',
      'Miscellaneous'),
 ]
-    
+
 intersphinx_mapping = {'python': ('https://docs.python.org/', None),
                        'mne': ('http://martinos.org/mne/stable/', None)
                        }
@@ -207,6 +207,3 @@ import os.path as op
 
 path = op.join(op.dirname(__file__), '../examples/')
 sys.path.insert(0, path)
-
-
-
