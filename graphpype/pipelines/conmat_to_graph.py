@@ -5,7 +5,7 @@ import nipype.pipeline.engine as pe
 
 import nipype.interfaces.utility as niu
 
-from graphpype.interfaces.radatools import PrepRada, NetPropRada, CommRada
+from graphpype.interfaces.radatools.rada import PrepRada, NetPropRada, CommRada
 from graphpype.nodes.modularity import ComputeNetList, ComputeNodeRoles
 
 

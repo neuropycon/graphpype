@@ -9,7 +9,8 @@ Author:
 """
 import random
 import numpy as np
-
+import os
+import shutil
 # fast util functions for getting first or second element (mostly in tuple)
 
 
@@ -117,3 +118,21 @@ def check_np_dimension(np_shape, np_coords):
                   {})".format(np_coords[dim], dim))
             return False
     return True
+
+
+def is_symetrical(mat):
+    """test if a matrix is is_symetrical i.e. upper triangle part is the same
+    as lower triangle part"""
+    triu_mat = mat[np.triu_indices(mat.shape[0], k=1)]
+    tril_mat = mat[np.tril_indices(mat.shape[0], k=-1)]
+    return np.all(triu_mat == tril_mat)
+
+
+def _make_tmp_dir():
+    tmp_dir = "/tmp/test_graphpype"
+    if os.path.exists(tmp_dir):
+        shutil.rmtree(tmp_dir)
+
+    os.makedirs(tmp_dir)
+    os.chdir(tmp_dir)
+    return tmp_dir
