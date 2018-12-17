@@ -6,7 +6,7 @@ import os
 
 setup(
     name="graphpype",
-    version='0.0.4',
+    version='0.0.5',
     packages=find_packages(),
     author="David Meunier",
     description="Graph analysis for neuropycon (using nipype, and ephypype); based on previous packages dmgraphanalysis and then dmgraphanalysis_nodes and graphpype",
