@@ -57,6 +57,9 @@ graphpype
 
 Neuropycon project for graph analysis, can be used from ephypype and nipype. 
 
+The graphpype package provides the following **pipelines**:
+
+* the :ref:`conmat_to_graph pipeline <conmat_to_graph>` runs the graph computation and graph-theoretical tools.
 
 Installation
 ============

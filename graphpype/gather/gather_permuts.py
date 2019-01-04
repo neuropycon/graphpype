@@ -9,9 +9,10 @@ import numpy as np
 
 from collections import Counter
 
-from graphpype.utils_net import read_lol_file, read_Pajek_corres_nodes
+from graphpype.utils_net import read_Pajek_corres_nodes
 from graphpype.utils_dtype_coord import where_in_coords
 
+from graphpype.utils_mod import read_lol_file
 from graphpype.utils_mod import get_modularity_value_from_lol_file
 from graphpype.utils_mod import get_values_from_global_info_file
 from graphpype.utils_mod import get_path_length_from_info_dists_file
@@ -358,12 +359,7 @@ def compute_signif_permuts(permut_df, permut_col="Seed",
             df_col["Diff"] = pd.to_numeric(
                 df_col.iloc[:, 0]) - pd.to_numeric(df_col.iloc[:, 1])
 
-            # asked by flake8 but not sure relevant for pandas Series...
-            non_nan_indexes, = np.where(np.isnan(df_col["Diff"]) is False)
-
-            print(non_nan_indexes)
-
-            diff_col = df_col["Diff"].values[non_nan_indexes]
+            diff_col = df_col["Diff"].dropna()
 
             if not all(val == 2 for val in list(count_elements.values())):
                 print("Error, all permut indexes should have 2 lines: {}"
