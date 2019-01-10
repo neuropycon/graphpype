@@ -178,6 +178,7 @@ Graphpype creates for us a pipeline which can be connected to these
 
 
 
+
 see
 http://deim.urv.cat/~sergio.gomez/download.php?f=radatools-5.0-README.txt
 for more details, but very briefly:
@@ -1434,7 +1435,7 @@ now for viewing it, we will use visbrain, and special functions in utils_visbrai
     (270, 3)
 
 
-**Total running time of the script:** ( 0 minutes  4.264 seconds)
+**Total running time of the script:** ( 0 minutes  4.310 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_conmat_to_graph.py:
