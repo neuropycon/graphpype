@@ -186,32 +186,30 @@ the values in the infosource node</p>
 <dd>nodes (datasource and infosource we created. The connectivity pipeline is implemented by the function</dd>
 <dt><code class="xref py py-func docutils literal notranslate"><span class="pre">graphpype.pipelines.conmat_to_graph.create_pipeline_conmat_to_graph_density()</span></code>,</dt>
 <dd>thus to instantiate this graph pipeline node, we import it and pass
-our parameters to it.</dd>
+our parameters to it.
+In particular, the follwing parameters are of particular importance:
+density of the threshold</dd>
 </dl>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># In particular, the follwing parameters are of particular importance:</span>
-<span class="c1"># density of the threshold</span>
-
-<span class="n">con_den</span> <span class="o">=</span> <span class="mf">0.1</span> <span class="c1">#</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">con_den</span> <span class="o">=</span> <span class="mf">0.1</span> <span class="c1">#</span>
 
 <span class="c1"># The optimisation sequence</span>
 <span class="n">radatools_optim</span> <span class="o">=</span> <span class="s2">&quot;WN tfrf 1&quot;</span>
-
-<span class="c1"># see</span>
-<span class="c1"># http://deim.urv.cat/~sergio.gomez/download.php?f=radatools-5.0-README.txt</span>
-<span class="c1"># for more details, but very briefly:</span>
-<span class="c1"># 1) WN for weighted unsigned (typically</span>
-<span class="c1"># coherence, pli, etc.) and WS for signed (e.g. Pearson correlation) +</span>
-<span class="c1"># 2) the optimisation sequence, can be used in different order. The sequence</span>
-<span class="c1"># tfrf is proposed in radatools, and means: t = tabu search , f = fast</span>
-<span class="c1"># algorithm, r = reposition algorithm and f = fast algorithm (again)</span>
-<span class="c1"># 3) the last number is the number of repetitions of the algorithm, out of</span>
-<span class="c1"># which the best one is chosen. The higher the number of repetitions, the</span>
-<span class="c1"># higher the chance to reach the global maximum, but also the longer the</span>
-<span class="c1"># computation takes. For testing, 1 is admissible, but it is expected to</span>
-<span class="c1"># have at least 100 is required for reliable results</span>
-
-
-<span class="c1"># The graph pipeline contains several nodes, some are based on radatools</span>
+</pre></div>
+</div>
+<p>see
+<a class="reference external" href="http://deim.urv.cat/~sergio.gomez/download.php?f=radatools-5.0-README.txt">http://deim.urv.cat/~sergio.gomez/download.php?f=radatools-5.0-README.txt</a>
+for more details, but very briefly:
+1) WN for weighted unsigned (typically
+coherence, pli, etc.) and WS for signed (e.g. Pearson correlation) +
+2) the optimisation sequence, can be used in different order. The sequence
+tfrf is proposed in radatools, and means: t = tabu search , f = fast
+algorithm, r = reposition algorithm and f = fast algorithm (again)
+3) the last number is the number of repetitions of the algorithm, out of
+which the best one is chosen. The higher the number of repetitions, the
+higher the chance to reach the global maximum, but also the longer the
+computation takes. For testing, 1 is admissible, but it is expected to
+have at least 100 is required for reliable results</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># The graph pipeline contains several nodes, some are based on radatools</span>
 <span class="c1">#</span>
 <span class="c1"># In particular, the two nodes are:</span>
 <span class="c1">#</span>
@@ -1377,7 +1375,7 @@ here correspond to how we connected the nodes.</p>
 (270, 3)
 </pre></div>
 </div>
-<p><strong>Total running time of the script:</strong> ( 0 minutes  4.286 seconds)</p>
+<p><strong>Total running time of the script:</strong> ( 0 minutes  4.264 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-conmat-to-graph-py">
 <div class="sphx-glr-download docutils container">
 <a class="reference download internal" download="" href="../_downloads/148019e1e7aad92d3808c5ede724a325/plot_conmat_to_graph.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_conmat_to_graph.py</span></code></a></div>

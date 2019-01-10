@@ -159,34 +159,43 @@ Graphpype creates for us a pipeline which can be connected to these
 :func:`graphpype.pipelines.conmat_to_graph.create_pipeline_conmat_to_graph_density`,
  thus to instantiate this graph pipeline node, we import it and pass
  our parameters to it.
+ In particular, the follwing parameters are of particular importance:
+ density of the threshold
 
 
 
 .. code-block:: python
 
 
-
-    # In particular, the follwing parameters are of particular importance:
-    # density of the threshold
-
     con_den = 0.1 #
 
     # The optimisation sequence
     radatools_optim = "WN tfrf 1" 
 
-    # see
-    # http://deim.urv.cat/~sergio.gomez/download.php?f=radatools-5.0-README.txt
-    # for more details, but very briefly:
-    # 1) WN for weighted unsigned (typically
-    # coherence, pli, etc.) and WS for signed (e.g. Pearson correlation) +
-    # 2) the optimisation sequence, can be used in different order. The sequence
-    # tfrf is proposed in radatools, and means: t = tabu search , f = fast
-    # algorithm, r = reposition algorithm and f = fast algorithm (again)
-    # 3) the last number is the number of repetitions of the algorithm, out of
-    # which the best one is chosen. The higher the number of repetitions, the
-    # higher the chance to reach the global maximum, but also the longer the
-    # computation takes. For testing, 1 is admissible, but it is expected to
-    # have at least 100 is required for reliable results
+
+
+
+
+
+
+see
+http://deim.urv.cat/~sergio.gomez/download.php?f=radatools-5.0-README.txt
+for more details, but very briefly:
+1) WN for weighted unsigned (typically
+coherence, pli, etc.) and WS for signed (e.g. Pearson correlation) +
+2) the optimisation sequence, can be used in different order. The sequence
+tfrf is proposed in radatools, and means: t = tabu search , f = fast
+algorithm, r = reposition algorithm and f = fast algorithm (again)
+3) the last number is the number of repetitions of the algorithm, out of
+which the best one is chosen. The higher the number of repetitions, the
+higher the chance to reach the global maximum, but also the longer the
+computation takes. For testing, 1 is admissible, but it is expected to
+have at least 100 is required for reliable results
+
+
+
+.. code-block:: python
+
 
 
     # The graph pipeline contains several nodes, some are based on radatools
@@ -1425,7 +1434,7 @@ now for viewing it, we will use visbrain, and special functions in utils_visbrai
     (270, 3)
 
 
-**Total running time of the script:** ( 0 minutes  4.286 seconds)
+**Total running time of the script:** ( 0 minutes  4.264 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_conmat_to_graph.py:
