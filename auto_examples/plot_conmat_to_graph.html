@@ -1,0 +1,1402 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Compute Graph properties from a given connectivity matrix &#8212; graphpype 0.1dev0 documentation</title>
+    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="../_static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="../_static/bootstrap-3.3.7/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../_static/bootstrap-sphinx.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../index.html">
+          Graphpype</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.1dev0</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="index.html">Gallery</a></li>
+                <li><a href="../api.html">API</a></li>
+                <li><a href="https://github.com/neuropycon/graphpype">Github</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"></ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li><a class="reference internal" href="#">Compute Graph properties from a given connectivity matrix</a></li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+            
+            
+            
+              <li class="hidden-sm">
+<div id="sourcelink">
+  <a href="../_sources/auto_examples/plot_conmat_to_graph.rst.txt"
+     rel="nofollow">Source</a>
+</div></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-12 content">
+      
+  <div class="sphx-glr-download-link-note admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Click <a class="reference internal" href="#sphx-glr-download-auto-examples-plot-conmat-to-graph-py"><span class="std std-ref">here</span></a> to download the full example code</p>
+</div>
+<div class="sphx-glr-example-title section" id="compute-graph-properties-from-a-given-connectivity-matrix">
+<span id="conmat-to-graph"></span><span id="sphx-glr-auto-examples-plot-conmat-to-graph-py"></span><h1>Compute Graph properties from a given connectivity matrix<a class="headerlink" href="#compute-graph-properties-from-a-given-connectivity-matrix" title="Permalink to this headline">¶</a></h1>
+<p>The conmat_to_graph pipeline performs graph analysis .</p>
+<p>The <strong>input</strong> data should be a time series matrix in <strong>npy</strong> .</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Authors: David Meunier &lt;david_meunier_79@hotmail.fr&gt;</span>
+
+<span class="c1"># License: BSD (3-clause)</span>
+
+<span class="kn">import</span> <span class="nn">os.path</span> <span class="kn">as</span> <span class="nn">op</span>
+
+<span class="kn">import</span> <span class="nn">nipype.pipeline.engine</span> <span class="kn">as</span> <span class="nn">pe</span>
+
+<span class="kn">from</span> <span class="nn">nipype.interfaces.utility</span> <span class="kn">import</span> <span class="n">IdentityInterface</span><span class="p">,</span> <span class="n">Function</span>
+<span class="kn">import</span> <span class="nn">nipype.interfaces.io</span> <span class="kn">as</span> <span class="nn">nio</span>
+
+<span class="c1">#import ephypype</span>
+<span class="c1">#from ephypype.nodes import create_iterator, create_datagrabber</span>
+<span class="kn">from</span> <span class="nn">ephypype.nodes</span> <span class="kn">import</span> <span class="n">get_frequency_band</span>
+<span class="kn">from</span> <span class="nn">ephypype.datasets</span> <span class="kn">import</span> <span class="n">fetch_omega_dataset</span>
+</pre></div>
+</div>
+<p>Check if data are available
+needs to import neuropycon_data
+‘pip install neuropycon_data’ should do the job…</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">neuropycon_data</span> <span class="kn">as</span> <span class="nn">nd</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Warning, neuropycon_data not found&quot;</span><span class="p">)</span>
+    <span class="nb">exit</span><span class="p">()</span>
+
+<span class="n">data_path</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">nd</span><span class="o">.</span><span class="n">__path__</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="s2">&quot;data_con&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This will be what we will loop on</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">freq_band_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;alpha&#39;</span><span class="p">,</span> <span class="s1">&#39;beta&#39;</span><span class="p">]</span>
+
+<span class="c1">#### parameters</span>
+<span class="n">con_den</span> <span class="o">=</span> <span class="mf">0.1</span> <span class="c1">## density of the threshold</span>
+
+<span class="n">radatools_optim</span> <span class="o">=</span> <span class="s2">&quot;WN tfrf 1&quot;</span> <span class="c1"># The optimisation sequence</span>
+<span class="c1"># see</span>
+<span class="c1"># http://deim.urv.cat/~sergio.gomez/download.php?f=radatools-5.0-README.txt</span>
+<span class="c1"># for more details, but very briefly:</span>
+<span class="c1"># 1) WN for weighted unsigned (typically</span>
+<span class="c1"># coherence, pli, etc.) and WS for signed (e.g. Pearson correlation) +</span>
+<span class="c1"># 2) the optimisation sequence, can be used in different order. The sequence</span>
+<span class="c1"># tfrf is proposed in radatools, and means: t = tabu search , f = fast</span>
+<span class="c1"># algorithm, r = reposition algorithm and f = fast algorithm (again)</span>
+<span class="c1"># 3) the last number is the number of repetitions of the algorithm, out of</span>
+<span class="c1"># which the best one is chosen. The higher the number of repetitions, the</span>
+<span class="c1"># higher the chance to reach the global maximum, but also the longer the</span>
+<span class="c1"># computation takes. For testing, 1 is admissible, but it is expected to</span>
+<span class="c1"># have at least 100 is required for reliable results</span>
+</pre></div>
+</div>
+<p>Then, we create our workflow and specify the <cite>base_dir</cite> which tells
+nipype the directory in which to store the outputs.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># workflow directory within the `base_dir`</span>
+<span class="n">graph_analysis_name</span> <span class="o">=</span> <span class="s1">&#39;graph_analysis&#39;</span>
+
+<span class="n">main_workflow</span> <span class="o">=</span> <span class="n">pe</span><span class="o">.</span><span class="n">Workflow</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">graph_analysis_name</span><span class="p">)</span>
+<span class="n">main_workflow</span><span class="o">.</span><span class="n">base_dir</span> <span class="o">=</span> <span class="n">data_path</span>
+</pre></div>
+</div>
+<p>Then we create a node to pass input filenames to DataGrabber from nipype</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># infosource = create_iterator([&#39;freq_band_name&#39;],</span>
+                             <span class="c1">#[freq_band_names])</span>
+
+<span class="n">infosource</span> <span class="o">=</span> <span class="n">pe</span><span class="o">.</span><span class="n">Node</span><span class="p">(</span>
+        <span class="n">interface</span><span class="o">=</span><span class="n">IdentityInterface</span><span class="p">(</span><span class="n">fields</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;freq_band_name&#39;</span><span class="p">]),</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;infosource&quot;</span><span class="p">)</span>
+
+<span class="n">infosource</span><span class="o">.</span><span class="n">iterables</span> <span class="o">=</span> <span class="p">[(</span><span class="s1">&#39;freq_band_name&#39;</span><span class="p">,</span><span class="n">freq_band_names</span><span class="p">)]</span>
+</pre></div>
+</div>
+<p>and a node to grab data. The template_args in this node iterate upon
+the values in the infosource node</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># template_path = &#39;*%s/conmat_0_coh.npy&#39;</span>
+<span class="c1"># template_args = [[&#39;freq_band_name&#39;]</span>
+<span class="c1"># datasource = create_datagrabber(data_path, template_path, template_args)</span>
+
+<span class="n">datasource</span> <span class="o">=</span> <span class="n">pe</span><span class="o">.</span><span class="n">Node</span><span class="p">(</span><span class="n">interface</span><span class="o">=</span><span class="n">nio</span><span class="o">.</span><span class="n">DataGrabber</span><span class="p">(</span><span class="n">infields</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;freq_band_name&#39;</span><span class="p">],</span>
+                                                <span class="n">outfields</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;conmat_file&#39;</span><span class="p">]),</span>
+                        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;datasource&#39;</span><span class="p">)</span>
+<span class="n">datasource</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">base_directory</span> <span class="o">=</span> <span class="n">data_path</span>
+<span class="n">datasource</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">template</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">/conmat_0_coh.npy&quot;</span><span class="p">)</span>
+<span class="n">datasource</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">template_args</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+    <span class="n">conmat_file</span><span class="o">=</span><span class="p">[[</span><span class="s1">&#39;freq_band_name&#39;</span><span class="p">]])</span>
+
+<span class="n">datasource</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">sort_filelist</span> <span class="o">=</span> <span class="bp">True</span>
+</pre></div>
+</div>
+<dl class="docutils">
+<dt>Ephypype creates for us a pipeline which can be connected to these</dt>
+<dd>nodes we created. The connectivity pipeline is implemented by the function</dd>
+<dt><code class="xref py py-func docutils literal notranslate"><span class="pre">graphpype.pipelines.conmat_to_graph.create_pipeline_conmat_to_graph_density()</span></code>,</dt>
+<dd><p class="first">thus to instantiate this connectivity pipeline node, we import it and pass
+our parameters to it.
+The graph pipeline contains several nodes, some are based on radatools</p>
+<p>In particular, the two nodes are:</p>
+<ul class="last simple">
+<li><code class="xref py py-class docutils literal notranslate"><span class="pre">ephypype.interfaces.mne.spectral.SpectralConn</span></code> computes spectral connectivity in a given frequency bands</li>
+<li><code class="xref py py-class docutils literal notranslate"><span class="pre">ephypype.interfaces.mne.spectral.PlotSpectralConn</span></code> plot connectivity matrix using the <a href="http://martinos.org/mne/stable/generated/mne.viz.plot_connectivity_circle.html#mne.viz.plot_connectivity_circle" target="_blank">spectral_connectivity function</a> function</li>
+</ul>
+</dd>
+</dl>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">graphpype.pipelines.conmat_to_graph</span> <span class="kn">import</span> <a href="http://neuropycon.github.io/graphpype/generated/graphpype.pipelines.create_pipeline_conmat_to_graph_density.html#graphpype.pipelines.create_pipeline_conmat_to_graph_density" title="View documentation for graphpype.pipelines.conmat_to_graph.create_pipeline_conmat_to_graph_density"><span class="n">create_pipeline_conmat_to_graph_density</span></a> <span class="c1"># noqa</span>
+
+<span class="n">graph_workflow</span> <span class="o">=</span> <a href="http://neuropycon.github.io/graphpype/generated/graphpype.pipelines.create_pipeline_conmat_to_graph_density.html#graphpype.pipelines.create_pipeline_conmat_to_graph_density" title="View documentation for graphpype.pipelines.conmat_to_graph.create_pipeline_conmat_to_graph_density"><span class="n">create_pipeline_conmat_to_graph_density</span></a><span class="p">(</span>
+    <span class="n">data_path</span><span class="p">,</span> <span class="n">con_den</span><span class="o">=</span><span class="n">con_den</span><span class="p">,</span> <span class="n">optim_seq</span> <span class="o">=</span> <span class="n">radatools_optim</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>We then connect the nodes two at a time. We connect the output
+of the infosource node to the datasource node.
+So, these two nodes taken together can grab data.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">main_workflow</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">infosource</span><span class="p">,</span> <span class="s1">&#39;freq_band_name&#39;</span><span class="p">,</span>
+                      <span class="n">datasource</span><span class="p">,</span> <span class="s1">&#39;freq_band_name&#39;</span><span class="p">)</span>
+
+<span class="n">main_workflow</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">datasource</span><span class="p">,</span> <span class="s1">&#39;conmat_file&#39;</span><span class="p">,</span>
+                      <span class="n">graph_workflow</span><span class="p">,</span><span class="s2">&quot;inputnode.conmat_file&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>To do so, we first write the workflow graph (optional)</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">main_workflow</span><span class="o">.</span><span class="n">write_graph</span><span class="p">(</span><span class="n">graph2use</span><span class="o">=</span><span class="s1">&#39;colored&#39;</span><span class="p">)</span>  <span class="c1"># colored</span>
+</pre></div>
+</div>
+<p>and visualize it. Take a moment to pause and notice how the connections
+here correspond to how we connected the nodes.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">scipy.misc</span> <span class="kn">import</span> <span class="n">imread</span>  <span class="c1"># noqa</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>  <span class="c1"># noqa</span>
+<span class="n">img</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="n">graph_analysis_name</span><span class="p">,</span> <span class="s1">&#39;graph.png&#39;</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;off&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<img alt="../_images/sphx_glr_plot_conmat_to_graph_001.png" class="sphx-glr-single-img" src="../_images/sphx_glr_plot_conmat_to_graph_001.png" />
+<p>Finally, we are now ready to execute our workflow.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">main_workflow</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;execution&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;remove_unnecessary_outputs&#39;</span><span class="p">:</span> <span class="s1">&#39;false&#39;</span><span class="p">}</span>
+
+<span class="c1"># Run workflow locally on 2 CPUs</span>
+<span class="c1">#main_workflow.run(plugin=&#39;MultiProc&#39;, plugin_args={&#39;n_procs&#39;: 2})</span>
+
+<span class="c1"># Run workflow</span>
+<span class="c1">#main_workflow.run()</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#   &lt;a href=&quot;https://github.com/neuropycon/graphpype&quot; target=&quot;_blank&quot;&gt;graphpype&lt;/a&gt;</span>
+
+<span class="c1"># now for viewing it, we will use visbrain, and special functions in utils_visbrain:</span>
+
+<span class="kn">from</span> <span class="nn">graphpype.utils_visbrain</span> <span class="kn">import</span> <span class="n">visu_graph_modules</span>
+
+<span class="n">labels_file</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="s2">&quot;correct_channel_names.txt&quot;</span><span class="p">)</span>
+<span class="n">coords_file</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="s2">&quot;correct_channel_coords.txt&quot;</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">freq_band_name</span> <span class="ow">in</span> <span class="n">freq_band_names</span><span class="p">:</span>
+
+    <span class="n">res_path</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+        <span class="n">data_path</span><span class="p">,</span><span class="n">graph_analysis_name</span><span class="p">,</span> <span class="s2">&quot;graph_den_pipe_den_0_1&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;_freq_band_name_&quot;</span><span class="o">+</span><span class="n">freq_band_name</span><span class="p">)</span>
+
+    <span class="n">lol_file</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">res_path</span><span class="p">,</span><span class="s2">&quot;community_rada&quot;</span><span class="p">,</span> <span class="s2">&quot;Z_List.lol&quot;</span><span class="p">)</span>
+
+    <span class="k">print</span><span class="p">(</span><span class="n">lol_file</span><span class="p">)</span>
+
+    <span class="n">net_file</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">res_path</span><span class="p">,</span><span class="s2">&quot;prep_rada&quot;</span><span class="p">,</span> <span class="s2">&quot;Z_List.net&quot;</span><span class="p">)</span>
+
+    <span class="n">visu</span> <span class="o">=</span> <span class="n">visu_graph_modules</span><span class="p">(</span><span class="n">lol_file</span><span class="o">=</span><span class="n">lol_file</span><span class="p">,</span> <span class="n">net_file</span><span class="o">=</span><span class="n">net_file</span><span class="p">,</span>
+                             <span class="n">coords_file</span><span class="o">=</span><span class="n">coords_file</span><span class="p">,</span>
+                             <span class="n">labels_file</span><span class="o">=</span><span class="n">labels_file</span><span class="p">,</span>
+                             <span class="n">modality_type</span> <span class="o">=</span> <span class="s2">&quot;MEG&quot;</span><span class="p">,</span><span class="n">inter_modules</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+                             <span class="c1">#x_offset=0, y_offset=-20, z_offset=-50)</span>
+    <span class="c1">#visu.show()</span>
+</pre></div>
+</div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/INT/meunier.d/miniconda3/Packages/neuropycon_data/neuropycon_data/data/data_con/graph_analysis/graph_den_pipe_den_0_1/_freq_band_name_alpha/community_rada/Z_List.lol
+[[-0.01169767  0.06735829  0.07811   ]
+ [-0.03020124  0.05566132  0.080258  ]
+ [-0.05000447  0.04727928  0.076722  ]
+ [-0.06875128  0.03443539  0.070259  ]
+ [-0.08337567  0.02077833  0.062335  ]
+ [-0.09298313  0.00379575  0.052885  ]
+ [-0.09683898 -0.014437    0.038792  ]
+ [-0.03298441  0.03488228  0.086154  ]
+ [-0.05249561  0.02641609  0.082094  ]
+ [-0.06886796  0.01339402  0.07607   ]
+ [-0.0805529  -0.00272307  0.070185  ]
+ [-0.08830561 -0.02073873  0.057773  ]
+ [-0.06167173 -0.00569009  0.083809  ]
+ [-0.07565618 -0.02508391  0.074823  ]
+ [-0.04451166  0.00752149  0.089505  ]
+ [-0.05734353 -0.02674419  0.087023  ]
+ [-0.01180656  0.03164091  0.090142  ]
+ [-0.04113806 -0.01353119  0.093673  ]
+ [-0.03929534 -0.03684309  0.093657  ]
+ [-0.02940221 -0.05599225  0.091234  ]
+ [-0.01241821 -0.0045764   0.098044  ]
+ [-0.02237569 -0.02390021  0.098291  ]
+ [-0.01197768 -0.04395729  0.097628  ]
+ [-0.02350423  0.12299415 -0.013855  ]
+ [-0.04486451  0.11501657 -0.016414  ]
+ [-0.06384467  0.10335073 -0.021628  ]
+ [-0.07782841  0.08797257 -0.031166  ]
+ [-0.01182     0.12408451  0.006151  ]
+ [-0.03326654  0.11890849  0.005424  ]
+ [-0.05227004  0.11086656  0.003291  ]
+ [-0.07026166  0.09609369 -0.001933  ]
+ [-0.08167649  0.08019864 -0.010939  ]
+ [-0.02282116  0.11713507  0.025365  ]
+ [-0.04382082  0.11089697  0.023509  ]
+ [-0.06347839  0.09878282  0.020008  ]
+ [-0.07773932  0.08369457  0.013821  ]
+ [-0.08731849  0.06637824  0.00503   ]
+ [-0.01185959  0.11002016  0.043774  ]
+ [-0.03325877  0.10655887  0.042789  ]
+ [-0.05419761  0.09633694  0.040021  ]
+ [-0.07093554  0.08326606  0.035722  ]
+ [-0.08438754  0.06689513  0.026123  ]
+ [-0.09407419  0.04747727  0.013505  ]
+ [-0.01915906  0.09703273  0.05981   ]
+ [-0.0422171   0.08958194  0.057291  ]
+ [-0.06075108  0.07805964  0.053887  ]
+ [-0.07635905  0.06364951  0.047122  ]
+ [-0.09026642  0.04754727  0.034487  ]
+ [-0.10008884  0.02820295  0.020804  ]
+ [-0.02916462  0.07789277  0.07029   ]
+ [-0.04842409  0.06769275  0.06924   ]
+ [-0.06564143  0.05518332  0.063934  ]
+ [-0.08036552  0.04295108  0.055301  ]
+ [-0.09353538  0.02842781  0.042808  ]
+ [-0.10046078  0.01138937  0.033121  ]
+ [-0.10224269 -0.00693884  0.019627  ]
+ [-0.02451256 -0.1198447   0.011311  ]
+ [-0.04574557 -0.11190531  0.010274  ]
+ [-0.06510474 -0.10043603  0.009318  ]
+ [-0.08097504 -0.0842348   0.008394  ]
+ [-0.01417466 -0.1253771  -0.007517  ]
+ [-0.03528109 -0.11921608 -0.007536  ]
+ [-0.05593285 -0.10902243 -0.008894  ]
+ [-0.07361688 -0.09469999 -0.009809  ]
+ [-0.02437468 -0.12345023 -0.026236  ]
+ [-0.045759   -0.11645271 -0.027186  ]
+ [-0.06480492 -0.10349356 -0.028062  ]
+ [-0.08070704 -0.08698899 -0.028783  ]
+ [-0.0134124  -0.12591591 -0.045048  ]
+ [-0.03528887 -0.12084455 -0.045982  ]
+ [-0.05545414 -0.11098465 -0.046631  ]
+ [-0.07301655 -0.09658159 -0.047041  ]
+ [-0.02416113 -0.1247895  -0.064815  ]
+ [-0.04575334 -0.11720224 -0.065589  ]
+ [-0.06559759 -0.10585742 -0.065654  ]
+ [-0.01915482 -0.07369679  0.083524  ]
+ [-0.05034954 -0.05363193  0.085091  ]
+ [-0.01192394 -0.0897566   0.070234  ]
+ [-0.04104543 -0.07232783  0.078563  ]
+ [-0.06810994 -0.04493381  0.076234  ]
+ [-0.02159716 -0.10073514  0.053978  ]
+ [-0.03736706 -0.08881332  0.06426   ]
+ [-0.05788588 -0.07820247  0.064836  ]
+ [-0.07438056 -0.06106291  0.063186  ]
+ [-0.08309848 -0.04131271  0.060866  ]
+ [-0.04351959 -0.10043603  0.045861  ]
+ [-0.06091654 -0.08934648  0.046436  ]
+ [-0.07699756 -0.07600196  0.045412  ]
+ [-0.08746345 -0.05567193  0.045149  ]
+ [-0.09364922 -0.03522665  0.04285   ]
+ [-0.01199536 -0.11512971  0.032549  ]
+ [-0.03472248 -0.11111264  0.028629  ]
+ [-0.05437298 -0.10210268  0.028217  ]
+ [-0.07228753 -0.08904454  0.02777   ]
+ [-0.08620127 -0.07230945  0.026043  ]
+ [-0.09554709 -0.05122706  0.025629  ]
+ [-0.09939376 -0.02983566  0.023083  ]
+ [-0.0941541   0.05045914 -0.007955  ]
+ [-0.10056189  0.03102077 -0.000882  ]
+ [-0.10319092  0.01076075  0.00641   ]
+ [-0.1056764  -0.02102016  0.003534  ]
+ [-0.10435057 -0.04356485  0.006045  ]
+ [-0.09334587 -0.06568244  0.007033  ]
+ [-0.08940941  0.06444854 -0.023789  ]
+ [-0.09991631  0.03511139 -0.022262  ]
+ [-0.10650866  0.01471914 -0.014781  ]
+ [-0.11001662 -0.00751018 -0.01318   ]
+ [-0.11109284 -0.03510856 -0.013454  ]
+ [-0.1052486  -0.05782153 -0.012228  ]
+ [-0.08731496 -0.07633642 -0.010856  ]
+ [-0.08713253  0.0717572  -0.044091  ]
+ [-0.09595864  0.04933201 -0.038122  ]
+ [-0.11260039  0.01999769 -0.035861  ]
+ [-0.11398844 -0.0029854  -0.034358  ]
+ [-0.11228432 -0.02504007 -0.032873  ]
+ [-0.11006188 -0.04782234 -0.031443  ]
+ [-0.09720809 -0.06955738 -0.029916  ]
+ [-0.09393135  0.05594275 -0.058704  ]
+ [-0.10133406  0.0334108  -0.052192  ]
+ [-0.11153053  0.0070541  -0.053989  ]
+ [-0.11503849 -0.0153124  -0.052498  ]
+ [-0.11228997 -0.03776374 -0.050807  ]
+ [-0.10525072 -0.06089109 -0.048837  ]
+ [-0.08693454 -0.07851431 -0.04779   ]
+ [-0.10409814  0.04115008 -0.072841  ]
+ [-0.10947356  0.01824406 -0.072897  ]
+ [-0.1127305  -0.00495328 -0.072105  ]
+ [-0.11453857 -0.02805941 -0.070342  ]
+ [-0.10987662 -0.05121787 -0.068101  ]
+ [-0.09614884 -0.07160375 -0.066662  ]
+ [-0.08060593 -0.08876312 -0.065854  ]
+ [ 0.00996455  0.06746506  0.078088  ]
+ [ 0.02864419  0.05579143  0.080633  ]
+ [ 0.04873804  0.04767738  0.077441  ]
+ [ 0.06786528  0.03497067  0.071046  ]
+ [ 0.0823843   0.02109087  0.063331  ]
+ [ 0.09304677  0.00483378  0.053617  ]
+ [ 0.09782539 -0.0142284   0.039429  ]
+ [ 0.03166636  0.03497845  0.086709  ]
+ [ 0.05132605  0.02664096  0.082979  ]
+ [ 0.06797983  0.01367544  0.077047  ]
+ [ 0.08005722 -0.00221749  0.071398  ]
+ [ 0.08869594 -0.02086601  0.058763  ]
+ [ 0.06066693 -0.00553806  0.084828  ]
+ [ 0.0755381  -0.02552019  0.075803  ]
+ [ 0.04334353  0.00754412  0.090231  ]
+ [ 0.05631257 -0.02678238  0.088096  ]
+ [ 0.01022264  0.03169606  0.090146  ]
+ [ 0.02238912  0.01360261  0.093587  ]
+ [ 0.03986456 -0.0136507   0.094371  ]
+ [ 0.03785072 -0.0370927   0.094351  ]
+ [ 0.0275807  -0.05632742  0.091836  ]
+ [ 0.01070984 -0.00455518  0.098062  ]
+ [ 0.02089006 -0.02407769  0.098783  ]
+ [ 0.0101689  -0.04427974  0.097894  ]
+ [ 0.02207587  0.1233675  -0.01386   ]
+ [ 0.04360091  0.11567206 -0.016348  ]
+ [ 0.06266592  0.10426926 -0.021718  ]
+ [ 0.07709939  0.08910748 -0.031254  ]
+ [ 0.01040861  0.12437018  0.006164  ]
+ [ 0.03187849  0.11947064  0.005478  ]
+ [ 0.05121575  0.11161539  0.003259  ]
+ [ 0.06960759  0.09715647 -0.001981  ]
+ [ 0.0820258   0.08177549 -0.010894  ]
+ [ 0.02151584  0.11747165  0.025419  ]
+ [ 0.04233448  0.11146407  0.023462  ]
+ [ 0.06296998  0.09968438  0.020274  ]
+ [ 0.07735182  0.08472554  0.013906  ]
+ [ 0.08709081  0.06726212  0.004958  ]
+ [ 0.01024173  0.10999187  0.043752  ]
+ [ 0.03179576  0.10707435  0.043027  ]
+ [ 0.05323878  0.0970398   0.040365  ]
+ [ 0.07032884  0.084215    0.036266  ]
+ [ 0.08443916  0.06796499  0.026084  ]
+ [ 0.09428491  0.04848419  0.013366  ]
+ [ 0.01755675  0.09705253  0.059866  ]
+ [ 0.04111473  0.09001823  0.057728  ]
+ [ 0.05982336  0.07865927  0.054375  ]
+ [ 0.07575376  0.0644938   0.047964  ]
+ [ 0.09043755  0.04833216  0.034777  ]
+ [ 0.10052866  0.0292523   0.020861  ]
+ [ 0.0279187   0.07810914  0.070559  ]
+ [ 0.04733726  0.06826055  0.069741  ]
+ [ 0.06478018  0.0558084   0.064776  ]
+ [ 0.08044825  0.04365041  0.055718  ]
+ [ 0.09408056  0.02915684  0.043729  ]
+ [ 0.10101162  0.01258084  0.032837  ]
+ [ 0.10339669 -0.00707036  0.019713  ]
+ [ 0.0225164  -0.12075616  0.011355  ]
+ [ 0.04424296 -0.11313355  0.010184  ]
+ [ 0.06407589 -0.10197823  0.00927   ]
+ [ 0.08076998 -0.08561508  0.008154  ]
+ [ 0.01177121 -0.12586713 -0.007314  ]
+ [ 0.03335918 -0.12023856 -0.007553  ]
+ [ 0.05455824 -0.11051019 -0.009155  ]
+ [ 0.07288221 -0.09617713 -0.010228  ]
+ [ 0.02206527 -0.1241333  -0.026395  ]
+ [ 0.04390568 -0.11724538 -0.027494  ]
+ [ 0.06364527 -0.10510435 -0.028352  ]
+ [ 0.08029834 -0.08866765 -0.029225  ]
+ [ 0.01083641 -0.12639605 -0.044947  ]
+ [ 0.03297168 -0.12184935 -0.04617   ]
+ [ 0.05373587 -0.11267746 -0.046983  ]
+ [ 0.07216378 -0.09847523 -0.047423  ]
+ [ 0.02153352 -0.12548245 -0.064893  ]
+ [ 0.04356626 -0.11869919 -0.065711  ]
+ [ 0.06343313 -0.10679433 -0.065936  ]
+ [ 0.0174514  -0.0739365   0.08372   ]
+ [ 0.0489332  -0.05416014  0.085852  ]
+ [ 0.01009183 -0.08989024  0.070347  ]
+ [ 0.0394014  -0.07289705  0.07904   ]
+ [ 0.06741839 -0.04539201  0.077272  ]
+ [ 0.01970282 -0.10120395  0.054124  ]
+ [ 0.03584183 -0.08940516  0.064713  ]
+ [ 0.05673047 -0.07913303  0.065459  ]
+ [ 0.07391882 -0.06158122  0.06436   ]
+ [ 0.08321092 -0.04178435  0.061978  ]
+ [ 0.04174051 -0.10167205  0.046361  ]
+ [ 0.05960203 -0.09050401  0.046873  ]
+ [ 0.07659663 -0.0775385   0.045961  ]
+ [ 0.08776326 -0.05643561  0.045904  ]
+ [ 0.09452179 -0.03547131  0.04355   ]
+ [ 0.00993273 -0.11544155  0.032614  ]
+ [ 0.03295825 -0.11218249  0.028791  ]
+ [ 0.07171265 -0.09055705  0.027998  ]
+ [ 0.08627834 -0.07366214  0.026131  ]
+ [ 0.09659998 -0.05175527  0.026004  ]
+ [ 0.10060574 -0.03005487  0.023323  ]
+ [ 0.09410884  0.05150707 -0.008188  ]
+ [ 0.10078464  0.03189122 -0.001145  ]
+ [ 0.10342992  0.01114966  0.006106  ]
+ [ 0.10697041 -0.02098622  0.003238  ]
+ [ 0.10546073 -0.04361435  0.005843  ]
+ [ 0.09329779 -0.06701039  0.006767  ]
+ [ 0.08905797  0.06558062 -0.024063  ]
+ [ 0.10025643  0.03623639 -0.022482  ]
+ [ 0.10700081  0.01529331 -0.015138  ]
+ [ 0.11134033 -0.00732916 -0.013508  ]
+ [ 0.1123727  -0.03529948 -0.013815  ]
+ [ 0.10595995 -0.05861915 -0.012689  ]
+ [ 0.08652866  0.07295927 -0.044332  ]
+ [ 0.09566236  0.05053197 -0.038429  ]
+ [ 0.10743922  0.02009739 -0.036366  ]
+ [ 0.1126711  -0.00263397 -0.03482   ]
+ [ 0.11327851 -0.02497925 -0.033286  ]
+ [ 0.11074989 -0.04824872 -0.03192   ]
+ [ 0.09671736 -0.0704441  -0.030263  ]
+ [ 0.09356578  0.05713706 -0.058908  ]
+ [ 0.10149528  0.0346751  -0.052514  ]
+ [ 0.11268807  0.00766009 -0.054295  ]
+ [ 0.11367237 -0.0149645  -0.05295   ]
+ [ 0.11333932 -0.03798719 -0.051223  ]
+ [ 0.1059444  -0.06183225 -0.049271  ]
+ [ 0.10032148  0.04119039 -0.073228  ]
+ [ 0.11068908  0.01916259 -0.073138  ]
+ [ 0.11615997 -0.0046662  -0.072433  ]
+ [ 0.11485606 -0.02799648 -0.070754  ]
+ [ 0.1111282  -0.05191649 -0.068554  ]
+ [ 0.09733962 -0.07344789 -0.066947  ]
+ [-0.00088176  0.04988992  0.085042  ]
+ [-0.0005374   0.01353119  0.094955  ]
+ [-0.00081176 -0.02445599  0.100261  ]
+ [-0.00093621 -0.06379235  0.09148   ]
+ [-0.00074246  0.126302   -0.012842  ]
+ [-0.0007361   0.11992319  0.026102  ]
+ [-0.00069226  0.08741324  0.067079  ]
+ [-0.00127703 -0.12198016  0.014775  ]
+ [-0.00123249 -0.12608632 -0.026367  ]
+ [-0.00140573 -0.12739801 -0.063204  ]
+ [-0.00095813 -0.10629866  0.049042  ]]
+[[  67.35828519  -11.69766765   78.11000198]
+ [  55.66132441  -30.20123765   80.25799692]
+ [  47.27927968  -50.00447109   76.72200352]
+ [  34.43539143  -68.75128299   70.25899738]
+ [  20.77833191  -83.37567002   62.33499944]
+ [   3.79574928  -92.98312664   52.88499966]
+ [ -14.43699934  -96.83898091   38.79199922]
+ [  34.8822847   -32.98440948   86.15399897]
+ [  26.41609497  -52.49560624   82.09399879]
+ [  13.39401677  -68.86795908   76.07000321]
+ [  -2.72306823  -80.55289835   70.18499821]
+ [ -20.73873393  -88.30561489   57.77300149]
+ [  -5.6900885   -61.67173386   83.80900323]
+ [ -25.08390509  -75.65618306   74.82299954]
+ [   7.52149476  -44.51166466   89.5050019 ]
+ [ -26.74419247  -57.3435314    87.02299744]
+ [  31.64090589  -11.80656161   90.14199674]
+ [ -13.531195    -41.13805667   93.67299825]
+ [ -36.84309125  -39.29533809   93.65700185]
+ [ -55.9922494   -29.40220758   91.23399854]
+ [  -4.57639527  -12.41820958   98.04400057]
+ [ -23.90020899  -22.37568609   98.29100221]
+ [ -43.95729303  -11.97768189   97.6279974 ]
+ [ 122.99415469  -23.50422926  -13.85500003]
+ [ 115.01657218  -44.86450925  -16.41399972]
+ [ 103.35072875  -63.84467334  -21.62799984]
+ [  87.97256649  -77.82841474  -31.16600029]
+ [ 124.08450991  -11.81999687    6.15100004]
+ [ 118.90848726  -33.26654434    5.42399986]
+ [ 110.86656153  -52.27003992    3.29099991]
+ [  96.09369189  -70.26166469   -1.93300005]
+ [  80.19863814  -81.6764906   -10.93900017]
+ [ 117.13507026  -22.82116376   25.36500059]
+ [ 110.89696735  -43.82082075   23.5089995 ]
+ [  98.78281504  -63.47838789   20.00799961]
+ [  83.69456977  -77.7393207    13.82100023]
+ [  66.37823582  -87.31849492    5.03000012]
+ [ 110.02016068  -11.85959484   43.7740013 ]
+ [ 106.55887425  -33.25876594   42.78900102]
+ [  96.33693844  -54.19761315   40.02099857]
+ [  83.26606452  -70.9355399    35.72199866]
+ [  66.8951273   -84.38754082   26.12300031]
+ [  47.47727141  -94.07418966   13.50499969]
+ [  97.03272581  -19.15905811   59.8100014 ]
+ [  89.58194405  -42.2171019    57.29100108]
+ [  78.05963606  -60.75108051   53.88699844]
+ [  63.64951283  -76.35904849   47.12200165]
+ [  47.54727334  -90.26642144   34.4870016 ]
+ [  28.20295468 -100.08884221   20.80399916]
+ [  77.8927654   -29.16461974   70.28999925]
+ [  67.6927492   -48.42408746   69.23999637]
+ [  55.18332124  -65.641433     63.93399835]
+ [  42.95108095  -80.36551625   55.30099943]
+ [  28.4278132   -93.53537858   42.808     ]
+ [  11.38936915 -100.46078265   33.12100098]
+ [  -6.93883887 -102.24269331   19.62699927]
+ [-119.84469742  -24.5125629    11.31100021]
+ [-111.90530658  -45.74556649   10.27399953]
+ [-100.43603182  -65.10473788    9.31799971]
+ [ -84.23480392  -80.97504079    8.39400012]
+ [-125.37710369  -14.17466253   -7.51700019]
+ [-119.21608448  -35.28109193   -7.53600011]
+ [-109.02243108  -55.93285337   -8.8940002 ]
+ [ -94.69998628  -73.61688465   -9.80900042]
+ [-123.45023453  -24.37467873  -26.23599954]
+ [-116.45270884  -45.75899988  -27.18600072]
+ [-103.49356383  -64.80491906  -28.06200087]
+ [ -86.98898554  -80.70704341  -28.78299914]
+ [-125.91591477  -13.41240108  -45.04799843]
+ [-120.84455043  -35.28887033  -45.98199949]
+ [-110.98465323  -55.45414239  -46.63100094]
+ [ -96.58159316  -73.01655412  -47.04099894]
+ [-124.78949875  -24.16113205  -64.8149997 ]
+ [-117.2022447   -45.75334489  -65.58900326]
+ [-105.85741699  -65.59758633  -65.65400213]
+ [ -73.69679213  -19.154815     83.52400362]
+ [ -53.63192782  -50.34953728   85.09100229]
+ [ -89.75660056  -11.92394178   70.23400068]
+ [ -72.3278299   -41.04542732   78.56299728]
+ [ -44.9338071   -68.10993701   76.23399794]
+ [-100.73514283  -21.59716189   53.97799984]
+ [ -88.8133198   -37.36705706   64.2599985 ]
+ [ -78.20247114  -57.88588151   64.83600289]
+ [ -61.06291339  -74.38056171   63.18599731]
+ [ -41.31271318  -83.09847862   60.86599827]
+ [-100.43603182  -43.51959378   45.86099833]
+ [ -89.3464759   -60.91654301   46.43600062]
+ [ -76.00195706  -76.99756324   45.41200027]
+ [ -55.67193031  -87.46345341   45.1489985 ]
+ [ -35.22664681  -93.64922345   42.84999892]
+ [-115.12970924  -11.99535932   32.54900128]
+ [-111.11263931  -34.7224772    28.62899937]
+ [-102.10268199  -54.37297747   28.21700089]
+ [ -89.04454112  -72.28752971   27.76999958]
+ [ -72.30944932  -86.20126545   26.0429997 ]
+ [ -51.22705922  -95.54709494   25.62900074]
+ [ -29.83566374  -99.3937552    23.08299951]
+ [  50.45913905  -94.15409714   -7.9549998 ]
+ [  31.02077357 -100.56189448   -0.88200002]
+ [  10.76075062 -103.19092125    6.40999991]
+ [ -21.02016285 -105.67639768    3.5339999 ]
+ [ -43.5648486  -104.35057431    6.04500016]
+ [ -65.682441    -93.34587306    7.03299977]
+ [  64.44854289  -89.40941095  -23.78899977]
+ [  35.11138633  -99.91630912  -22.26199955]
+ [  14.71913513 -106.50866479  -14.78100009]
+ [  -7.51018105 -110.01662165  -13.17999978]
+ [ -35.10855883 -111.09283566  -13.45400047]
+ [ -57.82153457 -105.24860024  -12.22799998]
+ [ -76.33642107  -87.31495589  -10.85599978]
+ [  71.75719738  -87.13252842  -44.09100115]
+ [  49.33201149  -95.95863521  -38.12199831]
+ [  19.99768615 -112.60039359  -35.86100042]
+ [  -2.9854048  -113.98844421  -34.35799852]
+ [ -25.04006587 -112.28431761  -32.87300095]
+ [ -47.8223376  -110.06187648  -31.44299984]
+ [ -69.55738366  -97.20809013  -29.91599962]
+ [  55.94275147  -93.93135458  -58.70399997]
+ [  33.41079503 -101.33405775  -52.19199881]
+ [   7.05409702 -111.53053492  -53.98900062]
+ [ -15.31239692 -115.03849179  -52.49800161]
+ [ -37.76374459 -112.2899726   -50.80699921]
+ [ -60.8910881  -105.25072366  -48.83699864]
+ [ -78.51430774  -86.9345367   -47.78999835]
+ [  41.15007818 -104.09814119  -72.84100354]
+ [  18.24406162 -109.47356373  -72.8970021 ]
+ [  -4.95328289 -112.73049563  -72.10499793]
+ [ -28.05941179 -114.53857273  -70.34199685]
+ [ -51.2178652  -109.87661779  -68.10099632]
+ [ -71.60375267  -96.14884108  -66.66199863]
+ [ -88.76311779  -80.60593158  -65.85399806]
+ [  67.46505946    9.96454898   78.08800042]
+ [  55.7914339    28.64418924   80.63299954]
+ [  47.67738283   48.73804376   77.44099945]
+ [  34.97067466   67.8652823    71.04600221]
+ [  21.09087445   82.38430321   63.33100051]
+ [   4.83378209   93.0467695    53.61700058]
+ [ -14.22840264   97.82539308   39.42900151]
+ [  34.97844934   31.66636452   86.70900017]
+ [  26.64095536   51.32605135   82.9790011 ]
+ [  13.67544476   67.97983497   77.04699785]
+ [  -2.21748697   80.05721867   71.39799744]
+ [ -20.86601406   88.6959359    58.76300111]
+ [  -5.53806033   60.66693366   84.82799679]
+ [ -25.5201906    75.53809881   75.80299675]
+ [   7.54412217   43.34352538   90.23100138]
+ [ -26.78237669   56.31256849   88.09600025]
+ [  31.69606254   10.22264268   90.1459977 ]
+ [  13.60261347   22.38912135   93.58700365]
+ [ -13.65069672   39.86455873   94.37099844]
+ [ -37.0927006    37.85071895   94.35100108]
+ [ -56.32741749   27.58070081   91.835998  ]
+ [  -4.55518207   10.70983894   98.06200117]
+ [ -24.077693     20.89005522   98.7830013 ]
+ [ -44.27973554   10.16890258   97.89399803]
+ [ 123.36750329   22.07587287  -13.8600003 ]
+ [ 115.67205936   43.60090941  -16.34800062]
+ [ 104.26925868   62.66592443  -21.71799913]
+ [  89.10747617   77.09939033  -31.25400096]
+ [ 124.37018007   10.40861197    6.1639999 ]
+ [ 119.47064102   31.87849373    5.4779998 ]
+ [ 111.61538959   51.21574551    3.2589999 ]
+ [  97.1564725    69.60759312   -1.98099995]
+ [  81.77548647   82.02580363  -10.8939996 ]
+ [ 117.47165024   21.51584439   25.41900054]
+ [ 111.46406829   42.33448207   23.46199937]
+ [  99.68437999   62.96998262   20.27400024]
+ [  84.72553641   77.35182345   13.90600018]
+ [  67.26212054   87.09080517    4.95800003]
+ [ 109.99187082   10.2417348    43.75199974]
+ [ 107.07435012   31.79576248   43.02699864]
+ [  97.03979641   53.23877558   40.36499932]
+ [  84.21500027   70.32883912   36.26599908]
+ [  67.96498597   84.43915844   26.08400024]
+ [  48.4841913    94.28491443   13.3659998 ]
+ [  97.05252945   17.55675487   59.86599997]
+ [  90.0182277    41.11472517   57.72799999]
+ [  78.65926623   59.82335657   54.3750003 ]
+ [  64.49379772   75.75376332   47.96399921]
+ [  48.3321622    90.43754637   34.77700055]
+ [  29.25230004  100.52866489   20.86099982]
+ [  78.10913771   27.9186964    70.55900246]
+ [  68.2605505    47.33726382   69.74100322]
+ [  55.8084026    64.78017569   64.77600336]
+ [  43.65040734   80.44824749   55.71800098]
+ [  29.15684134   94.08055991   43.72899979]
+ [  12.58084364  101.01161897   32.83699974]
+ [  -7.07036071  103.39669138   19.71299946]
+ [-120.75616419   22.51640148   11.35499962]
+ [-113.13354969   44.24296319   10.18400025]
+ [-101.97823495   64.07589465    9.27000027]
+ [ -85.61507612   80.76997846    8.15400016]
+ [-125.86712837   11.77120674   -7.31399981]
+ [-120.23855746   33.35917741   -7.553     ]
+ [-110.51018536   54.55823615   -9.15499963]
+ [ -96.17713094   72.88220525  -10.22799965]
+ [-124.13330376   22.06526697  -26.39500052]
+ [-117.24537611   43.90567541  -27.49400027]
+ [-105.10434955   63.645266    -28.35199982]
+ [ -88.6676535    80.29834181  -29.22499925]
+ [-126.39604509   10.83641127  -44.94699836]
+ [-121.84935063   32.97168389  -46.16999999]
+ [-112.6774624    53.73587087  -46.98299989]
+ [ -98.47522527   72.16378301  -47.42300138]
+ [-125.4824549    21.53352275  -64.89299983]
+ [-118.69918555   43.56626421  -65.71099907]
+ [-106.79433495   63.43313307  -65.93599916]
+ [ -73.93649966   17.45139621   83.7199986 ]
+ [ -54.16013673   48.93320426   85.85199714]
+ [ -89.89024162   10.09182818   70.34700364]
+ [ -72.89705426   39.40140456   79.03999835]
+ [ -45.39201409   67.41838902   77.27199793]
+ [-101.20394826   19.70282383   54.12400141]
+ [ -89.40516412   35.84183007   64.71300125]
+ [ -79.1330263    56.73047155   65.45899808]
+ [ -61.5812242    73.91881943   64.36000019]
+ [ -41.78435355   83.21091533   61.97800115]
+ [-101.67205334   41.74051434   46.36099935]
+ [ -90.504013     59.60202962   46.87299952]
+ [ -77.53849775   76.5966326    45.96100003]
+ [ -56.43560737   87.76326478   45.90399936]
+ [ -35.47130525   94.52179074   43.54999959]
+ [-115.44154584    9.93272942   32.61400014]
+ [-112.18249053   32.95824677   28.7909992 ]
+ [ -90.55704623   71.71265036   27.99800038]
+ [ -73.66213948   86.27834171   26.13100037]
+ [ -51.75526813   96.59998119   26.00399964]
+ [ -30.05486727  100.60574114   23.32299948]
+ [  51.50707066   94.10884231   -8.18799995]
+ [  31.89122304  100.78463703   -1.14499999]
+ [  11.14965975  103.42992097    6.10599993]
+ [ -20.98622173  106.97040707    3.23799998]
+ [ -43.61434653  105.46073318    5.84300002]
+ [ -67.01038778   93.29778701    6.76700007]
+ [  65.58062136   89.05797452  -24.06300046]
+ [  36.2363942   100.25642812  -22.48200029]
+ [  15.29330574  107.00081289  -15.13800025]
+ [  -7.32916174  111.34032905  -13.50800041]
+ [ -35.29947624  112.37270385  -13.81499972]
+ [ -58.61915275  105.95995188  -12.689     ]
+ [  72.95927405   86.52865887  -44.33200136]
+ [  50.5319722    95.66235542  -38.42899948]
+ [  20.09738982  107.43921995  -36.36600077]
+ [  -2.63397279  112.6710996   -34.82000157]
+ [ -24.97925423  113.27850819  -33.28600153]
+ [ -48.24872315  110.74989289  -31.92000091]
+ [ -70.44409961   96.71735764  -30.26299924]
+ [  57.13705719   93.56578439  -58.90800059]
+ [  34.67510268  101.49528086  -52.51400173]
+ [   7.66008766  112.68807203  -54.29499969]
+ [ -14.96450044  113.67236823  -52.94999853]
+ [ -37.98719123  113.33931983  -51.22299865]
+ [ -61.83224544  105.94439507  -49.27099869]
+ [  41.19038582  100.32147914  -73.22800159]
+ [  19.16259341  110.68908125  -73.13799858]
+ [  -4.66619758  116.15996808  -72.43300229]
+ [ -27.9964786   114.85606432  -70.75399905]
+ [ -51.91648751  111.12819612  -68.55399907]
+ [ -73.44789058   97.33961523  -66.94699824]
+ [  49.88991842   -0.88176213   85.04199982]
+ [  13.531195     -0.53740118   94.9549973 ]
+ [ -24.45599437   -0.81175857  100.26100278]
+ [ -63.79234791   -0.9362094    91.48000181]
+ [ 126.30200386   -0.74246211  -12.84200046]
+ [ 119.92318928   -0.73609815   26.10200085]
+ [  87.41324395   -0.69225754   67.07900017]
+ [-121.98016047   -1.27703487   14.77499958]
+ [-126.08632445   -1.23248715  -26.36699937]
+ [-127.39801407   -1.40572828  -63.20399791]
+ [-106.29865527   -0.95812971   49.04200137]]
+(270, 3)
+/home/INT/meunier.d/miniconda3/Packages/neuropycon_data/neuropycon_data/data/data_con/graph_analysis/graph_den_pipe_den_0_1/_freq_band_name_beta/community_rada/Z_List.lol
+[[-0.01169767  0.06735829  0.07811   ]
+ [-0.03020124  0.05566132  0.080258  ]
+ [-0.05000447  0.04727928  0.076722  ]
+ [-0.06875128  0.03443539  0.070259  ]
+ [-0.08337567  0.02077833  0.062335  ]
+ [-0.09298313  0.00379575  0.052885  ]
+ [-0.09683898 -0.014437    0.038792  ]
+ [-0.03298441  0.03488228  0.086154  ]
+ [-0.05249561  0.02641609  0.082094  ]
+ [-0.06886796  0.01339402  0.07607   ]
+ [-0.0805529  -0.00272307  0.070185  ]
+ [-0.08830561 -0.02073873  0.057773  ]
+ [-0.06167173 -0.00569009  0.083809  ]
+ [-0.07565618 -0.02508391  0.074823  ]
+ [-0.04451166  0.00752149  0.089505  ]
+ [-0.05734353 -0.02674419  0.087023  ]
+ [-0.01180656  0.03164091  0.090142  ]
+ [-0.04113806 -0.01353119  0.093673  ]
+ [-0.03929534 -0.03684309  0.093657  ]
+ [-0.02940221 -0.05599225  0.091234  ]
+ [-0.01241821 -0.0045764   0.098044  ]
+ [-0.02237569 -0.02390021  0.098291  ]
+ [-0.01197768 -0.04395729  0.097628  ]
+ [-0.02350423  0.12299415 -0.013855  ]
+ [-0.04486451  0.11501657 -0.016414  ]
+ [-0.06384467  0.10335073 -0.021628  ]
+ [-0.07782841  0.08797257 -0.031166  ]
+ [-0.01182     0.12408451  0.006151  ]
+ [-0.03326654  0.11890849  0.005424  ]
+ [-0.05227004  0.11086656  0.003291  ]
+ [-0.07026166  0.09609369 -0.001933  ]
+ [-0.08167649  0.08019864 -0.010939  ]
+ [-0.02282116  0.11713507  0.025365  ]
+ [-0.04382082  0.11089697  0.023509  ]
+ [-0.06347839  0.09878282  0.020008  ]
+ [-0.07773932  0.08369457  0.013821  ]
+ [-0.08731849  0.06637824  0.00503   ]
+ [-0.01185959  0.11002016  0.043774  ]
+ [-0.03325877  0.10655887  0.042789  ]
+ [-0.05419761  0.09633694  0.040021  ]
+ [-0.07093554  0.08326606  0.035722  ]
+ [-0.08438754  0.06689513  0.026123  ]
+ [-0.09407419  0.04747727  0.013505  ]
+ [-0.01915906  0.09703273  0.05981   ]
+ [-0.0422171   0.08958194  0.057291  ]
+ [-0.06075108  0.07805964  0.053887  ]
+ [-0.07635905  0.06364951  0.047122  ]
+ [-0.09026642  0.04754727  0.034487  ]
+ [-0.10008884  0.02820295  0.020804  ]
+ [-0.02916462  0.07789277  0.07029   ]
+ [-0.04842409  0.06769275  0.06924   ]
+ [-0.06564143  0.05518332  0.063934  ]
+ [-0.08036552  0.04295108  0.055301  ]
+ [-0.09353538  0.02842781  0.042808  ]
+ [-0.10046078  0.01138937  0.033121  ]
+ [-0.10224269 -0.00693884  0.019627  ]
+ [-0.02451256 -0.1198447   0.011311  ]
+ [-0.04574557 -0.11190531  0.010274  ]
+ [-0.06510474 -0.10043603  0.009318  ]
+ [-0.08097504 -0.0842348   0.008394  ]
+ [-0.01417466 -0.1253771  -0.007517  ]
+ [-0.03528109 -0.11921608 -0.007536  ]
+ [-0.05593285 -0.10902243 -0.008894  ]
+ [-0.07361688 -0.09469999 -0.009809  ]
+ [-0.02437468 -0.12345023 -0.026236  ]
+ [-0.045759   -0.11645271 -0.027186  ]
+ [-0.06480492 -0.10349356 -0.028062  ]
+ [-0.08070704 -0.08698899 -0.028783  ]
+ [-0.0134124  -0.12591591 -0.045048  ]
+ [-0.03528887 -0.12084455 -0.045982  ]
+ [-0.05545414 -0.11098465 -0.046631  ]
+ [-0.07301655 -0.09658159 -0.047041  ]
+ [-0.02416113 -0.1247895  -0.064815  ]
+ [-0.04575334 -0.11720224 -0.065589  ]
+ [-0.06559759 -0.10585742 -0.065654  ]
+ [-0.01915482 -0.07369679  0.083524  ]
+ [-0.05034954 -0.05363193  0.085091  ]
+ [-0.01192394 -0.0897566   0.070234  ]
+ [-0.04104543 -0.07232783  0.078563  ]
+ [-0.06810994 -0.04493381  0.076234  ]
+ [-0.02159716 -0.10073514  0.053978  ]
+ [-0.03736706 -0.08881332  0.06426   ]
+ [-0.05788588 -0.07820247  0.064836  ]
+ [-0.07438056 -0.06106291  0.063186  ]
+ [-0.08309848 -0.04131271  0.060866  ]
+ [-0.04351959 -0.10043603  0.045861  ]
+ [-0.06091654 -0.08934648  0.046436  ]
+ [-0.07699756 -0.07600196  0.045412  ]
+ [-0.08746345 -0.05567193  0.045149  ]
+ [-0.09364922 -0.03522665  0.04285   ]
+ [-0.01199536 -0.11512971  0.032549  ]
+ [-0.03472248 -0.11111264  0.028629  ]
+ [-0.05437298 -0.10210268  0.028217  ]
+ [-0.07228753 -0.08904454  0.02777   ]
+ [-0.08620127 -0.07230945  0.026043  ]
+ [-0.09554709 -0.05122706  0.025629  ]
+ [-0.09939376 -0.02983566  0.023083  ]
+ [-0.0941541   0.05045914 -0.007955  ]
+ [-0.10056189  0.03102077 -0.000882  ]
+ [-0.10319092  0.01076075  0.00641   ]
+ [-0.1056764  -0.02102016  0.003534  ]
+ [-0.10435057 -0.04356485  0.006045  ]
+ [-0.09334587 -0.06568244  0.007033  ]
+ [-0.08940941  0.06444854 -0.023789  ]
+ [-0.09991631  0.03511139 -0.022262  ]
+ [-0.10650866  0.01471914 -0.014781  ]
+ [-0.11001662 -0.00751018 -0.01318   ]
+ [-0.11109284 -0.03510856 -0.013454  ]
+ [-0.1052486  -0.05782153 -0.012228  ]
+ [-0.08731496 -0.07633642 -0.010856  ]
+ [-0.08713253  0.0717572  -0.044091  ]
+ [-0.09595864  0.04933201 -0.038122  ]
+ [-0.11260039  0.01999769 -0.035861  ]
+ [-0.11398844 -0.0029854  -0.034358  ]
+ [-0.11228432 -0.02504007 -0.032873  ]
+ [-0.11006188 -0.04782234 -0.031443  ]
+ [-0.09720809 -0.06955738 -0.029916  ]
+ [-0.09393135  0.05594275 -0.058704  ]
+ [-0.10133406  0.0334108  -0.052192  ]
+ [-0.11153053  0.0070541  -0.053989  ]
+ [-0.11503849 -0.0153124  -0.052498  ]
+ [-0.11228997 -0.03776374 -0.050807  ]
+ [-0.10525072 -0.06089109 -0.048837  ]
+ [-0.08693454 -0.07851431 -0.04779   ]
+ [-0.10409814  0.04115008 -0.072841  ]
+ [-0.10947356  0.01824406 -0.072897  ]
+ [-0.1127305  -0.00495328 -0.072105  ]
+ [-0.11453857 -0.02805941 -0.070342  ]
+ [-0.10987662 -0.05121787 -0.068101  ]
+ [-0.09614884 -0.07160375 -0.066662  ]
+ [-0.08060593 -0.08876312 -0.065854  ]
+ [ 0.00996455  0.06746506  0.078088  ]
+ [ 0.02864419  0.05579143  0.080633  ]
+ [ 0.04873804  0.04767738  0.077441  ]
+ [ 0.06786528  0.03497067  0.071046  ]
+ [ 0.0823843   0.02109087  0.063331  ]
+ [ 0.09304677  0.00483378  0.053617  ]
+ [ 0.09782539 -0.0142284   0.039429  ]
+ [ 0.03166636  0.03497845  0.086709  ]
+ [ 0.05132605  0.02664096  0.082979  ]
+ [ 0.06797983  0.01367544  0.077047  ]
+ [ 0.08005722 -0.00221749  0.071398  ]
+ [ 0.08869594 -0.02086601  0.058763  ]
+ [ 0.06066693 -0.00553806  0.084828  ]
+ [ 0.0755381  -0.02552019  0.075803  ]
+ [ 0.04334353  0.00754412  0.090231  ]
+ [ 0.05631257 -0.02678238  0.088096  ]
+ [ 0.01022264  0.03169606  0.090146  ]
+ [ 0.02238912  0.01360261  0.093587  ]
+ [ 0.03986456 -0.0136507   0.094371  ]
+ [ 0.03785072 -0.0370927   0.094351  ]
+ [ 0.0275807  -0.05632742  0.091836  ]
+ [ 0.01070984 -0.00455518  0.098062  ]
+ [ 0.02089006 -0.02407769  0.098783  ]
+ [ 0.0101689  -0.04427974  0.097894  ]
+ [ 0.02207587  0.1233675  -0.01386   ]
+ [ 0.04360091  0.11567206 -0.016348  ]
+ [ 0.06266592  0.10426926 -0.021718  ]
+ [ 0.07709939  0.08910748 -0.031254  ]
+ [ 0.01040861  0.12437018  0.006164  ]
+ [ 0.03187849  0.11947064  0.005478  ]
+ [ 0.05121575  0.11161539  0.003259  ]
+ [ 0.06960759  0.09715647 -0.001981  ]
+ [ 0.0820258   0.08177549 -0.010894  ]
+ [ 0.02151584  0.11747165  0.025419  ]
+ [ 0.04233448  0.11146407  0.023462  ]
+ [ 0.06296998  0.09968438  0.020274  ]
+ [ 0.07735182  0.08472554  0.013906  ]
+ [ 0.08709081  0.06726212  0.004958  ]
+ [ 0.01024173  0.10999187  0.043752  ]
+ [ 0.03179576  0.10707435  0.043027  ]
+ [ 0.05323878  0.0970398   0.040365  ]
+ [ 0.07032884  0.084215    0.036266  ]
+ [ 0.08443916  0.06796499  0.026084  ]
+ [ 0.09428491  0.04848419  0.013366  ]
+ [ 0.01755675  0.09705253  0.059866  ]
+ [ 0.04111473  0.09001823  0.057728  ]
+ [ 0.05982336  0.07865927  0.054375  ]
+ [ 0.07575376  0.0644938   0.047964  ]
+ [ 0.09043755  0.04833216  0.034777  ]
+ [ 0.10052866  0.0292523   0.020861  ]
+ [ 0.0279187   0.07810914  0.070559  ]
+ [ 0.04733726  0.06826055  0.069741  ]
+ [ 0.06478018  0.0558084   0.064776  ]
+ [ 0.08044825  0.04365041  0.055718  ]
+ [ 0.09408056  0.02915684  0.043729  ]
+ [ 0.10101162  0.01258084  0.032837  ]
+ [ 0.10339669 -0.00707036  0.019713  ]
+ [ 0.0225164  -0.12075616  0.011355  ]
+ [ 0.04424296 -0.11313355  0.010184  ]
+ [ 0.06407589 -0.10197823  0.00927   ]
+ [ 0.08076998 -0.08561508  0.008154  ]
+ [ 0.01177121 -0.12586713 -0.007314  ]
+ [ 0.03335918 -0.12023856 -0.007553  ]
+ [ 0.05455824 -0.11051019 -0.009155  ]
+ [ 0.07288221 -0.09617713 -0.010228  ]
+ [ 0.02206527 -0.1241333  -0.026395  ]
+ [ 0.04390568 -0.11724538 -0.027494  ]
+ [ 0.06364527 -0.10510435 -0.028352  ]
+ [ 0.08029834 -0.08866765 -0.029225  ]
+ [ 0.01083641 -0.12639605 -0.044947  ]
+ [ 0.03297168 -0.12184935 -0.04617   ]
+ [ 0.05373587 -0.11267746 -0.046983  ]
+ [ 0.07216378 -0.09847523 -0.047423  ]
+ [ 0.02153352 -0.12548245 -0.064893  ]
+ [ 0.04356626 -0.11869919 -0.065711  ]
+ [ 0.06343313 -0.10679433 -0.065936  ]
+ [ 0.0174514  -0.0739365   0.08372   ]
+ [ 0.0489332  -0.05416014  0.085852  ]
+ [ 0.01009183 -0.08989024  0.070347  ]
+ [ 0.0394014  -0.07289705  0.07904   ]
+ [ 0.06741839 -0.04539201  0.077272  ]
+ [ 0.01970282 -0.10120395  0.054124  ]
+ [ 0.03584183 -0.08940516  0.064713  ]
+ [ 0.05673047 -0.07913303  0.065459  ]
+ [ 0.07391882 -0.06158122  0.06436   ]
+ [ 0.08321092 -0.04178435  0.061978  ]
+ [ 0.04174051 -0.10167205  0.046361  ]
+ [ 0.05960203 -0.09050401  0.046873  ]
+ [ 0.07659663 -0.0775385   0.045961  ]
+ [ 0.08776326 -0.05643561  0.045904  ]
+ [ 0.09452179 -0.03547131  0.04355   ]
+ [ 0.00993273 -0.11544155  0.032614  ]
+ [ 0.03295825 -0.11218249  0.028791  ]
+ [ 0.07171265 -0.09055705  0.027998  ]
+ [ 0.08627834 -0.07366214  0.026131  ]
+ [ 0.09659998 -0.05175527  0.026004  ]
+ [ 0.10060574 -0.03005487  0.023323  ]
+ [ 0.09410884  0.05150707 -0.008188  ]
+ [ 0.10078464  0.03189122 -0.001145  ]
+ [ 0.10342992  0.01114966  0.006106  ]
+ [ 0.10697041 -0.02098622  0.003238  ]
+ [ 0.10546073 -0.04361435  0.005843  ]
+ [ 0.09329779 -0.06701039  0.006767  ]
+ [ 0.08905797  0.06558062 -0.024063  ]
+ [ 0.10025643  0.03623639 -0.022482  ]
+ [ 0.10700081  0.01529331 -0.015138  ]
+ [ 0.11134033 -0.00732916 -0.013508  ]
+ [ 0.1123727  -0.03529948 -0.013815  ]
+ [ 0.10595995 -0.05861915 -0.012689  ]
+ [ 0.08652866  0.07295927 -0.044332  ]
+ [ 0.09566236  0.05053197 -0.038429  ]
+ [ 0.10743922  0.02009739 -0.036366  ]
+ [ 0.1126711  -0.00263397 -0.03482   ]
+ [ 0.11327851 -0.02497925 -0.033286  ]
+ [ 0.11074989 -0.04824872 -0.03192   ]
+ [ 0.09671736 -0.0704441  -0.030263  ]
+ [ 0.09356578  0.05713706 -0.058908  ]
+ [ 0.10149528  0.0346751  -0.052514  ]
+ [ 0.11268807  0.00766009 -0.054295  ]
+ [ 0.11367237 -0.0149645  -0.05295   ]
+ [ 0.11333932 -0.03798719 -0.051223  ]
+ [ 0.1059444  -0.06183225 -0.049271  ]
+ [ 0.10032148  0.04119039 -0.073228  ]
+ [ 0.11068908  0.01916259 -0.073138  ]
+ [ 0.11615997 -0.0046662  -0.072433  ]
+ [ 0.11485606 -0.02799648 -0.070754  ]
+ [ 0.1111282  -0.05191649 -0.068554  ]
+ [ 0.09733962 -0.07344789 -0.066947  ]
+ [-0.00088176  0.04988992  0.085042  ]
+ [-0.0005374   0.01353119  0.094955  ]
+ [-0.00081176 -0.02445599  0.100261  ]
+ [-0.00093621 -0.06379235  0.09148   ]
+ [-0.00074246  0.126302   -0.012842  ]
+ [-0.0007361   0.11992319  0.026102  ]
+ [-0.00069226  0.08741324  0.067079  ]
+ [-0.00127703 -0.12198016  0.014775  ]
+ [-0.00123249 -0.12608632 -0.026367  ]
+ [-0.00140573 -0.12739801 -0.063204  ]
+ [-0.00095813 -0.10629866  0.049042  ]]
+[[  67.35828519  -11.69766765   78.11000198]
+ [  55.66132441  -30.20123765   80.25799692]
+ [  47.27927968  -50.00447109   76.72200352]
+ [  34.43539143  -68.75128299   70.25899738]
+ [  20.77833191  -83.37567002   62.33499944]
+ [   3.79574928  -92.98312664   52.88499966]
+ [ -14.43699934  -96.83898091   38.79199922]
+ [  34.8822847   -32.98440948   86.15399897]
+ [  26.41609497  -52.49560624   82.09399879]
+ [  13.39401677  -68.86795908   76.07000321]
+ [  -2.72306823  -80.55289835   70.18499821]
+ [ -20.73873393  -88.30561489   57.77300149]
+ [  -5.6900885   -61.67173386   83.80900323]
+ [ -25.08390509  -75.65618306   74.82299954]
+ [   7.52149476  -44.51166466   89.5050019 ]
+ [ -26.74419247  -57.3435314    87.02299744]
+ [  31.64090589  -11.80656161   90.14199674]
+ [ -13.531195    -41.13805667   93.67299825]
+ [ -36.84309125  -39.29533809   93.65700185]
+ [ -55.9922494   -29.40220758   91.23399854]
+ [  -4.57639527  -12.41820958   98.04400057]
+ [ -23.90020899  -22.37568609   98.29100221]
+ [ -43.95729303  -11.97768189   97.6279974 ]
+ [ 122.99415469  -23.50422926  -13.85500003]
+ [ 115.01657218  -44.86450925  -16.41399972]
+ [ 103.35072875  -63.84467334  -21.62799984]
+ [  87.97256649  -77.82841474  -31.16600029]
+ [ 124.08450991  -11.81999687    6.15100004]
+ [ 118.90848726  -33.26654434    5.42399986]
+ [ 110.86656153  -52.27003992    3.29099991]
+ [  96.09369189  -70.26166469   -1.93300005]
+ [  80.19863814  -81.6764906   -10.93900017]
+ [ 117.13507026  -22.82116376   25.36500059]
+ [ 110.89696735  -43.82082075   23.5089995 ]
+ [  98.78281504  -63.47838789   20.00799961]
+ [  83.69456977  -77.7393207    13.82100023]
+ [  66.37823582  -87.31849492    5.03000012]
+ [ 110.02016068  -11.85959484   43.7740013 ]
+ [ 106.55887425  -33.25876594   42.78900102]
+ [  96.33693844  -54.19761315   40.02099857]
+ [  83.26606452  -70.9355399    35.72199866]
+ [  66.8951273   -84.38754082   26.12300031]
+ [  47.47727141  -94.07418966   13.50499969]
+ [  97.03272581  -19.15905811   59.8100014 ]
+ [  89.58194405  -42.2171019    57.29100108]
+ [  78.05963606  -60.75108051   53.88699844]
+ [  63.64951283  -76.35904849   47.12200165]
+ [  47.54727334  -90.26642144   34.4870016 ]
+ [  28.20295468 -100.08884221   20.80399916]
+ [  77.8927654   -29.16461974   70.28999925]
+ [  67.6927492   -48.42408746   69.23999637]
+ [  55.18332124  -65.641433     63.93399835]
+ [  42.95108095  -80.36551625   55.30099943]
+ [  28.4278132   -93.53537858   42.808     ]
+ [  11.38936915 -100.46078265   33.12100098]
+ [  -6.93883887 -102.24269331   19.62699927]
+ [-119.84469742  -24.5125629    11.31100021]
+ [-111.90530658  -45.74556649   10.27399953]
+ [-100.43603182  -65.10473788    9.31799971]
+ [ -84.23480392  -80.97504079    8.39400012]
+ [-125.37710369  -14.17466253   -7.51700019]
+ [-119.21608448  -35.28109193   -7.53600011]
+ [-109.02243108  -55.93285337   -8.8940002 ]
+ [ -94.69998628  -73.61688465   -9.80900042]
+ [-123.45023453  -24.37467873  -26.23599954]
+ [-116.45270884  -45.75899988  -27.18600072]
+ [-103.49356383  -64.80491906  -28.06200087]
+ [ -86.98898554  -80.70704341  -28.78299914]
+ [-125.91591477  -13.41240108  -45.04799843]
+ [-120.84455043  -35.28887033  -45.98199949]
+ [-110.98465323  -55.45414239  -46.63100094]
+ [ -96.58159316  -73.01655412  -47.04099894]
+ [-124.78949875  -24.16113205  -64.8149997 ]
+ [-117.2022447   -45.75334489  -65.58900326]
+ [-105.85741699  -65.59758633  -65.65400213]
+ [ -73.69679213  -19.154815     83.52400362]
+ [ -53.63192782  -50.34953728   85.09100229]
+ [ -89.75660056  -11.92394178   70.23400068]
+ [ -72.3278299   -41.04542732   78.56299728]
+ [ -44.9338071   -68.10993701   76.23399794]
+ [-100.73514283  -21.59716189   53.97799984]
+ [ -88.8133198   -37.36705706   64.2599985 ]
+ [ -78.20247114  -57.88588151   64.83600289]
+ [ -61.06291339  -74.38056171   63.18599731]
+ [ -41.31271318  -83.09847862   60.86599827]
+ [-100.43603182  -43.51959378   45.86099833]
+ [ -89.3464759   -60.91654301   46.43600062]
+ [ -76.00195706  -76.99756324   45.41200027]
+ [ -55.67193031  -87.46345341   45.1489985 ]
+ [ -35.22664681  -93.64922345   42.84999892]
+ [-115.12970924  -11.99535932   32.54900128]
+ [-111.11263931  -34.7224772    28.62899937]
+ [-102.10268199  -54.37297747   28.21700089]
+ [ -89.04454112  -72.28752971   27.76999958]
+ [ -72.30944932  -86.20126545   26.0429997 ]
+ [ -51.22705922  -95.54709494   25.62900074]
+ [ -29.83566374  -99.3937552    23.08299951]
+ [  50.45913905  -94.15409714   -7.9549998 ]
+ [  31.02077357 -100.56189448   -0.88200002]
+ [  10.76075062 -103.19092125    6.40999991]
+ [ -21.02016285 -105.67639768    3.5339999 ]
+ [ -43.5648486  -104.35057431    6.04500016]
+ [ -65.682441    -93.34587306    7.03299977]
+ [  64.44854289  -89.40941095  -23.78899977]
+ [  35.11138633  -99.91630912  -22.26199955]
+ [  14.71913513 -106.50866479  -14.78100009]
+ [  -7.51018105 -110.01662165  -13.17999978]
+ [ -35.10855883 -111.09283566  -13.45400047]
+ [ -57.82153457 -105.24860024  -12.22799998]
+ [ -76.33642107  -87.31495589  -10.85599978]
+ [  71.75719738  -87.13252842  -44.09100115]
+ [  49.33201149  -95.95863521  -38.12199831]
+ [  19.99768615 -112.60039359  -35.86100042]
+ [  -2.9854048  -113.98844421  -34.35799852]
+ [ -25.04006587 -112.28431761  -32.87300095]
+ [ -47.8223376  -110.06187648  -31.44299984]
+ [ -69.55738366  -97.20809013  -29.91599962]
+ [  55.94275147  -93.93135458  -58.70399997]
+ [  33.41079503 -101.33405775  -52.19199881]
+ [   7.05409702 -111.53053492  -53.98900062]
+ [ -15.31239692 -115.03849179  -52.49800161]
+ [ -37.76374459 -112.2899726   -50.80699921]
+ [ -60.8910881  -105.25072366  -48.83699864]
+ [ -78.51430774  -86.9345367   -47.78999835]
+ [  41.15007818 -104.09814119  -72.84100354]
+ [  18.24406162 -109.47356373  -72.8970021 ]
+ [  -4.95328289 -112.73049563  -72.10499793]
+ [ -28.05941179 -114.53857273  -70.34199685]
+ [ -51.2178652  -109.87661779  -68.10099632]
+ [ -71.60375267  -96.14884108  -66.66199863]
+ [ -88.76311779  -80.60593158  -65.85399806]
+ [  67.46505946    9.96454898   78.08800042]
+ [  55.7914339    28.64418924   80.63299954]
+ [  47.67738283   48.73804376   77.44099945]
+ [  34.97067466   67.8652823    71.04600221]
+ [  21.09087445   82.38430321   63.33100051]
+ [   4.83378209   93.0467695    53.61700058]
+ [ -14.22840264   97.82539308   39.42900151]
+ [  34.97844934   31.66636452   86.70900017]
+ [  26.64095536   51.32605135   82.9790011 ]
+ [  13.67544476   67.97983497   77.04699785]
+ [  -2.21748697   80.05721867   71.39799744]
+ [ -20.86601406   88.6959359    58.76300111]
+ [  -5.53806033   60.66693366   84.82799679]
+ [ -25.5201906    75.53809881   75.80299675]
+ [   7.54412217   43.34352538   90.23100138]
+ [ -26.78237669   56.31256849   88.09600025]
+ [  31.69606254   10.22264268   90.1459977 ]
+ [  13.60261347   22.38912135   93.58700365]
+ [ -13.65069672   39.86455873   94.37099844]
+ [ -37.0927006    37.85071895   94.35100108]
+ [ -56.32741749   27.58070081   91.835998  ]
+ [  -4.55518207   10.70983894   98.06200117]
+ [ -24.077693     20.89005522   98.7830013 ]
+ [ -44.27973554   10.16890258   97.89399803]
+ [ 123.36750329   22.07587287  -13.8600003 ]
+ [ 115.67205936   43.60090941  -16.34800062]
+ [ 104.26925868   62.66592443  -21.71799913]
+ [  89.10747617   77.09939033  -31.25400096]
+ [ 124.37018007   10.40861197    6.1639999 ]
+ [ 119.47064102   31.87849373    5.4779998 ]
+ [ 111.61538959   51.21574551    3.2589999 ]
+ [  97.1564725    69.60759312   -1.98099995]
+ [  81.77548647   82.02580363  -10.8939996 ]
+ [ 117.47165024   21.51584439   25.41900054]
+ [ 111.46406829   42.33448207   23.46199937]
+ [  99.68437999   62.96998262   20.27400024]
+ [  84.72553641   77.35182345   13.90600018]
+ [  67.26212054   87.09080517    4.95800003]
+ [ 109.99187082   10.2417348    43.75199974]
+ [ 107.07435012   31.79576248   43.02699864]
+ [  97.03979641   53.23877558   40.36499932]
+ [  84.21500027   70.32883912   36.26599908]
+ [  67.96498597   84.43915844   26.08400024]
+ [  48.4841913    94.28491443   13.3659998 ]
+ [  97.05252945   17.55675487   59.86599997]
+ [  90.0182277    41.11472517   57.72799999]
+ [  78.65926623   59.82335657   54.3750003 ]
+ [  64.49379772   75.75376332   47.96399921]
+ [  48.3321622    90.43754637   34.77700055]
+ [  29.25230004  100.52866489   20.86099982]
+ [  78.10913771   27.9186964    70.55900246]
+ [  68.2605505    47.33726382   69.74100322]
+ [  55.8084026    64.78017569   64.77600336]
+ [  43.65040734   80.44824749   55.71800098]
+ [  29.15684134   94.08055991   43.72899979]
+ [  12.58084364  101.01161897   32.83699974]
+ [  -7.07036071  103.39669138   19.71299946]
+ [-120.75616419   22.51640148   11.35499962]
+ [-113.13354969   44.24296319   10.18400025]
+ [-101.97823495   64.07589465    9.27000027]
+ [ -85.61507612   80.76997846    8.15400016]
+ [-125.86712837   11.77120674   -7.31399981]
+ [-120.23855746   33.35917741   -7.553     ]
+ [-110.51018536   54.55823615   -9.15499963]
+ [ -96.17713094   72.88220525  -10.22799965]
+ [-124.13330376   22.06526697  -26.39500052]
+ [-117.24537611   43.90567541  -27.49400027]
+ [-105.10434955   63.645266    -28.35199982]
+ [ -88.6676535    80.29834181  -29.22499925]
+ [-126.39604509   10.83641127  -44.94699836]
+ [-121.84935063   32.97168389  -46.16999999]
+ [-112.6774624    53.73587087  -46.98299989]
+ [ -98.47522527   72.16378301  -47.42300138]
+ [-125.4824549    21.53352275  -64.89299983]
+ [-118.69918555   43.56626421  -65.71099907]
+ [-106.79433495   63.43313307  -65.93599916]
+ [ -73.93649966   17.45139621   83.7199986 ]
+ [ -54.16013673   48.93320426   85.85199714]
+ [ -89.89024162   10.09182818   70.34700364]
+ [ -72.89705426   39.40140456   79.03999835]
+ [ -45.39201409   67.41838902   77.27199793]
+ [-101.20394826   19.70282383   54.12400141]
+ [ -89.40516412   35.84183007   64.71300125]
+ [ -79.1330263    56.73047155   65.45899808]
+ [ -61.5812242    73.91881943   64.36000019]
+ [ -41.78435355   83.21091533   61.97800115]
+ [-101.67205334   41.74051434   46.36099935]
+ [ -90.504013     59.60202962   46.87299952]
+ [ -77.53849775   76.5966326    45.96100003]
+ [ -56.43560737   87.76326478   45.90399936]
+ [ -35.47130525   94.52179074   43.54999959]
+ [-115.44154584    9.93272942   32.61400014]
+ [-112.18249053   32.95824677   28.7909992 ]
+ [ -90.55704623   71.71265036   27.99800038]
+ [ -73.66213948   86.27834171   26.13100037]
+ [ -51.75526813   96.59998119   26.00399964]
+ [ -30.05486727  100.60574114   23.32299948]
+ [  51.50707066   94.10884231   -8.18799995]
+ [  31.89122304  100.78463703   -1.14499999]
+ [  11.14965975  103.42992097    6.10599993]
+ [ -20.98622173  106.97040707    3.23799998]
+ [ -43.61434653  105.46073318    5.84300002]
+ [ -67.01038778   93.29778701    6.76700007]
+ [  65.58062136   89.05797452  -24.06300046]
+ [  36.2363942   100.25642812  -22.48200029]
+ [  15.29330574  107.00081289  -15.13800025]
+ [  -7.32916174  111.34032905  -13.50800041]
+ [ -35.29947624  112.37270385  -13.81499972]
+ [ -58.61915275  105.95995188  -12.689     ]
+ [  72.95927405   86.52865887  -44.33200136]
+ [  50.5319722    95.66235542  -38.42899948]
+ [  20.09738982  107.43921995  -36.36600077]
+ [  -2.63397279  112.6710996   -34.82000157]
+ [ -24.97925423  113.27850819  -33.28600153]
+ [ -48.24872315  110.74989289  -31.92000091]
+ [ -70.44409961   96.71735764  -30.26299924]
+ [  57.13705719   93.56578439  -58.90800059]
+ [  34.67510268  101.49528086  -52.51400173]
+ [   7.66008766  112.68807203  -54.29499969]
+ [ -14.96450044  113.67236823  -52.94999853]
+ [ -37.98719123  113.33931983  -51.22299865]
+ [ -61.83224544  105.94439507  -49.27099869]
+ [  41.19038582  100.32147914  -73.22800159]
+ [  19.16259341  110.68908125  -73.13799858]
+ [  -4.66619758  116.15996808  -72.43300229]
+ [ -27.9964786   114.85606432  -70.75399905]
+ [ -51.91648751  111.12819612  -68.55399907]
+ [ -73.44789058   97.33961523  -66.94699824]
+ [  49.88991842   -0.88176213   85.04199982]
+ [  13.531195     -0.53740118   94.9549973 ]
+ [ -24.45599437   -0.81175857  100.26100278]
+ [ -63.79234791   -0.9362094    91.48000181]
+ [ 126.30200386   -0.74246211  -12.84200046]
+ [ 119.92318928   -0.73609815   26.10200085]
+ [  87.41324395   -0.69225754   67.07900017]
+ [-121.98016047   -1.27703487   14.77499958]
+ [-126.08632445   -1.23248715  -26.36699937]
+ [-127.39801407   -1.40572828  -63.20399791]
+ [-106.29865527   -0.95812971   49.04200137]]
+(270, 3)
+</pre></div>
+</div>
+<p><strong>Total running time of the script:</strong> ( 0 minutes  4.345 seconds)</p>
+<div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-conmat-to-graph-py">
+<div class="sphx-glr-download docutils container">
+<a class="reference download internal" download="" href="../_downloads/148019e1e7aad92d3808c5ede724a325/plot_conmat_to_graph.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_conmat_to_graph.py</span></code></a></div>
+<div class="sphx-glr-download docutils container">
+<a class="reference download internal" download="" href="../_downloads/d43953be76d37e9ce1d5844f6d926b2b/plot_conmat_to_graph.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_conmat_to_graph.ipynb</span></code></a></div>
+</div>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.readthedocs.io">Gallery generated by Sphinx-Gallery</a></p>
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2019, Neuropycon Developers. Last updated on 2019-01-10.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.2.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

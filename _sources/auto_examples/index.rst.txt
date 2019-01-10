@@ -11,6 +11,26 @@ Examples Gallery
 
 
 
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="The **input** data should be a time series matrix in **npy** . ">
+
+.. only:: html
+
+    .. figure:: /auto_examples/images/thumb/sphx_glr_plot_conmat_to_graph_thumb.png
+
+        :ref:`sphx_glr_auto_examples_plot_conmat_to_graph.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/plot_conmat_to_graph
 .. raw:: html
 
     <div style='clear:both'></div>
@@ -25,13 +45,13 @@ Examples Gallery
 
   .. container:: sphx-glr-download
 
-    :download:`Download all examples in Python source code: auto_examples_python.zip <//home/pasca/Tools/python/packages/neuropycon/graphpype/doc/auto_examples/auto_examples_python.zip>`
+    :download:`Download all examples in Python source code: auto_examples_python.zip <//home/INT/meunier.d/miniconda3/Packages/graphpype/doc/auto_examples/auto_examples_python.zip>`
 
 
 
   .. container:: sphx-glr-download
 
-    :download:`Download all examples in Jupyter notebooks: auto_examples_jupyter.zip <//home/pasca/Tools/python/packages/neuropycon/graphpype/doc/auto_examples/auto_examples_jupyter.zip>`
+    :download:`Download all examples in Jupyter notebooks: auto_examples_jupyter.zip <//home/INT/meunier.d/miniconda3/Packages/graphpype/doc/auto_examples/auto_examples_jupyter.zip>`
 
 
 .. only:: html
