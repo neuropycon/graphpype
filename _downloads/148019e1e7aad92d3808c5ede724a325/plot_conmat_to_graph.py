@@ -1,9 +1,9 @@
 """
 .. _conmat_to_graph:
 
-====================================
+=========================================================
 Compute Graph properties from a given connectivity matrix
-====================================
+=========================================================
 The conmat_to_graph pipeline performs graph analysis .
 
 The **input** data should be a time series matrix in **npy** .
@@ -44,25 +44,6 @@ data_path = op.join(nd.__path__[0], "data", "data_con")
 # This will be what we will loop on
 
 freq_band_names = ['alpha', 'beta']
-
-#### parameters
-con_den = 0.1 ## density of the threshold
-
-radatools_optim = "WN tfrf 1" # The optimisation sequence
-# see
-# http://deim.urv.cat/~sergio.gomez/download.php?f=radatools-5.0-README.txt
-# for more details, but very briefly:
-# 1) WN for weighted unsigned (typically
-# coherence, pli, etc.) and WS for signed (e.g. Pearson correlation) +
-# 2) the optimisation sequence, can be used in different order. The sequence
-# tfrf is proposed in radatools, and means: t = tabu search , f = fast
-# algorithm, r = reposition algorithm and f = fast algorithm (again)
-# 3) the last number is the number of repetitions of the algorithm, out of
-# which the best one is chosen. The higher the number of repetitions, the
-# higher the chance to reach the global maximum, but also the longer the
-# computation takes. For testing, 1 is admissible, but it is expected to
-# have at least 100 is required for reliable results
-
 
 ###############################################################################
 # Then, we create our workflow and specify the `base_dir` which tells
@@ -106,11 +87,36 @@ datasource.inputs.sort_filelist = True
 
 
 ###############################################################################
-# Ephypype creates for us a pipeline which can be connected to these
-# nodes we created. The connectivity pipeline is implemented by the function
+# Graphpype creates for us a pipeline which can be connected to these
+# nodes (datasource and infosource we created. The connectivity pipeline is implemented by the function
 #:func:`graphpype.pipelines.conmat_to_graph.create_pipeline_conmat_to_graph_density`,
-# thus to instantiate this connectivity pipeline node, we import it and pass
+# thus to instantiate this graph pipeline node, we import it and pass
 # our parameters to it.
+
+
+# In particular, the follwing parameters are of particular importance:
+# density of the threshold
+
+con_den = 0.1 #
+
+# The optimisation sequence
+radatools_optim = "WN tfrf 1" 
+
+# see
+# http://deim.urv.cat/~sergio.gomez/download.php?f=radatools-5.0-README.txt
+# for more details, but very briefly:
+# 1) WN for weighted unsigned (typically
+# coherence, pli, etc.) and WS for signed (e.g. Pearson correlation) +
+# 2) the optimisation sequence, can be used in different order. The sequence
+# tfrf is proposed in radatools, and means: t = tabu search , f = fast
+# algorithm, r = reposition algorithm and f = fast algorithm (again)
+# 3) the last number is the number of repetitions of the algorithm, out of
+# which the best one is chosen. The higher the number of repetitions, the
+# higher the chance to reach the global maximum, but also the longer the
+# computation takes. For testing, 1 is admissible, but it is expected to
+# have at least 100 is required for reliable results
+
+
 # The graph pipeline contains several nodes, some are based on radatools
 #
 # In particular, the two nodes are:
@@ -168,11 +174,6 @@ main_workflow.config['execution'] = {'remove_unnecessary_outputs': 'false'}
 #main_workflow.run()
 
 ###############################################################################
-# .. |graphpype| raw:: html
-#
-
-#   <a href="https://github.com/neuropycon/graphpype" target="_blank">graphpype</a>
-
 # now for viewing it, we will use visbrain, and special functions in utils_visbrain:
 
 from graphpype.utils_visbrain import visu_graph_modules

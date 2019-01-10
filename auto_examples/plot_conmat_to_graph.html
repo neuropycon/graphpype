@@ -142,24 +142,6 @@ needs to import neuropycon_data
 </div>
 <p>This will be what we will loop on</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">freq_band_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;alpha&#39;</span><span class="p">,</span> <span class="s1">&#39;beta&#39;</span><span class="p">]</span>
-
-<span class="c1">#### parameters</span>
-<span class="n">con_den</span> <span class="o">=</span> <span class="mf">0.1</span> <span class="c1">## density of the threshold</span>
-
-<span class="n">radatools_optim</span> <span class="o">=</span> <span class="s2">&quot;WN tfrf 1&quot;</span> <span class="c1"># The optimisation sequence</span>
-<span class="c1"># see</span>
-<span class="c1"># http://deim.urv.cat/~sergio.gomez/download.php?f=radatools-5.0-README.txt</span>
-<span class="c1"># for more details, but very briefly:</span>
-<span class="c1"># 1) WN for weighted unsigned (typically</span>
-<span class="c1"># coherence, pli, etc.) and WS for signed (e.g. Pearson correlation) +</span>
-<span class="c1"># 2) the optimisation sequence, can be used in different order. The sequence</span>
-<span class="c1"># tfrf is proposed in radatools, and means: t = tabu search , f = fast</span>
-<span class="c1"># algorithm, r = reposition algorithm and f = fast algorithm (again)</span>
-<span class="c1"># 3) the last number is the number of repetitions of the algorithm, out of</span>
-<span class="c1"># which the best one is chosen. The higher the number of repetitions, the</span>
-<span class="c1"># higher the chance to reach the global maximum, but also the longer the</span>
-<span class="c1"># computation takes. For testing, 1 is admissible, but it is expected to</span>
-<span class="c1"># have at least 100 is required for reliable results</span>
 </pre></div>
 </div>
 <p>Then, we create our workflow and specify the <cite>base_dir</cite> which tells
@@ -200,20 +182,47 @@ the values in the infosource node</p>
 </pre></div>
 </div>
 <dl class="docutils">
-<dt>Ephypype creates for us a pipeline which can be connected to these</dt>
-<dd>nodes we created. The connectivity pipeline is implemented by the function</dd>
+<dt>Graphpype creates for us a pipeline which can be connected to these</dt>
+<dd>nodes (datasource and infosource we created. The connectivity pipeline is implemented by the function</dd>
 <dt><code class="xref py py-func docutils literal notranslate"><span class="pre">graphpype.pipelines.conmat_to_graph.create_pipeline_conmat_to_graph_density()</span></code>,</dt>
-<dd><p class="first">thus to instantiate this connectivity pipeline node, we import it and pass
-our parameters to it.
-The graph pipeline contains several nodes, some are based on radatools</p>
-<p>In particular, the two nodes are:</p>
-<ul class="last simple">
-<li><code class="xref py py-class docutils literal notranslate"><span class="pre">ephypype.interfaces.mne.spectral.SpectralConn</span></code> computes spectral connectivity in a given frequency bands</li>
-<li><code class="xref py py-class docutils literal notranslate"><span class="pre">ephypype.interfaces.mne.spectral.PlotSpectralConn</span></code> plot connectivity matrix using the <a href="http://martinos.org/mne/stable/generated/mne.viz.plot_connectivity_circle.html#mne.viz.plot_connectivity_circle" target="_blank">spectral_connectivity function</a> function</li>
-</ul>
-</dd>
+<dd>thus to instantiate this graph pipeline node, we import it and pass
+our parameters to it.</dd>
 </dl>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">graphpype.pipelines.conmat_to_graph</span> <span class="kn">import</span> <span class="n">create_pipeline_conmat_to_graph_density</span> <span class="c1"># noqa</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># In particular, the follwing parameters are of particular importance:</span>
+<span class="c1"># density of the threshold</span>
+
+<span class="n">con_den</span> <span class="o">=</span> <span class="mf">0.1</span> <span class="c1">#</span>
+
+<span class="c1"># The optimisation sequence</span>
+<span class="n">radatools_optim</span> <span class="o">=</span> <span class="s2">&quot;WN tfrf 1&quot;</span>
+
+<span class="c1"># see</span>
+<span class="c1"># http://deim.urv.cat/~sergio.gomez/download.php?f=radatools-5.0-README.txt</span>
+<span class="c1"># for more details, but very briefly:</span>
+<span class="c1"># 1) WN for weighted unsigned (typically</span>
+<span class="c1"># coherence, pli, etc.) and WS for signed (e.g. Pearson correlation) +</span>
+<span class="c1"># 2) the optimisation sequence, can be used in different order. The sequence</span>
+<span class="c1"># tfrf is proposed in radatools, and means: t = tabu search , f = fast</span>
+<span class="c1"># algorithm, r = reposition algorithm and f = fast algorithm (again)</span>
+<span class="c1"># 3) the last number is the number of repetitions of the algorithm, out of</span>
+<span class="c1"># which the best one is chosen. The higher the number of repetitions, the</span>
+<span class="c1"># higher the chance to reach the global maximum, but also the longer the</span>
+<span class="c1"># computation takes. For testing, 1 is admissible, but it is expected to</span>
+<span class="c1"># have at least 100 is required for reliable results</span>
+
+
+<span class="c1"># The graph pipeline contains several nodes, some are based on radatools</span>
+<span class="c1">#</span>
+<span class="c1"># In particular, the two nodes are:</span>
+<span class="c1">#</span>
+<span class="c1"># * :class:`ephypype.interfaces.mne.spectral.SpectralConn` computes spectral connectivity in a given frequency bands</span>
+<span class="c1"># * :class:`ephypype.interfaces.mne.spectral.PlotSpectralConn` plot connectivity matrix using the |plot_connectivity_circle| function</span>
+<span class="c1">#</span>
+<span class="c1"># .. |plot_connectivity_circle| raw:: html</span>
+<span class="c1">#</span>
+<span class="c1">#   &lt;a href=&quot;http://martinos.org/mne/stable/generated/mne.viz.plot_connectivity_circle.html#mne.viz.plot_connectivity_circle&quot; target=&quot;_blank&quot;&gt;spectral_connectivity function&lt;/a&gt;</span>
+
+<span class="kn">from</span> <span class="nn">graphpype.pipelines.conmat_to_graph</span> <span class="kn">import</span> <span class="n">create_pipeline_conmat_to_graph_density</span> <span class="c1"># noqa</span>
 
 <span class="n">graph_workflow</span> <span class="o">=</span> <span class="n">create_pipeline_conmat_to_graph_density</span><span class="p">(</span>
     <span class="n">data_path</span><span class="p">,</span> <span class="n">con_den</span><span class="o">=</span><span class="n">con_den</span><span class="p">,</span> <span class="n">optim_seq</span> <span class="o">=</span> <span class="n">radatools_optim</span><span class="p">)</span>
@@ -255,11 +264,8 @@ here correspond to how we connected the nodes.</p>
 <span class="c1">#main_workflow.run()</span>
 </pre></div>
 </div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#   &lt;a href=&quot;https://github.com/neuropycon/graphpype&quot; target=&quot;_blank&quot;&gt;graphpype&lt;/a&gt;</span>
-
-<span class="c1"># now for viewing it, we will use visbrain, and special functions in utils_visbrain:</span>
-
-<span class="kn">from</span> <span class="nn">graphpype.utils_visbrain</span> <span class="kn">import</span> <span class="n">visu_graph_modules</span>
+<p>now for viewing it, we will use visbrain, and special functions in utils_visbrain:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">graphpype.utils_visbrain</span> <span class="kn">import</span> <span class="n">visu_graph_modules</span>
 
 <span class="n">labels_file</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="s2">&quot;correct_channel_names.txt&quot;</span><span class="p">)</span>
 <span class="n">coords_file</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="s2">&quot;correct_channel_coords.txt&quot;</span><span class="p">)</span>
@@ -1371,7 +1377,7 @@ here correspond to how we connected the nodes.</p>
 (270, 3)
 </pre></div>
 </div>
-<p><strong>Total running time of the script:</strong> ( 0 minutes  4.277 seconds)</p>
+<p><strong>Total running time of the script:</strong> ( 0 minutes  4.286 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-conmat-to-graph-py">
 <div class="sphx-glr-download docutils container">
 <a class="reference download internal" download="" href="../_downloads/148019e1e7aad92d3808c5ede724a325/plot_conmat_to_graph.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_conmat_to_graph.py</span></code></a></div>
