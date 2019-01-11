@@ -1,9 +1,9 @@
 """
 .. _conmat_to_graph:
 
-=========================================================
+====================================
 Compute Graph properties from a given connectivity matrix
-=========================================================
+====================================
 The conmat_to_graph pipeline performs graph analysis .
 
 The **input** data should be a time series matrix in **npy** .
@@ -92,16 +92,18 @@ datasource.inputs.sort_filelist = True
 #:func:`graphpype.pipelines.conmat_to_graph.create_pipeline_conmat_to_graph_density`,
 # thus to instantiate this graph pipeline node, we import it and pass
 # our parameters to it.
+
+
 # In particular, the follwing parameters are of particular importance:
 # density of the threshold
 
-con_den = 0.1 #
+#con_den = 0.1 #
+con_den = 0.05 #
+#con_den = 0.01 #
 
 # The optimisation sequence
 radatools_optim = "WN tfrf 1" 
 
-
-###############################################################################
 # see
 # http://deim.urv.cat/~sergio.gomez/download.php?f=radatools-5.0-README.txt
 # for more details, but very briefly:
@@ -173,18 +175,39 @@ main_workflow.config['execution'] = {'remove_unnecessary_outputs': 'false'}
 # Run workflow
 #main_workflow.run()
 
-###############################################################################
-# now for viewing it, we will use visbrain, and special functions in utils_visbrain:
 
 from graphpype.utils_visbrain import visu_graph_modules
 
 labels_file = op.join(data_path, "correct_channel_names.txt")
-coords_file = op.join(data_path, "correct_channel_coords.txt")
+coords_file = op.join(data_path, "MNI_coords.txt")
 
-for freq_band_name in freq_band_names:
+#for freq_band_name in freq_band_names:
+
+    #res_path = op.join(
+        #data_path,graph_analysis_name, "graph_den_pipe_den_0_05",
+        #"_freq_band_name_"+freq_band_name)
+
+    #lol_file = op.join(res_path,"community_rada", "Z_List.lol")
+
+    #print(lol_file)
+
+    #net_file = op.join(res_path,"prep_rada", "Z_List.net")
+
+    #visu = visu_graph_modules(lol_file=lol_file, net_file=net_file,
+                             #coords_file=coords_file,
+                             #labels_file=labels_file,inter_modules=False,
+                             #z_offset=+50)
+                             ##x_offset=0, y_offset=-20, z_offset=-50)
+    ##visu.show()
+
+from visbrain.objects import SceneObj
+
+sc = SceneObj(size=(1000, 1000), bgcolor=(.1, .1, .1))
+
+for nf,freq_band_name in enumerate(freq_band_names):
 
     res_path = op.join(
-        data_path,graph_analysis_name, "graph_den_pipe_den_0_1",
+        data_path,graph_analysis_name, "graph_den_pipe_den_0_05",
         "_freq_band_name_"+freq_band_name)
 
     lol_file = op.join(res_path,"community_rada", "Z_List.lol")
@@ -193,14 +216,15 @@ for freq_band_name in freq_band_names:
 
     net_file = op.join(res_path,"prep_rada", "Z_List.net")
 
-    visu = visu_graph_modules(lol_file=lol_file, net_file=net_file,
-                             coords_file=coords_file,
-                             labels_file=labels_file,
-                             modality_type = "MEG",inter_modules=False)
+    c_obj = visu_graph_modules(lol_file=lol_file, net_file=net_file,
+                            coords_file=coords_file,
+                             labels_file=labels_file,inter_modules=False,
+                             z_offset=+50)
                              #x_offset=0, y_offset=-20, z_offset=-50)
-    #visu.show()
 
+    sc.add_to_subplot(c_obj, title=("Module for\
+        {} band".format(freq_band_name)), title_size=14, title_bold=True,
+        title_color='white', rotate='left', zoom=.15, use_this_cam=True,
+        row=nf)
 
-
-
-
+sc.preview()
