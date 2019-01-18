@@ -339,7 +339,7 @@ Finally, we are now ready to execute our workflow.
             c_obj, row=nf, title=("Module for {} band".format(freq_band_name)),
             title_size=14, title_bold=True, title_color='white')
 
-        b_obj = BrainObj("white")
+        b_obj = BrainObj("white", translucent = False)
         sc.add_to_subplot(b_obj, row = nf,use_this_cam=True, rotate='left')
 
 
@@ -353,7 +353,7 @@ Finally, we are now ready to execute our workflow.
 
 
 
-**Total running time of the script:** ( 0 minutes  3.757 seconds)
+**Total running time of the script:** ( 0 minutes  3.777 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_conmat_to_graph.py:

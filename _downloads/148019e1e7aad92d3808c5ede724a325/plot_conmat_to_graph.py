@@ -224,7 +224,7 @@ for nf,freq_band_name in enumerate(freq_band_names):
         c_obj, row=nf, title=("Module for {} band".format(freq_band_name)),
         title_size=14, title_bold=True, title_color='white')
 
-    b_obj = BrainObj("white")
+    b_obj = BrainObj("white", translucent = False)
     sc.add_to_subplot(b_obj, row = nf,use_this_cam=True, rotate='left')
 
 
