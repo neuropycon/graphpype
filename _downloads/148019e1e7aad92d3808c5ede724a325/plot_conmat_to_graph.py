@@ -1,9 +1,9 @@
 """
 .. _conmat_to_graph:
 
-====================================
+=========================================================
 Compute Graph properties from a given connectivity matrix
-====================================
+=========================================================
 The conmat_to_graph pipeline performs graph analysis .
 
 The **input** data should be a time series matrix in **npy** .
@@ -211,8 +211,6 @@ for nf,freq_band_name in enumerate(freq_band_names):
         "_freq_band_name_"+freq_band_name)
 
     lol_file = op.join(res_path,"community_rada", "Z_List.lol")
-
-    print(lol_file)
 
     net_file = op.join(res_path,"prep_rada", "Z_List.net")
 
