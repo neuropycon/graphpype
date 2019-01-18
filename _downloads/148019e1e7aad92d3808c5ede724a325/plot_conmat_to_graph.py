@@ -200,7 +200,7 @@ coords_file = op.join(data_path, "MNI_coords.txt")
                              ##x_offset=0, y_offset=-20, z_offset=-50)
     ##visu.show()
 
-from visbrain.objects import SceneObj
+from visbrain.objects import SceneObj, BrainObj
 
 sc = SceneObj(size=(1000, 1000), bgcolor=(.1, .1, .1))
 
@@ -220,9 +220,12 @@ for nf,freq_band_name in enumerate(freq_band_names):
                              z_offset=+50)
                              #x_offset=0, y_offset=-20, z_offset=-50)
 
-    sc.add_to_subplot(c_obj, title=("Module for\
-        {} band".format(freq_band_name)), title_size=14, title_bold=True,
-        title_color='white', rotate='left', zoom=.15, use_this_cam=True,
-        row=nf)
+    sc.add_to_subplot(
+        c_obj, row=nf, title=("Module for {} band".format(freq_band_name)),
+        title_size=14, title_bold=True, title_color='white')
+
+    b_obj = BrainObj("white")
+    sc.add_to_subplot(b_obj, row = nf,use_this_cam=True, rotate='left')
+
 
 sc.preview()
