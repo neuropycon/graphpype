@@ -123,7 +123,7 @@ html_theme_options = {
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ['_static']
+#html_static_path = ['_static']
 
 
 # -- Options for HTMLHelp output ------------------------------------------
@@ -182,9 +182,7 @@ texinfo_documents = [
      'Miscellaneous'),
 ]
 
-intersphinx_mapping = {'python': ('https://docs.python.org/', None),
-                       'mne': ('http://martinos.org/mne/stable/', None)
-                       }
+intersphinx_mapping = {'python': ('https://docs.python.org/', None)}
 
 sphinx_gallery_conf = {
     'examples_dirs': '../examples',
@@ -193,7 +191,6 @@ sphinx_gallery_conf = {
     'backreferences_dir': 'generated',
     'within_subsection_order': FileNameSortKey,
     'reference_url': {
-        'mne': 'http://mne-tools.github.io/stable/',
         'numpy': 'http://docs.scipy.org/doc/numpy-1.9.1',
         'scipy': 'http://docs.scipy.org/doc/scipy-0.17.0/reference',
         'nipype': 'https://nipype.readthedocs.io/en/latest/api',
@@ -207,3 +204,14 @@ import os.path as op
 
 path = op.join(op.dirname(__file__), '../examples/')
 sys.path.insert(0, path)
+
+
+import sys
+import os.path as op
+
+path = op.join(op.dirname(__file__), '../examples/')
+sys.path.insert(0, path)
+
+
+from visbrain.config import CONFIG
+CONFIG['MPL_RENDER'] = True
