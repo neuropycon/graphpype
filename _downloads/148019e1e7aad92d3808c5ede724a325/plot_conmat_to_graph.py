@@ -214,6 +214,10 @@ for nf,freq_band_name in enumerate(freq_band_names):
 
     net_file = op.join(res_path,"prep_rada", "Z_List.net")
 
+    b_obj = BrainObj("white")
+    sc.add_to_subplot(b_obj, row = nf,use_this_cam=True, rotate='left')
+
+
     c_obj = visu_graph_modules(lol_file=lol_file, net_file=net_file,
                             coords_file=coords_file,
                              labels_file=labels_file,inter_modules=False,
@@ -223,9 +227,5 @@ for nf,freq_band_name in enumerate(freq_band_names):
     sc.add_to_subplot(
         c_obj, row=nf, title=("Module for {} band".format(freq_band_name)),
         title_size=14, title_bold=True, title_color='white')
-
-    b_obj = BrainObj("white")
-    sc.add_to_subplot(b_obj, row = nf,use_this_cam=True, rotate='left')
-
 
 sc.preview()

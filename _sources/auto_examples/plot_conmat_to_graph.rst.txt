@@ -329,6 +329,10 @@ Finally, we are now ready to execute our workflow.
 
         net_file = op.join(res_path,"prep_rada", "Z_List.net")
 
+        b_obj = BrainObj("white")
+        sc.add_to_subplot(b_obj, row = nf,use_this_cam=True, rotate='left')
+
+
         c_obj = visu_graph_modules(lol_file=lol_file, net_file=net_file,
                                 coords_file=coords_file,
                                  labels_file=labels_file,inter_modules=False,
@@ -338,10 +342,6 @@ Finally, we are now ready to execute our workflow.
         sc.add_to_subplot(
             c_obj, row=nf, title=("Module for {} band".format(freq_band_name)),
             title_size=14, title_bold=True, title_color='white')
-
-        b_obj = BrainObj("white")
-        sc.add_to_subplot(b_obj, row = nf,use_this_cam=True, rotate='left')
-
 
     sc.preview()
 
@@ -353,7 +353,7 @@ Finally, we are now ready to execute our workflow.
 
 
 
-**Total running time of the script:** ( 0 minutes  3.855 seconds)
+**Total running time of the script:** ( 0 minutes  3.180 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_conmat_to_graph.py:
