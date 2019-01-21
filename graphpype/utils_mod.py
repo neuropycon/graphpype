@@ -334,6 +334,47 @@ def _return_parti_coef(community_vect, dense_mat):
     return parti_coef
 
 
+def compute_node_dissociation_index(community_vect, sparse_mat):
+    """
+    compute Node dissociation index (NDI) like in (Caplan et al, 2017)
+    """
+    dense_mat = sparse_mat.todense()
+    undir_dense_mat = dense_mat + np.transpose(dense_mat)
+    bin_dense_mat = np.array(undir_dense_mat != 0, dtype=int)
+
+    print(undir_dense_mat)
+    degree_vect = np.array(np.sum(bin_dense_mat != 0, axis=1), dtype='float')
+
+    print (degree_vect)
+    community_indexes = np.unique(community_vect)
+    print (community_indexes)
+
+    ndi_values = np.ones(
+        shape=(community_vect.shape[0]), dtype='float')
+
+    for i in range(ndi_values.shape[0]):
+
+        #same_com = np.where(
+            #np.array([community_vect[i] == community_vect[j] for j in
+                #range(ndi_values.shape[0])],dtype = "bool") == True)
+
+        #print (same_com[0])
+
+        #val = 1.0-(np.sum(bin_dense_mat[i,
+            #same_com[0]])/float(degree_vect[i]))
+
+
+        val2 = 0.0
+
+        for j in community_indexes:
+            if j!=-1 and j!=community_vect[i]:
+                val2+=np.sum(bin_dense_mat[i, community_vect == j])
+
+        ndi_values[i] = val2/float(degree_vect[i])
+
+    print(ndi_values)
+    return ndi_values
+
 def _return_amaral_roles(Z_com_deg, parti_coef):
     """compute Amaral roles (7 node categories)"""
     assert Z_com_deg.shape[0] == parti_coef.shape[0], ("Error, Z_com_deg {} \

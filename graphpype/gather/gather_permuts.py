@@ -251,6 +251,16 @@ def compute_nodes_rada_df(local_dir, gm_coords, coords_file, labels_file,
             np.concatenate((node_roles, part_coeff, Z_com_degree), axis=1),
             columns=['Role_quality', 'Role_quantity',
                      'Participation_coefficient', 'Z_community_degree']))
+    # ndi values
+    ndi_values_file = os.path.join(
+        local_dir, "node_roles", "ndi_values.txt")
+
+    if os.path.exists(ndi_values_file):
+
+        # loding node roles
+        ndi_values = np.array(np.loadtxt(ndi_values_file))
+        list_df.append(pd.DataFrame(ndi_values,
+                                    columns=['Node_Dissociation_Index']))
 
     return list_df
 
@@ -317,6 +327,7 @@ def compute_signif_permuts(permut_df, permut_col="Seed",
     cols = []
 
     if session_col == -1 or len(permut_df[session_col].unique()) == 1:
+        print("Compairing one session with itself")
 
         for index_col, col in enumerate(data_cols):
 
@@ -336,6 +347,7 @@ def compute_signif_permuts(permut_df, permut_col="Seed",
 
             cols.append(str(col))
     else:
+        print("Compairing diffences between two sessions")
         # all unique values should have 2 different samples
         count_elements = Counter(permut_df[permut_col].values)
 
@@ -353,13 +365,18 @@ def compute_signif_permuts(permut_df, permut_col="Seed",
 
         for index_col, col in enumerate(data_cols):
 
+            print ("\n",col)
             df_col = permut_df.pivot(
                 index=permut_col, columns=session_col, values=col)
+
+            print (df_col)
 
             df_col["Diff"] = pd.to_numeric(
                 df_col.iloc[:, 0]) - pd.to_numeric(df_col.iloc[:, 1])
 
-            diff_col = df_col["Diff"].dropna()
+            diff_col = df_col["Diff"].dropna().reset_index(drop = True)
+
+            print(diff_col)
 
             if not all(val == 2 for val in list(count_elements.values())):
                 print("Error, all permut indexes should have 2 lines: {}"
@@ -375,6 +392,8 @@ def compute_signif_permuts(permut_df, permut_col="Seed",
                 cols.append(col)
 
                 continue
+
+            print (diff_col[0])
 
             if diff_col[0] > 0:
                 sum_higher = np.sum(

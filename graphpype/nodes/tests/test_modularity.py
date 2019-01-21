@@ -38,6 +38,7 @@ def test_compute_node_roles():
     compute_node_roles = ComputeNodeRoles()
     compute_node_roles.inputs.rada_lol_file = lol_file
     compute_node_roles.inputs.Pajek_net_file = Pajek_net_file
+    compute_node_roles.inputs.compute_ndi = True
 
     val = compute_node_roles.run().outputs
     print(val)
@@ -49,6 +50,8 @@ def test_compute_node_roles():
     os.remove(val.all_Z_com_degree_file)
     os.remove(val.all_participation_coeff_file)
 
+
+test_compute_node_roles()
 
 def test_compute_module_mat_prop():
     """ test ComputeModuleMatProp"""

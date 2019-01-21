@@ -12,7 +12,8 @@ from graphpype.utils_net import (return_net_list, return_int_net_list,
 
 from graphpype.utils_net import read_Pajek_corres_nodes_and_sparse_matrix
 from graphpype.utils_mod import (compute_roles, read_lol_file,
-                                 _inter_module_avgmat)
+                                 _inter_module_avgmat,
+                                 compute_node_dissociation_index)
 
 from graphpype.utils import is_symetrical
 # ComputeNetList
@@ -212,6 +213,10 @@ class ComputeNodeRolesInputSpec(BaseInterfaceInputSpec):
     role_type = traits.Enum('Amaral_roles', '4roles',
                             desc='definition of node roles',
                             usedefault=True)
+    compute_ndi = traits.Bool(
+        False,
+        desc="whether to compute node_dissociation_index or not",
+        usedefault=True)
 
 
 class ComputeNodeRolesOutputSpec(TraitedSpec):
@@ -227,6 +232,10 @@ class ComputeNodeRolesOutputSpec(TraitedSpec):
         desc="value of quality, descibing the provincial/connector role of the\
             nodes")
 
+    ndi_values_file = File(
+        exists=False,
+        desc="if computed, values of degree with other module relative to \
+            total degree")
 
 class ComputeNodeRoles(BaseInterface):
 
@@ -314,6 +323,14 @@ class ComputeNodeRoles(BaseInterface):
         np.savetxt(all_participation_coeff_file,
                    all_participation_coeff, fmt='%f')
 
+        if self.inputs.compute_ndi:
+            ndi_values = compute_node_dissociation_index(
+                community_vect, sparse_mat)
+
+            ndi_values_file = os.path.abspath('ndi_values.txt')
+
+            np.savetxt(ndi_values_file, ndi_values, fmt='%f')
+
         return runtime
 
     def _list_outputs(self):
@@ -323,7 +340,8 @@ class ComputeNodeRoles(BaseInterface):
             'all_Z_com_degree.txt')
         outputs["all_participation_coeff_file"] = os.path.abspath(
             'all_participation_coeff.txt')
-
+        if self.inputs.compute_ndi:
+            outputs["ndi_values_file"] = os.path.abspath('ndi_values.txt')
         return outputs
 
 
