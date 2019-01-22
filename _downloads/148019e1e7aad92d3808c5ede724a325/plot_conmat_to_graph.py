@@ -219,7 +219,9 @@ for nf,freq_band_name in enumerate(freq_band_names):
 
     b_obj = BrainObj("white", translucent = False)
 
-    sc.add_to_subplot(b_obj, row = nf,use_this_cam=True, rotate='left')
+    sc.add_to_subplot(b_obj, row = nf,use_this_cam=True, rotate='left',
+        title=("Module for {} band".format(freq_band_name)),
+        title_size=14, title_bold=True, title_color='white')
 
 
     c_obj = visu_graph_modules(lol_file=lol_file, net_file=net_file,
@@ -228,8 +230,6 @@ for nf,freq_band_name in enumerate(freq_band_names):
                              z_offset=+50)
                              #x_offset=0, y_offset=-20, z_offset=-50)
 
-    sc.add_to_subplot(
-        c_obj, row=nf, title=("Module for {} band".format(freq_band_name)),
-        title_size=14, title_bold=True, title_color='white')
+    sc.add_to_subplot(c_obj, row=nf)
 
 sc.preview()
