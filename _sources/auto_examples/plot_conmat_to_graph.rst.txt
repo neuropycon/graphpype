@@ -288,7 +288,16 @@ Finally, we are now ready to execute our workflow.
     #main_workflow.run(plugin='MultiProc', plugin_args={'n_procs': 2})
 
     # Run workflow
-    #main_workflow.run()
+    main_workflow.run()
+
+
+
+
+
+
+
+
+.. code-block:: python
 
 
     from graphpype.utils_visbrain import visu_graph_modules
@@ -329,7 +338,10 @@ Finally, we are now ready to execute our workflow.
 
         net_file = op.join(res_path,"prep_rada", "Z_List.net")
 
-        b_obj = BrainObj("white")
+        #net_file = op.join(res_path,"net_prop", "Z_List.net")
+
+        b_obj = BrainObj("white", translucent = False)
+
         sc.add_to_subplot(b_obj, row = nf,use_this_cam=True, rotate='left')
 
 
@@ -353,7 +365,7 @@ Finally, we are now ready to execute our workflow.
 
 
 
-**Total running time of the script:** ( 0 minutes  3.180 seconds)
+**Total running time of the script:** ( 0 minutes  3.315 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_conmat_to_graph.py:

@@ -173,8 +173,9 @@ main_workflow.config['execution'] = {'remove_unnecessary_outputs': 'false'}
 #main_workflow.run(plugin='MultiProc', plugin_args={'n_procs': 2})
 
 # Run workflow
-#main_workflow.run()
+main_workflow.run()
 
+########################################## plotting
 
 from graphpype.utils_visbrain import visu_graph_modules
 
@@ -214,7 +215,10 @@ for nf,freq_band_name in enumerate(freq_band_names):
 
     net_file = op.join(res_path,"prep_rada", "Z_List.net")
 
-    b_obj = BrainObj("white")
+    #net_file = op.join(res_path,"net_prop", "Z_List.net")
+
+    b_obj = BrainObj("white", translucent = False)
+
     sc.add_to_subplot(b_obj, row = nf,use_this_cam=True, rotate='left')
 
 
