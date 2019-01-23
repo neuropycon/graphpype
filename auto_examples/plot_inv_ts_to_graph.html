@@ -79,7 +79,7 @@
             
               <li class="hidden-sm">
 <div id="sourcelink">
-  <a href="../_sources/auto_examples/plot_conmat_to_graph.rst.txt"
+  <a href="../_sources/auto_examples/plot_inv_ts_to_graph.rst.txt"
      rel="nofollow">Source</a>
 </div></li>
             
@@ -105,12 +105,13 @@
       
   <div class="sphx-glr-download-link-note admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">Click <a class="reference internal" href="#sphx-glr-download-auto-examples-plot-conmat-to-graph-py"><span class="std std-ref">here</span></a> to download the full example code</p>
+<p class="last">Click <a class="reference internal" href="#sphx-glr-download-auto-examples-plot-inv-ts-to-graph-py"><span class="std std-ref">here</span></a> to download the full example code</p>
 </div>
 <div class="sphx-glr-example-title section" id="compute-graph-properties-from-a-given-connectivity-matrix">
-<span id="conmat-to-graph"></span><span id="sphx-glr-auto-examples-plot-conmat-to-graph-py"></span><h1>Compute Graph properties from a given connectivity matrix<a class="headerlink" href="#compute-graph-properties-from-a-given-connectivity-matrix" title="Permalink to this headline">¶</a></h1>
-<p>The conmat_to_graph pipeline performs graph analysis .</p>
-<p>The <strong>input</strong> data should be a symetrical connecivity matrix in <strong>npy</strong> format.</p>
+<span id="inv-ts-to-graph"></span><span id="sphx-glr-auto-examples-plot-inv-ts-to-graph-py"></span><h1>Compute Graph properties from a given connectivity matrix<a class="headerlink" href="#compute-graph-properties-from-a-given-connectivity-matrix" title="Permalink to this headline">¶</a></h1>
+<p>The inv_ts_to_graph pipeline performs spectral connectivity and graph analysis
+over time series .</p>
+<p>The <strong>input</strong> data should be a time series matrix in <strong>npy</strong> format.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Authors: David Meunier &lt;david_meunier_79@hotmail.fr&gt;</span>
 
 <span class="c1"># License: BSD (3-clause)</span>
@@ -123,9 +124,9 @@
 <span class="kn">import</span> <span class="nn">nipype.interfaces.io</span> <span class="kn">as</span> <span class="nn">nio</span>
 
 <span class="c1">#import ephypype</span>
-<span class="c1">#from ephypype.nodes import create_iterator, create_datagrabber</span>
+<span class="kn">from</span> <span class="nn">ephypype.nodes</span> <span class="kn">import</span> <span class="n">create_iterator</span><span class="p">,</span> <span class="n">create_datagrabber</span>
 <span class="kn">from</span> <span class="nn">ephypype.nodes</span> <span class="kn">import</span> <span class="n">get_frequency_band</span>
-<span class="kn">from</span> <span class="nn">ephypype.datasets</span> <span class="kn">import</span> <span class="n">fetch_omega_dataset</span>
+<span class="c1">#from ephypype.datasets import fetch_omega_dataset</span>
 </pre></div>
 </div>
 <p>Check if data are available
@@ -137,31 +138,53 @@ needs to import neuropycon_data
     <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Warning, neuropycon_data not found&quot;</span><span class="p">)</span>
     <span class="nb">exit</span><span class="p">()</span>
 
-<span class="n">data_path</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">nd</span><span class="o">.</span><span class="n">__path__</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="s2">&quot;data_con&quot;</span><span class="p">)</span>
+<span class="n">data_path</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">nd</span><span class="o">.</span><span class="n">__path__</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="s2">&quot;data_inv_ts&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>This will be what we will loop on</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">freq_band_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;alpha&#39;</span><span class="p">,</span> <span class="s1">&#39;beta&#39;</span><span class="p">]</span>
+<p>spectral_connectivity_parameters</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">freq_bands</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">8</span><span class="p">,</span> <span class="mi">12</span><span class="p">],</span> <span class="p">[</span><span class="mi">13</span><span class="p">,</span> <span class="mi">29</span><span class="p">]]</span>
+<span class="n">freq_band_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;alpha&#39;</span><span class="p">,</span> <span class="s1">&#39;beta&#39;</span><span class="p">]</span>
+
+
+<span class="n">frequency_node</span> <span class="o">=</span> <span class="n">get_frequency_band</span><span class="p">(</span><span class="n">freq_band_names</span><span class="p">,</span> <span class="n">freq_bands</span><span class="p">)</span>
+
+
+<span class="n">con_method</span> <span class="o">=</span> <span class="s1">&#39;coh&#39;</span>
+<span class="n">epoch_window_length</span> <span class="o">=</span> <span class="mf">3.0</span>
+
+<span class="n">sfreq</span> <span class="o">=</span> <span class="mi">2400</span>
+<span class="c1"># workflow directory within the `base_dir`</span>
+<span class="c1">#correl_analysis_name = &#39;spectral_connectivity_&#39; + con_method</span>
+
+<span class="kn">from</span> <span class="nn">ephypype.pipelines.ts_to_conmat</span> <span class="kn">import</span> <a href="http://neuropycon.github.io/ephypype/generated/ephypype.pipelines.create_pipeline_time_series_to_spectral_connectivity.html#ephypype.pipelines.create_pipeline_time_series_to_spectral_connectivity" title="View documentation for ephypype.pipelines.ts_to_conmat.create_pipeline_time_series_to_spectral_connectivity"><span class="n">create_pipeline_time_series_to_spectral_connectivity</span></a> <span class="c1"># noqa</span>
+<span class="n">spectral_workflow</span> <span class="o">=</span> <a href="http://neuropycon.github.io/ephypype/generated/ephypype.pipelines.create_pipeline_time_series_to_spectral_connectivity.html#ephypype.pipelines.create_pipeline_time_series_to_spectral_connectivity" title="View documentation for ephypype.pipelines.ts_to_conmat.create_pipeline_time_series_to_spectral_connectivity"><span class="n">create_pipeline_time_series_to_spectral_connectivity</span></a><span class="p">(</span>
+    <span class="n">data_path</span><span class="p">,</span> <span class="n">con_method</span><span class="o">=</span><span class="n">con_method</span><span class="p">,</span>
+    <span class="n">epoch_window_length</span><span class="o">=</span><span class="n">epoch_window_length</span><span class="p">)</span>
+</pre></div>
+</div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>$$$$$$$$$$$$$$$$$$$$$$$$ Multiple trials $$$$$$$$$$$$$$$$$$$$$
 </pre></div>
 </div>
 <p>Then, we create our workflow and specify the <cite>base_dir</cite> which tells
 nipype the directory in which to store the outputs.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># workflow directory within the `base_dir`</span>
-<span class="n">graph_analysis_name</span> <span class="o">=</span> <span class="s1">&#39;graph_analysis&#39;</span>
+<span class="n">graph_analysis_name</span> <span class="o">=</span> <span class="s1">&#39;inv_to_graph_analysis&#39;</span>
 
 <span class="n">main_workflow</span> <span class="o">=</span> <span class="n">pe</span><span class="o">.</span><span class="n">Workflow</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">graph_analysis_name</span><span class="p">)</span>
 <span class="n">main_workflow</span><span class="o">.</span><span class="n">base_dir</span> <span class="o">=</span> <span class="n">data_path</span>
 </pre></div>
 </div>
 <p>Then we create a node to pass input filenames to DataGrabber from nipype</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># infosource = create_iterator([&#39;freq_band_name&#39;],</span>
-                             <span class="c1">#[freq_band_names])</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">subject_ids</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;sub-0003&#39;</span><span class="p">]</span>  <span class="c1"># &#39;sub-0004&#39;, &#39;sub-0006&#39;</span>
+<span class="n">infosource</span> <span class="o">=</span> <span class="n">create_iterator</span><span class="p">([</span><span class="s1">&#39;subject_id&#39;</span><span class="p">,</span> <span class="s1">&#39;freq_band_name&#39;</span><span class="p">],</span>
+                             <span class="p">[</span><span class="n">subject_ids</span><span class="p">,</span> <span class="n">freq_band_names</span><span class="p">])</span>
 
-<span class="n">infosource</span> <span class="o">=</span> <span class="n">pe</span><span class="o">.</span><span class="n">Node</span><span class="p">(</span>
-        <span class="n">interface</span><span class="o">=</span><span class="n">IdentityInterface</span><span class="p">(</span><span class="n">fields</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;freq_band_name&#39;</span><span class="p">]),</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;infosource&quot;</span><span class="p">)</span>
+<span class="c1">#infosource = pe.Node(</span>
+        <span class="c1">#interface=IdentityInterface(fields=[&#39;freq_band_name&#39;]),</span>
+        <span class="c1">#name=&quot;infosource&quot;)</span>
 
-<span class="n">infosource</span><span class="o">.</span><span class="n">iterables</span> <span class="o">=</span> <span class="p">[(</span><span class="s1">&#39;freq_band_name&#39;</span><span class="p">,</span><span class="n">freq_band_names</span><span class="p">)]</span>
+<span class="c1">#infosource.iterables = [(&#39;freq_band_name&#39;,freq_band_names)]</span>
 </pre></div>
 </div>
 <p>and a node to grab data. The template_args in this node iterate upon
@@ -170,14 +193,18 @@ the values in the infosource node</p>
 <span class="c1"># template_args = [[&#39;freq_band_name&#39;]</span>
 <span class="c1"># datasource = create_datagrabber(data_path, template_path, template_args)</span>
 
-<span class="n">datasource</span> <span class="o">=</span> <span class="n">pe</span><span class="o">.</span><span class="n">Node</span><span class="p">(</span><span class="n">interface</span><span class="o">=</span><span class="n">nio</span><span class="o">.</span><span class="n">DataGrabber</span><span class="p">(</span><span class="n">infields</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;freq_band_name&#39;</span><span class="p">],</span>
-                                                <span class="n">outfields</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;conmat_file&#39;</span><span class="p">]),</span>
-                        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;datasource&#39;</span><span class="p">)</span>
-<span class="n">datasource</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">base_directory</span> <span class="o">=</span> <span class="n">data_path</span>
-<span class="n">datasource</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">template</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">/conmat_0_coh.npy&quot;</span><span class="p">)</span>
-<span class="n">datasource</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">template_args</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
-    <span class="n">conmat_file</span><span class="o">=</span><span class="p">[[</span><span class="s1">&#39;freq_band_name&#39;</span><span class="p">]])</span>
 
+<span class="n">template_path</span> <span class="o">=</span> <span class="s1">&#39;*</span><span class="si">%s</span><span class="s1">_task-rest_run-01_meg_0_60_raw_filt_dsamp_ica_ROI_ts.npy&#39;</span>
+
+
+<span class="n">datasource</span> <span class="o">=</span> <span class="n">pe</span><span class="o">.</span><span class="n">Node</span><span class="p">(</span><span class="n">interface</span><span class="o">=</span><span class="n">nio</span><span class="o">.</span><span class="n">DataGrabber</span><span class="p">(</span><span class="n">infields</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;subject_id&#39;</span><span class="p">],</span>
+                                               <span class="n">outfields</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;ts_file&#39;</span><span class="p">]),</span>
+                        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;datasource&#39;</span><span class="p">)</span>
+
+<span class="n">datasource</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">base_directory</span> <span class="o">=</span> <span class="n">data_path</span>
+<span class="n">datasource</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">template</span> <span class="o">=</span> <span class="n">template_path</span>
+
+<span class="n">datasource</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">template_args</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">ts_file</span><span class="o">=</span><span class="p">[[</span><span class="s1">&#39;subject_id&#39;</span><span class="p">]])</span>
 <span class="n">datasource</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">sort_filelist</span> <span class="o">=</span> <span class="bp">True</span>
 </pre></div>
 </div>
@@ -233,10 +260,21 @@ our parameters to it.</dd>
 <p>We then connect the nodes two at a time. We connect the output
 of the infosource node to the datasource node.
 So, these two nodes taken together can grab data.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">main_workflow</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">infosource</span><span class="p">,</span> <span class="s1">&#39;freq_band_name&#39;</span><span class="p">,</span>
-                      <span class="n">datasource</span><span class="p">,</span> <span class="s1">&#39;freq_band_name&#39;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">main_workflow</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">infosource</span><span class="p">,</span> <span class="s1">&#39;subject_id&#39;</span><span class="p">,</span>
+                      <span class="n">datasource</span><span class="p">,</span> <span class="s1">&#39;subject_id&#39;</span><span class="p">)</span>
 
-<span class="n">main_workflow</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">datasource</span><span class="p">,</span> <span class="s1">&#39;conmat_file&#39;</span><span class="p">,</span>
+<span class="n">main_workflow</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">infosource</span><span class="p">,</span> <span class="s1">&#39;freq_band_name&#39;</span><span class="p">,</span>
+                      <span class="n">frequency_node</span><span class="p">,</span> <span class="s1">&#39;freq_band_name&#39;</span><span class="p">)</span>
+
+<span class="n">main_workflow</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">datasource</span><span class="p">,</span> <span class="s1">&#39;ts_file&#39;</span><span class="p">,</span>
+                      <span class="n">spectral_workflow</span><span class="p">,</span><span class="s2">&quot;inputnode.ts_file&quot;</span><span class="p">)</span>
+
+<span class="n">spectral_workflow</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">inputnode</span><span class="o">.</span><span class="n">sfreq</span> <span class="o">=</span> <span class="n">sfreq</span>
+
+<span class="n">main_workflow</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">frequency_node</span><span class="p">,</span> <span class="s1">&#39;freq_bands&#39;</span><span class="p">,</span>
+                      <span class="n">spectral_workflow</span><span class="p">,</span> <span class="s1">&#39;inputnode.freq_band&#39;</span><span class="p">)</span>
+
+<span class="n">main_workflow</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">spectral_workflow</span><span class="p">,</span> <span class="s1">&#39;spectral.conmat_file&#39;</span><span class="p">,</span>
                       <span class="n">graph_workflow</span><span class="p">,</span><span class="s2">&quot;inputnode.conmat_file&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -244,8 +282,8 @@ So, these two nodes taken together can grab data.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">main_workflow</span><span class="o">.</span><span class="n">write_graph</span><span class="p">(</span><span class="n">graph2use</span><span class="o">=</span><span class="s1">&#39;colored&#39;</span><span class="p">)</span>  <span class="c1"># colored</span>
 </pre></div>
 </div>
-<p>and visualize it. Take a moment to pause and notice how the connections
-here correspond to how we connected the nodes.</p>
+<p># and visualize it. Take a moment to pause and notice how the connections
+# here correspond to how we connected the nodes.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">scipy.misc</span> <span class="kn">import</span> <span class="n">imread</span>  <span class="c1"># noqa</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>  <span class="c1"># noqa</span>
 <span class="n">img</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="n">graph_analysis_name</span><span class="p">,</span> <span class="s1">&#39;graph.png&#39;</span><span class="p">))</span>
@@ -255,8 +293,8 @@ here correspond to how we connected the nodes.</p>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-<img alt="../_images/sphx_glr_plot_conmat_to_graph_001.png" class="sphx-glr-single-img" src="../_images/sphx_glr_plot_conmat_to_graph_001.png" />
-<p>Finally, we are now ready to execute our workflow.</p>
+<img alt="../_images/sphx_glr_plot_inv_ts_to_graph_001.png" class="sphx-glr-single-img" src="../_images/sphx_glr_plot_inv_ts_to_graph_001.png" />
+<p># Finally, we are now ready to execute our workflow.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">main_workflow</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;execution&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;remove_unnecessary_outputs&#39;</span><span class="p">:</span> <span class="s1">&#39;false&#39;</span><span class="p">}</span>
 
 <span class="c1"># Run workflow locally on 2 CPUs</span>
@@ -268,8 +306,8 @@ here correspond to how we connected the nodes.</p>
 </div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">graphpype.utils_visbrain</span> <span class="kn">import</span> <span class="n">visu_graph_modules</span>
 
-<span class="n">labels_file</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="s2">&quot;correct_channel_names.txt&quot;</span><span class="p">)</span>
-<span class="n">coords_file</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="s2">&quot;MNI_coords.txt&quot;</span><span class="p">)</span>
+<span class="n">labels_file</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="s2">&quot;label_names.txt&quot;</span><span class="p">)</span>
+<span class="n">coords_file</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="s2">&quot;label_coords.txt&quot;</span><span class="p">)</span>
 
 <span class="c1">#for freq_band_name in freq_band_names:</span>
 
@@ -298,7 +336,7 @@ here correspond to how we connected the nodes.</p>
 
     <span class="n">res_path</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
         <span class="n">data_path</span><span class="p">,</span><span class="n">graph_analysis_name</span><span class="p">,</span> <span class="s2">&quot;graph_den_pipe_den_0_05&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;_freq_band_name_&quot;</span><span class="o">+</span><span class="n">freq_band_name</span><span class="p">)</span>
+        <span class="s2">&quot;_freq_band_name_&quot;</span><span class="o">+</span><span class="n">freq_band_name</span> <span class="o">+</span> <span class="s2">&quot;_subject_id_sub-0003&quot;</span><span class="p">)</span>
 
     <span class="n">lol_file</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">res_path</span><span class="p">,</span><span class="s2">&quot;community_rada&quot;</span><span class="p">,</span> <span class="s2">&quot;Z_List.lol&quot;</span><span class="p">)</span>
 
@@ -324,13 +362,13 @@ here correspond to how we connected the nodes.</p>
 <span class="n">sc</span><span class="o">.</span><span class="n">preview</span><span class="p">()</span>
 </pre></div>
 </div>
-<img alt="../_images/sphx_glr_plot_conmat_to_graph_002.png" class="sphx-glr-single-img" src="../_images/sphx_glr_plot_conmat_to_graph_002.png" />
-<p><strong>Total running time of the script:</strong> ( 0 minutes  3.971 seconds)</p>
-<div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-conmat-to-graph-py">
+<img alt="../_images/sphx_glr_plot_inv_ts_to_graph_002.png" class="sphx-glr-single-img" src="../_images/sphx_glr_plot_inv_ts_to_graph_002.png" />
+<p><strong>Total running time of the script:</strong> ( 0 minutes  1.706 seconds)</p>
+<div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-inv-ts-to-graph-py">
 <div class="sphx-glr-download docutils container">
-<a class="reference download internal" download="" href="../_downloads/148019e1e7aad92d3808c5ede724a325/plot_conmat_to_graph.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_conmat_to_graph.py</span></code></a></div>
+<a class="reference download internal" download="" href="../_downloads/c408898dc7b654b78c9005349545b8bd/plot_inv_ts_to_graph.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_inv_ts_to_graph.py</span></code></a></div>
 <div class="sphx-glr-download docutils container">
-<a class="reference download internal" download="" href="../_downloads/d43953be76d37e9ce1d5844f6d926b2b/plot_conmat_to_graph.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_conmat_to_graph.ipynb</span></code></a></div>
+<a class="reference download internal" download="" href="../_downloads/c7d8056e39a517111ff88942ed0cc51b/plot_inv_ts_to_graph.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_inv_ts_to_graph.ipynb</span></code></a></div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.readthedocs.io">Gallery generated by Sphinx-Gallery</a></p>
 </div>

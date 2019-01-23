@@ -1,12 +1,13 @@
 """
-.. _conmat_to_graph:
+.. _inv_ts_to_graph:
 
 =========================================================
 Compute Graph properties from a given connectivity matrix
 =========================================================
-The conmat_to_graph pipeline performs graph analysis .
+The inv_ts_to_graph pipeline performs spectral connectivity and graph analysis
+over time series .
 
-The **input** data should be a symetrical connecivity matrix in **npy** format.
+The **input** data should be a time series matrix in **npy** format.
 """
 
 # Authors: David Meunier <david_meunier_79@hotmail.fr>
@@ -21,9 +22,9 @@ from nipype.interfaces.utility import IdentityInterface, Function
 import nipype.interfaces.io as nio
 
 #import ephypype
-#from ephypype.nodes import create_iterator, create_datagrabber
+from ephypype.nodes import create_iterator, create_datagrabber
 from ephypype.nodes import get_frequency_band
-from ephypype.datasets import fetch_omega_dataset
+#from ephypype.datasets import fetch_omega_dataset
 
 
 ###############################################################################
@@ -38,19 +39,37 @@ except ImportError:
     print("Warning, neuropycon_data not found")
     exit()
 
-data_path = op.join(nd.__path__[0], "data", "data_con")
+data_path = op.join(nd.__path__[0], "data", "data_inv_ts")
 
 ###############################################################################
-# This will be what we will loop on
+# spectral_connectivity_parameters
 
+freq_bands = [[8, 12], [13, 29]]
 freq_band_names = ['alpha', 'beta']
+
+
+frequency_node = get_frequency_band(freq_band_names, freq_bands)
+
+
+con_method = 'coh'
+epoch_window_length = 3.0
+
+sfreq = 2400
+# workflow directory within the `base_dir`
+#correl_analysis_name = 'spectral_connectivity_' + con_method
+
+from ephypype.pipelines.ts_to_conmat import create_pipeline_time_series_to_spectral_connectivity # noqa
+spectral_workflow = create_pipeline_time_series_to_spectral_connectivity(
+    data_path, con_method=con_method,
+    epoch_window_length=epoch_window_length)
+
 
 ###############################################################################
 # Then, we create our workflow and specify the `base_dir` which tells
 # nipype the directory in which to store the outputs.
 
 # workflow directory within the `base_dir`
-graph_analysis_name = 'graph_analysis'
+graph_analysis_name = 'inv_to_graph_analysis'
 
 main_workflow = pe.Workflow(name=graph_analysis_name)
 main_workflow.base_dir = data_path
@@ -58,14 +77,15 @@ main_workflow.base_dir = data_path
 ###############################################################################
 # Then we create a node to pass input filenames to DataGrabber from nipype
 
-# infosource = create_iterator(['freq_band_name'],
-                             #[freq_band_names])
+subject_ids = ['sub-0003']  # 'sub-0004', 'sub-0006'
+infosource = create_iterator(['subject_id', 'freq_band_name'],
+                             [subject_ids, freq_band_names])
 
-infosource = pe.Node(
-        interface=IdentityInterface(fields=['freq_band_name']),
-        name="infosource")
+#infosource = pe.Node(
+        #interface=IdentityInterface(fields=['freq_band_name']),
+        #name="infosource")
 
-infosource.iterables = [('freq_band_name',freq_band_names)]
+#infosource.iterables = [('freq_band_name',freq_band_names)]
 
 ###############################################################################
 # and a node to grab data. The template_args in this node iterate upon
@@ -75,14 +95,18 @@ infosource.iterables = [('freq_band_name',freq_band_names)]
 # template_args = [['freq_band_name']
 # datasource = create_datagrabber(data_path, template_path, template_args)
 
-datasource = pe.Node(interface=nio.DataGrabber(infields=['freq_band_name'],
-                                                outfields=['conmat_file']),
-                        name='datasource')
-datasource.inputs.base_directory = data_path
-datasource.inputs.template = ("%s/conmat_0_coh.npy")
-datasource.inputs.template_args = dict(
-    conmat_file=[['freq_band_name']])
 
+template_path = '*%s_task-rest_run-01_meg_0_60_raw_filt_dsamp_ica_ROI_ts.npy'
+
+
+datasource = pe.Node(interface=nio.DataGrabber(infields=['subject_id'],
+                                               outfields=['ts_file']),
+                        name='datasource')
+
+datasource.inputs.base_directory = data_path
+datasource.inputs.template = template_path
+
+datasource.inputs.template_args = dict(ts_file=[['subject_id']])
 datasource.inputs.sort_filelist = True
 
 
@@ -141,10 +165,21 @@ graph_workflow = create_pipeline_conmat_to_graph_density(
 # of the infosource node to the datasource node.
 # So, these two nodes taken together can grab data.
 
-main_workflow.connect(infosource, 'freq_band_name',
-                      datasource, 'freq_band_name')
+main_workflow.connect(infosource, 'subject_id',
+                      datasource, 'subject_id')
 
-main_workflow.connect(datasource, 'conmat_file',
+main_workflow.connect(infosource, 'freq_band_name',
+                      frequency_node, 'freq_band_name')
+
+main_workflow.connect(datasource, 'ts_file',
+                      spectral_workflow,"inputnode.ts_file")
+
+spectral_workflow.inputs.inputnode.sfreq = sfreq
+
+main_workflow.connect(frequency_node, 'freq_bands',
+                      spectral_workflow, 'inputnode.freq_band')
+
+main_workflow.connect(spectral_workflow, 'spectral.conmat_file',
                       graph_workflow,"inputnode.conmat_file")
 
 ###############################################################################
@@ -152,9 +187,9 @@ main_workflow.connect(datasource, 'conmat_file',
 
 main_workflow.write_graph(graph2use='colored')  # colored
 
-###############################################################################
-# and visualize it. Take a moment to pause and notice how the connections
-# here correspond to how we connected the nodes.
+################################################################################
+## and visualize it. Take a moment to pause and notice how the connections
+## here correspond to how we connected the nodes.
 
 from scipy.misc import imread  # noqa
 import matplotlib.pyplot as plt  # noqa
@@ -164,8 +199,8 @@ plt.imshow(img)
 plt.axis('off')
 plt.show()
 
-###############################################################################
-# Finally, we are now ready to execute our workflow.
+################################################################################
+## Finally, we are now ready to execute our workflow.
 
 main_workflow.config['execution'] = {'remove_unnecessary_outputs': 'false'}
 
@@ -175,12 +210,19 @@ main_workflow.config['execution'] = {'remove_unnecessary_outputs': 'false'}
 # Run workflow
 main_workflow.run()
 
+
+
+
+
+
+
+
 ########################################## plotting
 
 from graphpype.utils_visbrain import visu_graph_modules
 
-labels_file = op.join(data_path, "correct_channel_names.txt")
-coords_file = op.join(data_path, "MNI_coords.txt")
+labels_file = op.join(data_path, "label_names.txt")
+coords_file = op.join(data_path, "label_coords.txt")
 
 #for freq_band_name in freq_band_names:
 
@@ -209,7 +251,7 @@ for nf,freq_band_name in enumerate(freq_band_names):
 
     res_path = op.join(
         data_path,graph_analysis_name, "graph_den_pipe_den_0_05",
-        "_freq_band_name_"+freq_band_name)
+        "_freq_band_name_"+freq_band_name + "_subject_id_sub-0003")
 
     lol_file = op.join(res_path,"community_rada", "Z_List.lol")
 
