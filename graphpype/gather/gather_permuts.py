@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 import os
-
 import glob
 
 import pandas as pd
@@ -362,38 +361,26 @@ def compute_signif_permuts(permut_df, permut_col="Seed",
                   .format(count_elements))
 
         # computing diff df
-
         for index_col, col in enumerate(data_cols):
 
-            print ("\n",col)
             df_col = permut_df.pivot(
                 index=permut_col, columns=session_col, values=col)
-
-            print (df_col)
 
             df_col["Diff"] = pd.to_numeric(
                 df_col.iloc[:, 0]) - pd.to_numeric(df_col.iloc[:, 1])
 
-            diff_col = df_col["Diff"].dropna().reset_index(drop = True)
+            diff_col = df_col["Diff"].dropna().reset_index(drop=True)
 
-            print(diff_col)
-
-            if not all(val == 2 for val in list(count_elements.values())):
-                print("Error, all permut indexes should have 2 lines: {}"
-                      .format(count_elements))
-
-                print(diff_col)
-                print(diff_col.shape)
+            assert all(val == 2 for val in list(count_elements.values())),\
+                ("Error, all permut indexes should have 2 lines: \
+                    {}".format(count_elements))
 
             if diff_col.shape[0] == 0:
-
                 all_p_higher[index_col] = np.nan
                 all_p_lower[index_col] = np.nan
                 cols.append(col)
 
                 continue
-
-            print (diff_col[0])
 
             if diff_col[0] > 0:
                 sum_higher = np.sum(

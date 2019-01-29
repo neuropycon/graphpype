@@ -14,9 +14,7 @@ def visu_graph(net_file, coords_file, labels_file, modality_type="fMRI",
     coords = np.loadtxt(coords_file)
     if modality_type == "MEG":
         coords = 1000*coords
-
-        coords = np.swapaxes(coords,0,1)
-
+        coords = np.swapaxes(coords, 0, 1)
 
     # labels
     labels = [line.strip() for line in open(labels_file)]
@@ -100,25 +98,24 @@ c_colval_modules = {0: "red", 1: "orange", 2: "blue", 3: "green", 4: "yellow",
 def visu_graph_modules(net_file, lol_file, coords_file, labels_file,
                        inter_modules=True, modality_type="",
                        s_textcolor="white", c_colval=c_colval_modules,
-                       umin=0, umax=50, x_offset = 0, y_offset = 0,
-                       z_offset = 0):
-
+                       umin=0, umax=50, x_offset=0, y_offset=0,
+                       z_offset=0):
     # coords
     coords = np.loadtxt(coords_file)
 
     if modality_type == "MEG":
         coords = 1000*coords
         temp = np.copy(coords)
-        coords [:,1] = coords[:,0]
-        coords[:,0] = temp [:,1]
+        coords[:, 1] = coords[:, 0]
+        coords[:, 0] = temp[:, 1]
 
-    coords[:,2] +=  z_offset
-    coords[:,1] +=  y_offset
-    coords[:,0] +=  x_offset
+    coords[:, 2] += z_offset
+    coords[:, 1] += y_offset
+    coords[:, 0] += x_offset
 
     # labels
     labels = [line.strip() for line in open(labels_file)]
-    npLabels = np.array(labels)
+    np_labels = np.array(labels)
 
     # net file
     node_corres, sparse_matrix = read_Pajek_corres_nodes_and_sparse_matrix(
@@ -133,11 +130,8 @@ def visu_graph_modules(net_file, lol_file, coords_file, labels_file,
     c_connect = np.ma.masked_array(c_connect, mask=True)
     c_connect.mask[c_connect > -1.0] = False
 
-    # Colormap properties (for connectivity) :
-    # c_cmap = 'inferno'		# Matplotlib colormap
-
     corres_coords = coords[node_corres, :]
-    newLabels = npLabels[node_corres]
+    corres_labels = np_labels[node_corres]
 
     if inter_modules:
         c_colval[-1] = "grey"
@@ -145,15 +139,11 @@ def visu_graph_modules(net_file, lol_file, coords_file, labels_file,
     """Create the connectivity object :"""
     c_obj = ConnectObj('ConnectObj1', corres_coords, c_connect,
                        color_by='strength', custom_colors=c_colval)
-    # ,antialias=True
 
-    return c_obj
-    #"""Create the source object :"""
-    #s_obj = SourceObj('SourceObj1', corres_coords, text=newLabels,
-                      #text_color=s_textcolor, color='crimson', alpha=.5,
-                      #edge_width=2., radius_min=2., radius_max=10.)
+    # source object
+    s_obj = SourceObj(
+        'SourceObj1', corres_coords, text=corres_labels,
+        text_color=s_textcolor, text_size=10, color='crimson', alpha=.5,
+        edge_width=2., radius_min=2., radius_max=10.)
 
-    #vb = Brain(source_obj=s_obj, connect_obj=c_obj)
-
-    #return c_obj,vb
-
+    return c_obj, s_obj

@@ -46,12 +46,12 @@ def test_compute_node_roles():
     assert os.path.exists(val.all_Z_com_degree_file)
     assert os.path.exists(val.all_participation_coeff_file)
 
+    assert os.path.exists(val.ndi_values_file)
+
     os.remove(val.node_roles_file)
     os.remove(val.all_Z_com_degree_file)
     os.remove(val.all_participation_coeff_file)
 
-
-test_compute_node_roles()
 
 def test_compute_module_mat_prop():
     """ test ComputeModuleMatProp"""

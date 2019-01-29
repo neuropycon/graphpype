@@ -11,7 +11,7 @@ from graphpype.nodes.modularity import ComputeNetList, ComputeNodeRoles
 
 def create_pipeline_conmat_to_graph_density(
         main_path, pipeline_name="graph_den_pipe", con_den=1.0, multi=False,
-        mod=True, plot=False, optim_seq="WS trfr 100", compute_ndi = False):
+        mod=True, plot=False, optim_seq="WS trfr 100", compute_ndi=False):
     """
     Description:
 

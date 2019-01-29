@@ -237,6 +237,7 @@ class ComputeNodeRolesOutputSpec(TraitedSpec):
         desc="if computed, values of degree with other module relative to \
             total degree")
 
+
 class ComputeNodeRoles(BaseInterface):
 
     """
