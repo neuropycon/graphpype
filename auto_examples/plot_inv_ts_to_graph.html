@@ -113,20 +113,14 @@
 over time series .</p>
 <p>The <strong>input</strong> data should be a time series matrix in <strong>npy</strong> format.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Authors: David Meunier &lt;david_meunier_79@hotmail.fr&gt;</span>
-
 <span class="c1"># License: BSD (3-clause)</span>
-
 <span class="kn">import</span> <span class="nn">os.path</span> <span class="kn">as</span> <span class="nn">op</span>
-
 <span class="kn">import</span> <span class="nn">nipype.pipeline.engine</span> <span class="kn">as</span> <span class="nn">pe</span>
-
 <span class="kn">from</span> <span class="nn">nipype.interfaces.utility</span> <span class="kn">import</span> <span class="n">IdentityInterface</span><span class="p">,</span> <span class="n">Function</span>
 <span class="kn">import</span> <span class="nn">nipype.interfaces.io</span> <span class="kn">as</span> <span class="nn">nio</span>
 
-<span class="c1">#import ephypype</span>
 <span class="kn">from</span> <span class="nn">ephypype.nodes</span> <span class="kn">import</span> <span class="n">create_iterator</span><span class="p">,</span> <span class="n">create_datagrabber</span>
 <span class="kn">from</span> <span class="nn">ephypype.nodes</span> <span class="kn">import</span> <span class="n">get_frequency_band</span>
-<span class="c1">#from ephypype.datasets import fetch_omega_dataset</span>
 </pre></div>
 </div>
 <p>Check if data are available
@@ -228,24 +222,16 @@ our parameters to it.</dd>
 </div>
 <p>see <a class="reference external" href="http://deim.urv.cat/~sergio.gomez/download.php?f=radatools-5.0-README.txt">http://deim.urv.cat/~sergio.gomez/download.php?f=radatools-5.0-README.txt</a>
 for more details, but very briefly:
-1) WN for weighted unsigned (typically
-coherence, pli, etc.) and WS for signed (e.g. Pearson correlation) +
-2) the optimisation sequence, can be used in different order. The sequence
-tfrf is proposed in radatools, and means: t = tabu search , f = fast
-algorithm, r = reposition algorithm and f = fast algorithm (again)
-3) the last number is the number of repetitions of the algorithm, out of
-which the best one is chosen. The higher the number of repetitions, the
-higher the chance to reach the global maximum, but also the longer the
-computation takes. For testing, 1 is admissible, but it is expected to
-have at least 100 is required for reliable results</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># The graph pipeline contains several nodes, some are based on radatools</span>
-<span class="c1">#</span>
-<span class="c1"># Two nodes of particular interest are :</span>
-<span class="c1">#</span>
-<span class="c1"># * :class:`graphpype.interfaces.radatools.rada.CommRada` computes Community detection based on the previous radatools_optim parameters noqa</span>
-<span class="c1"># * :class:`graphpype.interfaces.radatools.rada..NetPropRada` computes most of the classical graph-based metrics (Small-World, Efficiency, Assortativity, etc.) noqa</span>
-
-<span class="kn">from</span> <span class="nn">graphpype.pipelines.conmat_to_graph</span> <span class="kn">import</span> <span class="n">create_pipeline_conmat_to_graph_density</span> <span class="c1"># noqa</span>
+* 1) WN for weighted unsigned (typically coherence, pli, etc.) and WS for signed (e.g. Pearson correlation) # noqa
+* 2) the optimisation sequence, can be used in different order. The sequence tfrf is proposed in radatools, and means: t = tabu search , f = fast algorithm, r = reposition algorithm and f = fast algorithm (again) # noqa
+* 3) the last number is the number of repetitions of the algorithm, out of which the best one is chosen. The higher the number of repetitions, the higher the chance to reach the global maximum, but also the longer the computation takes. For testing, 1 is admissible, but it is expected to have at least 100 is required for reliable results #noqa
+The graph pipeline contains several nodes, some are based on radatools</p>
+<p>Two nodes of particular interest are :</p>
+<ul class="simple">
+<li><code class="xref py py-class docutils literal notranslate"><span class="pre">graphpype.interfaces.radatools.rada.CommRada</span></code> computes Community detection based on the previous radatools_optim parameters # noqa</li>
+<li><code class="xref py py-class docutils literal notranslate"><span class="pre">graphpype.interfaces.radatools.rada.NetPropRada</span></code> computes most of the classical graph-based metrics (Small-World, Efficiency, Assortativity, etc.) # noqa</li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">graphpype.pipelines.conmat_to_graph</span> <span class="kn">import</span> <span class="n">create_pipeline_conmat_to_graph_density</span> <span class="c1"># noqa</span>
 
 <span class="n">graph_workflow</span> <span class="o">=</span> <span class="n">create_pipeline_conmat_to_graph_density</span><span class="p">(</span>
     <span class="n">data_path</span><span class="p">,</span> <span class="n">con_den</span><span class="o">=</span><span class="n">con_den</span><span class="p">,</span> <span class="n">optim_seq</span> <span class="o">=</span> <span class="n">radatools_optim</span><span class="p">)</span>
@@ -335,7 +321,7 @@ So, these two nodes taken together can grab data.</p>
 </pre></div>
 </div>
 <img alt="../_images/sphx_glr_plot_inv_ts_to_graph_002.png" class="sphx-glr-single-img" src="../_images/sphx_glr_plot_inv_ts_to_graph_002.png" />
-<p><strong>Total running time of the script:</strong> ( 0 minutes  1.547 seconds)</p>
+<p><strong>Total running time of the script:</strong> ( 0 minutes  1.521 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-inv-ts-to-graph-py">
 <div class="sphx-glr-download docutils container">
 <a class="reference download internal" download="" href="../_downloads/c408898dc7b654b78c9005349545b8bd/plot_inv_ts_to_graph.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_inv_ts_to_graph.py</span></code></a></div>
