@@ -17,7 +17,7 @@ import nipype.pipeline.engine as pe
 from nipype.interfaces.utility import IdentityInterface, Function
 import nipype.interfaces.io as nio
 
-from ephypype.nodes import create_iterator, create_datagrabber
+from ephypype.nodes import create_iterator
 from ephypype.nodes import get_frequency_band
 
 ###############################################################################
