@@ -221,11 +221,22 @@ our parameters to it.</dd>
 </pre></div>
 </div>
 <p>see <a class="reference external" href="http://deim.urv.cat/~sergio.gomez/download.php?f=radatools-5.0-README.txt">http://deim.urv.cat/~sergio.gomez/download.php?f=radatools-5.0-README.txt</a>
-for more details, but very briefly:
-* 1) WN for weighted unsigned (typically coherence, pli, etc.) and WS for signed (e.g. Pearson correlation) # noqa
-* 2) the optimisation sequence, can be used in different order. The sequence tfrf is proposed in radatools, and means: t = tabu search , f = fast algorithm, r = reposition algorithm and f = fast algorithm (again) # noqa
-* 3) the last number is the number of repetitions of the algorithm, out of which the best one is chosen. The higher the number of repetitions, the higher the chance to reach the global maximum, but also the longer the computation takes. For testing, 1 is admissible, but it is expected to have at least 100 is required for reliable results #noqa
-The graph pipeline contains several nodes, some are based on radatools</p>
+for more details, but very briefly:</p>
+<ul class="simple">
+<li><ol class="first arabic">
+<li>WN for weighted unsigned (typically coherence, pli, etc.) and WS for signed (e.g. Pearson correlation) # noqa</li>
+</ol>
+</li>
+<li><ol class="first arabic" start="2">
+<li>the optimisation sequence, can be used in different order. The sequence tfrf is proposed in radatools, and means: t = tabu search , f = fast algorithm, r = reposition algorithm and f = fast algorithm (again) # noqa</li>
+</ol>
+</li>
+<li><ol class="first arabic" start="3">
+<li>the last number is the number of repetitions of the algorithm, out of which the best one is chosen. The higher the number of repetitions, the higher the chance to reach the global maximum, but also the longer the computation takes. For testing, 1 is admissible, but it is expected to have at least 100 is required for reliable results #noqa</li>
+</ol>
+</li>
+</ul>
+<p>The graph pipeline contains several nodes, some are based on radatools</p>
 <p>Two nodes of particular interest are :</p>
 <ul class="simple">
 <li><code class="xref py py-class docutils literal notranslate"><span class="pre">graphpype.interfaces.radatools.rada.CommRada</span></code> computes Community detection based on the previous radatools_optim parameters # noqa</li>
@@ -321,7 +332,7 @@ So, these two nodes taken together can grab data.</p>
 </pre></div>
 </div>
 <img alt="../_images/sphx_glr_plot_inv_ts_to_graph_002.png" class="sphx-glr-single-img" src="../_images/sphx_glr_plot_inv_ts_to_graph_002.png" />
-<p><strong>Total running time of the script:</strong> ( 0 minutes  1.553 seconds)</p>
+<p><strong>Total running time of the script:</strong> ( 0 minutes  1.552 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-inv-ts-to-graph-py">
 <div class="sphx-glr-download docutils container">
 <a class="reference download internal" download="" href="../_downloads/c408898dc7b654b78c9005349545b8bd/plot_inv_ts_to_graph.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_inv_ts_to_graph.py</span></code></a></div>
