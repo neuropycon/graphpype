@@ -121,8 +121,8 @@ datasource.inputs.sort_filelist = True
 # In particular, the follwing parameters are of particular importance:
 # density of the threshold
 
-#con_den = 0.1 #
-con_den = 0.05 #
+con_den = 0.1 #
+#con_den = 0.05 #
 #con_den = 0.01 #
 
 # The optimisation sequence
@@ -222,7 +222,7 @@ main_workflow.run()
 from graphpype.utils_visbrain import visu_graph_modules
 
 labels_file = op.join(data_path, "label_names.txt")
-coords_file = op.join(data_path, "label_coords.txt")
+coords_file = op.join(data_path, "label_centroid.txt")
 
 #for freq_band_name in freq_band_names:
 
@@ -250,7 +250,8 @@ sc = SceneObj(size=(1000, 1000), bgcolor=(.1, .1, .1))
 for nf,freq_band_name in enumerate(freq_band_names):
 
     res_path = op.join(
-        data_path,graph_analysis_name, "graph_den_pipe_den_0_05",
+        data_path,graph_analysis_name,
+        "graph_den_pipe_den_"+str(con_den).replace(".","_"),
         "_freq_band_name_"+freq_band_name + "_subject_id_sub-0003")
 
     lol_file = op.join(res_path,"community_rada", "Z_List.lol")
@@ -259,7 +260,7 @@ for nf,freq_band_name in enumerate(freq_band_names):
 
     #net_file = op.join(res_path,"net_prop", "Z_List.net")
 
-    b_obj = BrainObj("white", translucent = False)
+    b_obj = BrainObj("white", translucent = True)
 
     sc.add_to_subplot(b_obj, row = nf,use_this_cam=True, rotate='left',
         title=("Module for {} band".format(freq_band_name)),
@@ -268,8 +269,7 @@ for nf,freq_band_name in enumerate(freq_band_names):
 
     c_obj = visu_graph_modules(lol_file=lol_file, net_file=net_file,
                             coords_file=coords_file,
-                             labels_file=labels_file,inter_modules=False,
-                             z_offset=+50)
+                             labels_file=labels_file,inter_modules=False)
                              #x_offset=0, y_offset=-20, z_offset=-50)
 
     sc.add_to_subplot(c_obj, row=nf)
