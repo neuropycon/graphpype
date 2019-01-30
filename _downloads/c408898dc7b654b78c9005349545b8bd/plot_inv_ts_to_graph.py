@@ -101,16 +101,16 @@ spectral_workflow = create_pipeline_time_series_to_spectral_connectivity(
 # thus to instantiate this graph pipeline node, we import it and pass
 # our parameters to it.
 
-from graphpype.pipelines.conmat_to_graph import create_pipeline_conmat_to_graph_density # noqa
+from graphpype.pipelines.conmat_to_graph import create_pipeline_conmat_to_graph_density
 
 ###############################################################################
 # The graph pipeline contains several nodes, some are based on radatools
 #
 # Two nodes of particular interest are :
 #
-# * :class:`graphpype.interfaces.radatools.rada.CommRada` computes Community detection based on the previous radatools_optim parameters # noqa
+# * :class:`graphpype.interfaces.radatools.rada.CommRada` computes Community detection based on the previous radatools_optim parameters
 #
-# * :class:`graphpype.interfaces.radatools.rada.NetPropRada` computes most of the classical graph-based metrics (Small-World, Efficiency, Assortativity, etc.) # noqa
+# * :class:`graphpype.interfaces.radatools.rada.NetPropRada` computes most of the classical graph-based metrics (Small-World, Efficiency, Assortativity, etc.)
 #
 # The follwing parameters are of particular importance:
 
@@ -132,11 +132,11 @@ radatools_optim = "WN tfrf 1"
 # see http://deim.urv.cat/~sergio.gomez/download.php?f=radatools-5.0-README.txt
 # for more details, but very briefly:
 #
-# * 1) WN for weighted unsigned (typically coherence, pli, etc.) and WS for signed (e.g. Pearson correlation) # noqa
+# * 1) WN for weighted unsigned (typically coherence, pli, etc.) and WS for signed (e.g. Pearson correlation)
 #
-# * 2) the optimisation sequence, can be used in different order. The sequence tfrf is proposed in radatools, and means: t = tabu search , f = fast algorithm, r = reposition algorithm and f = fast algorithm (again) # noqa
+# * 2) the optimisation sequence, can be used in different order. The sequence tfrf is proposed in radatools, and means: t = tabu search , f = fast algorithm, r = reposition algorithm and f = fast algorithm (again)
 #
-# * 3) the last number is the number of repetitions of the algorithm, out of which the best one is chosen. The higher the number of repetitions, the higher the chance to reach the global maximum, but also the longer the computation takes. For testing, 1 is admissible, but it is expected to have at least 100 is required for reliable results #noqa 
+# * 3) the last number is the number of repetitions of the algorithm, out of which the best one is chosen. The higher the number of repetitions, the higher the chance to reach the global maximum, but also the longer the computation takes. For testing, 1 is admissible, but it is expected to have at least 100 is required for reliable results
 #
 
 graph_workflow = create_pipeline_conmat_to_graph_density(
@@ -166,12 +166,11 @@ main_workflow.connect(spectral_workflow, 'spectral.conmat_file',
 
 ###############################################################################
 # To do so, we first write the workflow graph (optional)
-
 main_workflow.write_graph(graph2use='colored')  # colored
 
 ################################################################################
-## and visualize it. Take a moment to pause and notice how the connections
-## here correspond to how we connected the nodes.
+# and visualize it. Take a moment to pause and notice how the connections
+# correspond to how we connected the nodes.
 
 from scipy.misc import imread  # noqa
 import matplotlib.pyplot as plt  # noqa
@@ -186,10 +185,9 @@ plt.show()
 
 main_workflow.config['execution'] = {'remove_unnecessary_outputs': 'false'}
 
-# Run workflow locally on 2 CPUs
-#main_workflow.run(plugin='MultiProc', plugin_args={'n_procs': 2})
-# Run workflow
-main_workflow.run()
+################################################################################
+# Run workflow locally on 2 CPUs in parrallel
+main_workflow.run(plugin='MultiProc', plugin_args={'n_procs': 2})
 
 ########################################## plotting
 
