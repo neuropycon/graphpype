@@ -14,7 +14,6 @@ The **input** data should be a time series matrix in **npy** format.
 # License: BSD (3-clause)
 import os.path as op
 import nipype.pipeline.engine as pe
-from nipype.interfaces.utility import IdentityInterface, Function
 import nipype.interfaces.io as nio
 
 from ephypype.nodes import create_iterator
@@ -24,8 +23,6 @@ from ephypype.nodes import get_frequency_band
 # Check if data are available
 # needs to import neuropycon_data
 # 'pip install neuropycon_data' should do the job...
-
-
 try:
     import neuropycon_data as nd
 except ImportError:
@@ -66,9 +63,9 @@ infosource = create_iterator(['subject_id', 'freq_band_name'],
 
 template_path = '*%s_task-rest_run-01_meg_0_60_raw_filt_dsamp_ica_ROI_ts.npy'
 
-datasource = pe.Node(interface=nio.DataGrabber(infields=['subject_id'],
-                                               outfields=['ts_file']),
-                        name='datasource')
+datasource = pe.Node(
+    interface=nio.DataGrabber(infields=['subject_id'], outfields=['ts_file']),
+    name='datasource')
 
 datasource.inputs.base_directory = data_path
 datasource.inputs.template = template_path
@@ -84,7 +81,7 @@ datasource.inputs.sort_filelist = True
 con_method = 'coh'
 epoch_window_length = 3.0
 
-sfreq = 2400 # sampling frequency
+sfreq = 2400  # sampling frequency
 # when starting from raw MEG (.fif) data, can be directly extracted from the
 # file info
 
@@ -96,29 +93,28 @@ spectral_workflow = create_pipeline_time_series_to_spectral_connectivity(
 
 ###############################################################################
 # Graphpype creates for us a pipeline which can be connected to these
-# nodes (datasource and infosource we created. The connectivity pipeline is implemented by the function
-#:func:`graphpype.pipelines.conmat_to_graph.create_pipeline_conmat_to_graph_density`,
-# thus to instantiate this graph pipeline node, we import it and pass
+# nodes (datasource and infosource we created. The connectivity pipeline is
+# implemented by the function
+# :func:
+# `graphpype.pipelines.conmat_to_graph.create_pipeline_conmat_to_graph_density`
+# ,thus to instantiate this graph pipeline node, we import it and pass
 # our parameters to it.
-
-from graphpype.pipelines.conmat_to_graph import create_pipeline_conmat_to_graph_density
-
-###############################################################################
+#
 # The graph pipeline contains several nodes, some are based on radatools
 #
 # Two nodes of particular interest are :
 #
-# * :class:`graphpype.interfaces.radatools.rada.CommRada` computes Community detection based on the previous radatools_optim parameters
+# * :class:`graphpype.interfaces.radatools.rada.CommRada` computes Community
+# detection based on the previous radatools_optim parameters
 #
-# * :class:`graphpype.interfaces.radatools.rada.NetPropRada` computes most of the classical graph-based metrics (Small-World, Efficiency, Assortativity, etc.)
+# * :class:`graphpype.interfaces.radatools.rada.NetPropRada` computes most of
+# the classical graph-based metrics (Small-World, Efficiency, Assortativity,
+# etc.)
 #
 # The follwing parameters are of particular importance:
 
 # density of the threshold
-
-con_den = 0.1 #
-#con_den = 0.05 #
-#con_den = 0.01 #
+con_den = 0.1
 
 ###############################################################################
 # This parameter corrdesponds to the percentage of highest connections retains
@@ -126,21 +122,30 @@ con_den = 0.1 #
 # are present)
 
 # The optimisation sequence
-radatools_optim = "WN tfrf 1" 
+radatools_optim = "WN tfrf 1"
 
 ###############################################################################
 # see http://deim.urv.cat/~sergio.gomez/download.php?f=radatools-5.0-README.txt
 # for more details, but very briefly:
 #
-# * 1) WN for weighted unsigned (typically coherence, pli, etc.) and WS for signed (e.g. Pearson correlation)
+# * 1) WN for weighted unsigned (typically coherence, pli, etc.) and WS for
+# signed (e.g. Pearson correlation)
 #
-# * 2) the optimisation sequence, can be used in different order. The sequence tfrf is proposed in radatools, and means: t = tabu search , f = fast algorithm, r = reposition algorithm and f = fast algorithm (again)
+# * 2) the optimisation sequence, can be used in different order. The sequence
+# tfrf is proposed in radatools, and means: t = tabu search , f = fast
+# algorithm, r = reposition algorithm and f = fast algorithm (again)
 #
-# * 3) the last number is the number of repetitions of the algorithm, out of which the best one is chosen. The higher the number of repetitions, the higher the chance to reach the global maximum, but also the longer the computation takes. For testing, 1 is admissible, but it is expected to have at least 100 is required for reliable results
+# * 3) the last number is the number of repetitions of the algorithm, out of
+# which the best one is chosen. The higher the number of repetitions, the
+# higher the chance to reach the global maximum, but also the longer the
+# computation takes. For testing, 1 is admissible, but it is expected to have
+# at least 100 is required for reliable results
 #
 
+from graphpype.pipelines.conmat_to_graph import create_pipeline_conmat_to_graph_density ## noqa
+
 graph_workflow = create_pipeline_conmat_to_graph_density(
-    data_path, con_den=con_den, optim_seq = radatools_optim)
+    data_path, con_den=con_den, optim_seq=radatools_optim)
 
 ###############################################################################
 # We then connect the nodes two at a time. We connect the output
@@ -154,7 +159,7 @@ main_workflow.connect(infosource, 'freq_band_name',
                       frequency_node, 'freq_band_name')
 
 main_workflow.connect(datasource, 'ts_file',
-                      spectral_workflow,"inputnode.ts_file")
+                      spectral_workflow, "inputnode.ts_file")
 
 spectral_workflow.inputs.inputnode.sfreq = sfreq
 
@@ -162,13 +167,13 @@ main_workflow.connect(frequency_node, 'freq_bands',
                       spectral_workflow, 'inputnode.freq_band')
 
 main_workflow.connect(spectral_workflow, 'spectral.conmat_file',
-                      graph_workflow,"inputnode.conmat_file")
+                      graph_workflow, "inputnode.conmat_file")
 
 ###############################################################################
 # To do so, we first write the workflow graph (optional)
 main_workflow.write_graph(graph2use='colored')  # colored
 
-################################################################################
+###############################################################################
 # and visualize it. Take a moment to pause and notice how the connections
 # correspond to how we connected the nodes.
 
@@ -180,49 +185,44 @@ plt.imshow(img)
 plt.axis('off')
 plt.show()
 
-################################################################################
-## Finally, we are now ready to execute our workflow.
+###############################################################################
+# Finally, we are now ready to execute our workflow.
 
 main_workflow.config['execution'] = {'remove_unnecessary_outputs': 'false'}
 
-################################################################################
+###############################################################################
 # Run workflow locally on 2 CPUs in parrallel
 main_workflow.run(plugin='MultiProc', plugin_args={'n_procs': 2})
 
-########################################## plotting
+###############################################################################
+# plotting
 
-from graphpype.utils_visbrain import visu_graph_modules
+from graphpype.utils_visbrain import visu_graph_modules # noqa
 
 labels_file = op.join(data_path, "label_names.txt")
 coords_file = op.join(data_path, "label_centroid.txt")
 
-from visbrain.objects import SceneObj, BrainObj
+from visbrain.objects import SceneObj, BrainObj # noqa
 
 sc = SceneObj(size=(1000, 1000), bgcolor=(.1, .1, .1))
 
-for nf,freq_band_name in enumerate(freq_band_names):
-
+for nf, freq_band_name in enumerate(freq_band_names):
     res_path = op.join(
-        data_path,graph_analysis_name,
-        "graph_den_pipe_den_"+str(con_den).replace(".","_"),
-        "_freq_band_name_"+freq_band_name + "_subject_id_sub-0003")
+        data_path, graph_analysis_name,
+        "graph_den_pipe_den_"+str(con_den).replace(".", "_"),
+        "_freq_band_name_"+freq_band_name+"_subject_id_sub-0003")
 
-    lol_file = op.join(res_path,"community_rada", "Z_List.lol")
+    lol_file = op.join(res_path, "community_rada", "Z_List.lol")
+    net_file = op.join(res_path, "prep_rada", "Z_List.net")
 
-    net_file = op.join(res_path,"prep_rada", "Z_List.net")
-
-    b_obj = BrainObj("white", translucent = True)
-
-    sc.add_to_subplot(b_obj, row = nf,use_this_cam=True, rotate='left',
-        title=("Module for {} band".format(freq_band_name)),
-        title_size=14, title_bold=True, title_color='white')
-
+    b_obj = BrainObj("white", translucent=True)
+    sc.add_to_subplot(b_obj, row=nf, use_this_cam=True, rotate='left',
+                      title=("Module for {} band".format(freq_band_name)),
+                      title_size=14, title_bold=True, title_color='white')
 
     c_obj = visu_graph_modules(lol_file=lol_file, net_file=net_file,
-                            coords_file=coords_file,
-                             labels_file=labels_file,inter_modules=False)
-                             #x_offset=0, y_offset=-20, z_offset=-50)
-
+                               coords_file=coords_file,
+                               labels_file=labels_file, inter_modules=False)
     sc.add_to_subplot(c_obj, row=nf)
 
 sc.preview()

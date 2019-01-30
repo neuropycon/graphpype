@@ -119,13 +119,8 @@
 
 <span class="kn">import</span> <span class="nn">nipype.pipeline.engine</span> <span class="kn">as</span> <span class="nn">pe</span>
 
-<span class="kn">from</span> <span class="nn">nipype.interfaces.utility</span> <span class="kn">import</span> <span class="n">IdentityInterface</span><span class="p">,</span> <span class="n">Function</span>
+<span class="kn">from</span> <span class="nn">nipype.interfaces.utility</span> <span class="kn">import</span> <span class="n">IdentityInterface</span>
 <span class="kn">import</span> <span class="nn">nipype.interfaces.io</span> <span class="kn">as</span> <span class="nn">nio</span>
-
-<span class="c1">#import ephypype</span>
-<span class="c1">#from ephypype.nodes import create_iterator, create_datagrabber</span>
-<span class="kn">from</span> <span class="nn">ephypype.nodes</span> <span class="kn">import</span> <span class="n">get_frequency_band</span>
-<span class="kn">from</span> <span class="nn">ephypype.datasets</span> <span class="kn">import</span> <span class="n">fetch_omega_dataset</span>
 </pre></div>
 </div>
 <p>Check if data are available
@@ -154,14 +149,11 @@ nipype the directory in which to store the outputs.</p>
 </pre></div>
 </div>
 <p>Then we create a node to pass input filenames to DataGrabber from nipype</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># infosource = create_iterator([&#39;freq_band_name&#39;],</span>
-                             <span class="c1">#[freq_band_names])</span>
-
-<span class="n">infosource</span> <span class="o">=</span> <span class="n">pe</span><span class="o">.</span><span class="n">Node</span><span class="p">(</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">infosource</span> <span class="o">=</span> <span class="n">pe</span><span class="o">.</span><span class="n">Node</span><span class="p">(</span>
         <span class="n">interface</span><span class="o">=</span><span class="n">IdentityInterface</span><span class="p">(</span><span class="n">fields</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;freq_band_name&#39;</span><span class="p">]),</span>
         <span class="n">name</span><span class="o">=</span><span class="s2">&quot;infosource&quot;</span><span class="p">)</span>
 
-<span class="n">infosource</span><span class="o">.</span><span class="n">iterables</span> <span class="o">=</span> <span class="p">[(</span><span class="s1">&#39;freq_band_name&#39;</span><span class="p">,</span><span class="n">freq_band_names</span><span class="p">)]</span>
+<span class="n">infosource</span><span class="o">.</span><span class="n">iterables</span> <span class="o">=</span> <span class="p">[(</span><span class="s1">&#39;freq_band_name&#39;</span><span class="p">,</span> <span class="n">freq_band_names</span><span class="p">)]</span>
 </pre></div>
 </div>
 <p>and a node to grab data. The template_args in this node iterate upon
@@ -170,9 +162,10 @@ the values in the infosource node</p>
 <span class="c1"># template_args = [[&#39;freq_band_name&#39;]</span>
 <span class="c1"># datasource = create_datagrabber(data_path, template_path, template_args)</span>
 
-<span class="n">datasource</span> <span class="o">=</span> <span class="n">pe</span><span class="o">.</span><span class="n">Node</span><span class="p">(</span><span class="n">interface</span><span class="o">=</span><span class="n">nio</span><span class="o">.</span><span class="n">DataGrabber</span><span class="p">(</span><span class="n">infields</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;freq_band_name&#39;</span><span class="p">],</span>
-                                                <span class="n">outfields</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;conmat_file&#39;</span><span class="p">]),</span>
-                        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;datasource&#39;</span><span class="p">)</span>
+<span class="n">datasource</span> <span class="o">=</span> <span class="n">pe</span><span class="o">.</span><span class="n">Node</span><span class="p">(</span>
+    <span class="n">interface</span><span class="o">=</span><span class="n">nio</span><span class="o">.</span><span class="n">DataGrabber</span><span class="p">(</span><span class="n">infields</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;freq_band_name&#39;</span><span class="p">],</span>
+                              <span class="n">outfields</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;conmat_file&#39;</span><span class="p">]),</span>
+    <span class="n">name</span><span class="o">=</span><span class="s1">&#39;datasource&#39;</span><span class="p">)</span>
 <span class="n">datasource</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">base_directory</span> <span class="o">=</span> <span class="n">data_path</span>
 <span class="n">datasource</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">template</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">/conmat_0_coh.npy&quot;</span><span class="p">)</span>
 <span class="n">datasource</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">template_args</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
@@ -181,53 +174,62 @@ the values in the infosource node</p>
 <span class="n">datasource</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">sort_filelist</span> <span class="o">=</span> <span class="bp">True</span>
 </pre></div>
 </div>
-<dl class="docutils">
-<dt>Graphpype creates for us a pipeline which can be connected to these</dt>
-<dd>nodes (datasource and infosource we created. The connectivity pipeline is implemented by the function</dd>
-<dt><code class="xref py py-func docutils literal notranslate"><span class="pre">graphpype.pipelines.conmat_to_graph.create_pipeline_conmat_to_graph_density()</span></code>,</dt>
-<dd>thus to instantiate this graph pipeline node, we import it and pass
-our parameters to it.</dd>
-</dl>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># In particular, the follwing parameters are of particular importance:</span>
-<span class="c1"># density of the threshold</span>
-
-<span class="c1">#con_den = 0.1 #</span>
-<span class="n">con_den</span> <span class="o">=</span> <span class="mf">0.05</span> <span class="c1">#</span>
-<span class="c1">#con_den = 0.01 #</span>
+<p>Graphpype creates for us a pipeline which can be connected to these
+nodes (datasource and infosource we created. The connectivity pipeline is
+implemented by the function :func:
+<cite>graphpype.pipelines.conmat_to_graph.create_pipeline_conmat_to_graph_density</cite>
+,
+thus to instantiate this graph pipeline node, we import it and pass
+our parameters to it.
+In particular, the follwing parameters are of particular importance:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># density of the threshold</span>
+<span class="n">con_den</span> <span class="o">=</span> <span class="mf">0.1</span>
 
 <span class="c1"># The optimisation sequence</span>
 <span class="n">radatools_optim</span> <span class="o">=</span> <span class="s2">&quot;WN tfrf 1&quot;</span>
-
-<span class="c1"># see</span>
-<span class="c1"># http://deim.urv.cat/~sergio.gomez/download.php?f=radatools-5.0-README.txt</span>
-<span class="c1"># for more details, but very briefly:</span>
-<span class="c1"># 1) WN for weighted unsigned (typically</span>
-<span class="c1"># coherence, pli, etc.) and WS for signed (e.g. Pearson correlation) +</span>
-<span class="c1"># 2) the optimisation sequence, can be used in different order. The sequence</span>
-<span class="c1"># tfrf is proposed in radatools, and means: t = tabu search , f = fast</span>
-<span class="c1"># algorithm, r = reposition algorithm and f = fast algorithm (again)</span>
-<span class="c1"># 3) the last number is the number of repetitions of the algorithm, out of</span>
-<span class="c1"># which the best one is chosen. The higher the number of repetitions, the</span>
-<span class="c1"># higher the chance to reach the global maximum, but also the longer the</span>
-<span class="c1"># computation takes. For testing, 1 is admissible, but it is expected to</span>
-<span class="c1"># have at least 100 is required for reliable results</span>
-
-
-<span class="c1"># The graph pipeline contains several nodes, some are based on radatools</span>
-<span class="c1">#</span>
-<span class="c1"># In particular, the two nodes are:</span>
-<span class="c1">#</span>
-<span class="c1"># * :class:`ephypype.interfaces.mne.spectral.SpectralConn` computes spectral connectivity in a given frequency bands</span>
-<span class="c1"># * :class:`ephypype.interfaces.mne.spectral.PlotSpectralConn` plot connectivity matrix using the |plot_connectivity_circle| function</span>
-<span class="c1">#</span>
-<span class="c1"># .. |plot_connectivity_circle| raw:: html</span>
-<span class="c1">#</span>
-<span class="c1">#   &lt;a href=&quot;http://martinos.org/mne/stable/generated/mne.viz.plot_connectivity_circle.html#mne.viz.plot_connectivity_circle&quot; target=&quot;_blank&quot;&gt;spectral_connectivity function&lt;/a&gt;</span>
-
-<span class="kn">from</span> <span class="nn">graphpype.pipelines.conmat_to_graph</span> <span class="kn">import</span> <span class="n">create_pipeline_conmat_to_graph_density</span> <span class="c1"># noqa</span>
+</pre></div>
+</div>
+<p>see <a class="reference external" href="http://deim.urv.cat/~sergio.gomez/download.php?f=radatools-5.0-README.txt">http://deim.urv.cat/~sergio.gomez/download.php?f=radatools-5.0-README.txt</a>
+for more details, but very briefly:</p>
+<ul class="simple">
+<li><ol class="first arabic">
+<li>WN for weighted unsigned (typically coherence, pli, etc.) and WS for</li>
+</ol>
+</li>
+</ul>
+<p>signed (e.g. Pearson correlation)</p>
+<ul class="simple">
+<li><ol class="first arabic" start="2">
+<li>the optimisation sequence, can be used in different order. The sequence</li>
+</ol>
+</li>
+</ul>
+<p>tfrf is proposed in radatools, and means: t = tabu search , f = fast
+algorithm, r = reposition algorithm and f = fast algorithm (again)</p>
+<ul class="simple">
+<li><ol class="first arabic" start="3">
+<li>the last number is the number of repetitions of the algorithm, out of</li>
+</ol>
+</li>
+</ul>
+<p>which the best one is chosen. The higher the number of repetitions, the
+higher the chance to reach the global maximum, but also the longer the
+computation takes. For testing, 1 is admissible, but it is expected to have
+at least 100 is required for reliable results</p>
+<p>The graph pipeline contains several nodes, some are based on radatools</p>
+<p>In particular, the two nodes are:</p>
+<ul class="simple">
+<li><code class="xref py py-class docutils literal notranslate"><span class="pre">ephypype.interfaces.mne.spectral.SpectralConn</span></code> computes spectral</li>
+</ul>
+<p>connectivity in a given frequency bands
+* <code class="xref py py-class docutils literal notranslate"><span class="pre">ephypype.interfaces.mne.spectral.PlotSpectralConn</span></code> plot
+connectivity matrix using the <a href="http://martinos.org/mne/stable/generated/mne.viz. function</p>
+<p>plot_connectivity_circle .html#mne.viz.plot_connectivity_circle”
+target=”_blank”&gt;spectral_connectivity function&lt;/a&gt;</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">graphpype.pipelines.conmat_to_graph</span> <span class="kn">import</span> <span class="n">create_pipeline_conmat_to_graph_density</span> <span class="c1"># noqa</span>
 
 <span class="n">graph_workflow</span> <span class="o">=</span> <span class="n">create_pipeline_conmat_to_graph_density</span><span class="p">(</span>
-    <span class="n">data_path</span><span class="p">,</span> <span class="n">con_den</span><span class="o">=</span><span class="n">con_den</span><span class="p">,</span> <span class="n">optim_seq</span> <span class="o">=</span> <span class="n">radatools_optim</span><span class="p">)</span>
+    <span class="n">data_path</span><span class="p">,</span> <span class="n">con_den</span><span class="o">=</span><span class="n">con_den</span><span class="p">,</span> <span class="n">optim_seq</span><span class="o">=</span><span class="n">radatools_optim</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>We then connect the nodes two at a time. We connect the output
@@ -237,7 +239,7 @@ So, these two nodes taken together can grab data.</p>
                       <span class="n">datasource</span><span class="p">,</span> <span class="s1">&#39;freq_band_name&#39;</span><span class="p">)</span>
 
 <span class="n">main_workflow</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">datasource</span><span class="p">,</span> <span class="s1">&#39;conmat_file&#39;</span><span class="p">,</span>
-                      <span class="n">graph_workflow</span><span class="p">,</span><span class="s2">&quot;inputnode.conmat_file&quot;</span><span class="p">)</span>
+                      <span class="n">graph_workflow</span><span class="p">,</span> <span class="s2">&quot;inputnode.conmat_file&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>To do so, we first write the workflow graph (optional)</p>
@@ -260,72 +262,45 @@ here correspond to how we connected the nodes.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">main_workflow</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;execution&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;remove_unnecessary_outputs&#39;</span><span class="p">:</span> <span class="s1">&#39;false&#39;</span><span class="p">}</span>
 
 <span class="c1"># Run workflow locally on 2 CPUs</span>
-<span class="c1">#main_workflow.run(plugin=&#39;MultiProc&#39;, plugin_args={&#39;n_procs&#39;: 2})</span>
-
-<span class="c1"># Run workflow</span>
-<span class="n">main_workflow</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+<span class="n">main_workflow</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">plugin</span><span class="o">=</span><span class="s1">&#39;MultiProc&#39;</span><span class="p">,</span> <span class="n">plugin_args</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;n_procs&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">})</span>
 </pre></div>
 </div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">graphpype.utils_visbrain</span> <span class="kn">import</span> <span class="n">visu_graph_modules</span>
+<p>plotting</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">graphpype.utils_visbrain</span> <span class="kn">import</span> <span class="n">visu_graph_modules</span> <span class="c1"># noqa</span>
 
 <span class="n">labels_file</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="s2">&quot;correct_channel_names.txt&quot;</span><span class="p">)</span>
 <span class="n">coords_file</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="s2">&quot;MNI_coords.txt&quot;</span><span class="p">)</span>
 
-<span class="c1">#for freq_band_name in freq_band_names:</span>
-
-    <span class="c1">#res_path = op.join(</span>
-        <span class="c1">#data_path,graph_analysis_name, &quot;graph_den_pipe_den_0_05&quot;,</span>
-        <span class="c1">#&quot;_freq_band_name_&quot;+freq_band_name)</span>
-
-    <span class="c1">#lol_file = op.join(res_path,&quot;community_rada&quot;, &quot;Z_List.lol&quot;)</span>
-
-    <span class="c1">#print(lol_file)</span>
-
-    <span class="c1">#net_file = op.join(res_path,&quot;prep_rada&quot;, &quot;Z_List.net&quot;)</span>
-
-    <span class="c1">#visu = visu_graph_modules(lol_file=lol_file, net_file=net_file,</span>
-                             <span class="c1">#coords_file=coords_file,</span>
-                             <span class="c1">#labels_file=labels_file,inter_modules=False,</span>
-                             <span class="c1">#z_offset=+50)</span>
-                             <span class="c1">##x_offset=0, y_offset=-20, z_offset=-50)</span>
-    <span class="c1">##visu.show()</span>
-
-<span class="kn">from</span> <span class="nn">visbrain.objects</span> <span class="kn">import</span> <span class="n">SceneObj</span><span class="p">,</span> <span class="n">BrainObj</span>
+<span class="kn">from</span> <span class="nn">visbrain.objects</span> <span class="kn">import</span> <span class="n">SceneObj</span><span class="p">,</span> <span class="n">BrainObj</span> <span class="c1"># noqa</span>
 
 <span class="n">sc</span> <span class="o">=</span> <span class="n">SceneObj</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="mi">1000</span><span class="p">),</span> <span class="n">bgcolor</span><span class="o">=</span><span class="p">(</span><span class="o">.</span><span class="mi">1</span><span class="p">,</span> <span class="o">.</span><span class="mi">1</span><span class="p">,</span> <span class="o">.</span><span class="mi">1</span><span class="p">))</span>
 
-<span class="k">for</span> <span class="n">nf</span><span class="p">,</span><span class="n">freq_band_name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">freq_band_names</span><span class="p">):</span>
+<span class="k">for</span> <span class="n">nf</span><span class="p">,</span> <span class="n">freq_band_name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">freq_band_names</span><span class="p">):</span>
 
     <span class="n">res_path</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-        <span class="n">data_path</span><span class="p">,</span><span class="n">graph_analysis_name</span><span class="p">,</span> <span class="s2">&quot;graph_den_pipe_den_0_05&quot;</span><span class="p">,</span>
+        <span class="n">data_path</span><span class="p">,</span> <span class="n">graph_analysis_name</span><span class="p">,</span> <span class="s2">&quot;graph_den_pipe_den_0_05&quot;</span><span class="p">,</span>
         <span class="s2">&quot;_freq_band_name_&quot;</span><span class="o">+</span><span class="n">freq_band_name</span><span class="p">)</span>
 
-    <span class="n">lol_file</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">res_path</span><span class="p">,</span><span class="s2">&quot;community_rada&quot;</span><span class="p">,</span> <span class="s2">&quot;Z_List.lol&quot;</span><span class="p">)</span>
+    <span class="n">lol_file</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">res_path</span><span class="p">,</span> <span class="s2">&quot;community_rada&quot;</span><span class="p">,</span> <span class="s2">&quot;Z_List.lol&quot;</span><span class="p">)</span>
+    <span class="n">net_file</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">res_path</span><span class="p">,</span> <span class="s2">&quot;prep_rada&quot;</span><span class="p">,</span> <span class="s2">&quot;Z_List.net&quot;</span><span class="p">)</span>
 
-    <span class="n">net_file</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">res_path</span><span class="p">,</span><span class="s2">&quot;prep_rada&quot;</span><span class="p">,</span> <span class="s2">&quot;Z_List.net&quot;</span><span class="p">)</span>
-
-    <span class="c1">#net_file = op.join(res_path,&quot;net_prop&quot;, &quot;Z_List.net&quot;)</span>
-
-    <span class="n">b_obj</span> <span class="o">=</span> <span class="n">BrainObj</span><span class="p">(</span><span class="s2">&quot;white&quot;</span><span class="p">,</span> <span class="n">translucent</span> <span class="o">=</span> <span class="bp">False</span><span class="p">)</span>
-
-    <span class="n">sc</span><span class="o">.</span><span class="n">add_to_subplot</span><span class="p">(</span><span class="n">b_obj</span><span class="p">,</span> <span class="n">row</span> <span class="o">=</span> <span class="n">nf</span><span class="p">,</span><span class="n">use_this_cam</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">rotate</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">,</span>
+    <span class="n">b_obj</span> <span class="o">=</span> <span class="n">BrainObj</span><span class="p">(</span><span class="s2">&quot;white&quot;</span><span class="p">,</span> <span class="n">translucent</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+    <span class="n">sc</span><span class="o">.</span><span class="n">add_to_subplot</span><span class="p">(</span>
+        <span class="n">b_obj</span><span class="p">,</span> <span class="n">row</span><span class="o">=</span><span class="n">nf</span><span class="p">,</span> <span class="n">use_this_cam</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">rotate</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">,</span>
         <span class="n">title</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;Module for {} band&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">freq_band_name</span><span class="p">)),</span>
         <span class="n">title_size</span><span class="o">=</span><span class="mi">14</span><span class="p">,</span> <span class="n">title_bold</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">title_color</span><span class="o">=</span><span class="s1">&#39;white&#39;</span><span class="p">)</span>
 
-
     <span class="n">c_obj</span> <span class="o">=</span> <span class="n">visu_graph_modules</span><span class="p">(</span><span class="n">lol_file</span><span class="o">=</span><span class="n">lol_file</span><span class="p">,</span> <span class="n">net_file</span><span class="o">=</span><span class="n">net_file</span><span class="p">,</span>
-                            <span class="n">coords_file</span><span class="o">=</span><span class="n">coords_file</span><span class="p">,</span>
-                             <span class="n">labels_file</span><span class="o">=</span><span class="n">labels_file</span><span class="p">,</span><span class="n">inter_modules</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
-                             <span class="n">z_offset</span><span class="o">=+</span><span class="mi">50</span><span class="p">)</span>
-                             <span class="c1">#x_offset=0, y_offset=-20, z_offset=-50)</span>
-
+                               <span class="n">coords_file</span><span class="o">=</span><span class="n">coords_file</span><span class="p">,</span>
+                               <span class="n">labels_file</span><span class="o">=</span><span class="n">labels_file</span><span class="p">,</span> <span class="n">inter_modules</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+                               <span class="n">z_offset</span><span class="o">=+</span><span class="mi">50</span><span class="p">)</span>
     <span class="n">sc</span><span class="o">.</span><span class="n">add_to_subplot</span><span class="p">(</span><span class="n">c_obj</span><span class="p">,</span> <span class="n">row</span><span class="o">=</span><span class="n">nf</span><span class="p">)</span>
 
 <span class="n">sc</span><span class="o">.</span><span class="n">preview</span><span class="p">()</span>
 </pre></div>
 </div>
 <img alt="../_images/sphx_glr_plot_conmat_to_graph_002.png" class="sphx-glr-single-img" src="../_images/sphx_glr_plot_conmat_to_graph_002.png" />
-<p><strong>Total running time of the script:</strong> ( 0 minutes  3.930 seconds)</p>
+<p><strong>Total running time of the script:</strong> ( 0 minutes  14.321 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-conmat-to-graph-py">
 <div class="sphx-glr-download docutils container">
 <a class="reference download internal" download="" href="../_downloads/148019e1e7aad92d3808c5ede724a325/plot_conmat_to_graph.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_conmat_to_graph.py</span></code></a></div>
