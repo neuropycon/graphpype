@@ -5,7 +5,8 @@
 Compute Graph properties from a given connectivity matrix
 =========================================================
 The inv_ts_to_graph pipeline performs spectral connectivity and graph analysis
-over time series .
+over time series. This workflow makes use of two chained pipelines, and
+requires both graphpype AND ephypype to be installed.
 
 The **input** data should be a time series matrix in **npy** format.
 """
@@ -34,37 +35,23 @@ except ImportError:
 data_path = op.join(nd.__path__[0], "data", "data_inv_ts")
 
 ###############################################################################
-# spectral_connectivity_parameters
+# First, we create our workflow and specify the `base_dir` which tells
+# nipype the directory in which to store the outputs.
+
+# workflow directory within the `base_dir`
+graph_analysis_name = 'inv_ts_to_graph_analysis'
+
+main_workflow = pe.Workflow(name=graph_analysis_name)
+main_workflow.base_dir = data_path
+
+###############################################################################
+# We then use a special node from ephypype to get the proper frequency band,
+# give its name
 
 freq_bands = [[8, 12], [13, 29]]
 freq_band_names = ['alpha', 'beta']
 
-
 frequency_node = get_frequency_band(freq_band_names, freq_bands)
-
-
-con_method = 'coh'
-epoch_window_length = 3.0
-
-sfreq = 2400
-# workflow directory within the `base_dir`
-#correl_analysis_name = 'spectral_connectivity_' + con_method
-
-from ephypype.pipelines.ts_to_conmat import create_pipeline_time_series_to_spectral_connectivity # noqa
-spectral_workflow = create_pipeline_time_series_to_spectral_connectivity(
-    data_path, con_method=con_method,
-    epoch_window_length=epoch_window_length)
-
-
-###############################################################################
-# Then, we create our workflow and specify the `base_dir` which tells
-# nipype the directory in which to store the outputs.
-
-# workflow directory within the `base_dir`
-graph_analysis_name = 'inv_to_graph_analysis'
-
-main_workflow = pe.Workflow(name=graph_analysis_name)
-main_workflow.base_dir = data_path
 
 ###############################################################################
 # Then we create a node to pass input filenames to DataGrabber from nipype
@@ -73,23 +60,11 @@ subject_ids = ['sub-0003']  # 'sub-0004', 'sub-0006'
 infosource = create_iterator(['subject_id', 'freq_band_name'],
                              [subject_ids, freq_band_names])
 
-#infosource = pe.Node(
-        #interface=IdentityInterface(fields=['freq_band_name']),
-        #name="infosource")
-
-#infosource.iterables = [('freq_band_name',freq_band_names)]
-
 ###############################################################################
 # and a node to grab data. The template_args in this node iterate upon
 # the values in the infosource node
 
-# template_path = '*%s/conmat_0_coh.npy'
-# template_args = [['freq_band_name']
-# datasource = create_datagrabber(data_path, template_path, template_args)
-
-
 template_path = '*%s_task-rest_run-01_meg_0_60_raw_filt_dsamp_ica_ROI_ts.npy'
-
 
 datasource = pe.Node(interface=nio.DataGrabber(infields=['subject_id'],
                                                outfields=['ts_file']),
@@ -101,6 +76,23 @@ datasource.inputs.template = template_path
 datasource.inputs.template_args = dict(ts_file=[['subject_id']])
 datasource.inputs.sort_filelist = True
 
+###############################################################################
+# We then use the pipeline used in the previous example :ref:`conmat_to_graph
+# pipeline <conmat_to_graph>
+
+# spectral_connectivity_parameters
+con_method = 'coh'
+epoch_window_length = 3.0
+
+sfreq = 2400 # sampling frequency
+# when starting from raw MEG (.fif) data, can be directly extracted from the
+# file info
+
+from ephypype.pipelines.ts_to_conmat import create_pipeline_time_series_to_spectral_connectivity # noqa
+
+spectral_workflow = create_pipeline_time_series_to_spectral_connectivity(
+    data_path, con_method=con_method,
+    epoch_window_length=epoch_window_length)
 
 ###############################################################################
 # Graphpype creates for us a pipeline which can be connected to these
@@ -109,13 +101,29 @@ datasource.inputs.sort_filelist = True
 # thus to instantiate this graph pipeline node, we import it and pass
 # our parameters to it.
 
+from graphpype.pipelines.conmat_to_graph import create_pipeline_conmat_to_graph_density # noqa
 
-# In particular, the follwing parameters are of particular importance:
+###############################################################################
+# The graph pipeline contains several nodes, some are based on radatools
+#
+# Two nodes of particular interest are :
+#
+# * :class:`graphpype.interfaces.radatools.rada.CommRada` computes Community detection based on the previous radatools_optim parameters # noqa
+#
+# * :class:`graphpype.interfaces.radatools.rada.NetPropRada` computes most of the classical graph-based metrics (Small-World, Efficiency, Assortativity, etc.) # noqa
+#
+# The follwing parameters are of particular importance:
+
 # density of the threshold
 
 con_den = 0.1 #
 #con_den = 0.05 #
 #con_den = 0.01 #
+
+###############################################################################
+# This parameter corrdesponds to the percentage of highest connections retains
+# for the analyses. con_den = 1.0 means a fully connected graphs (all edges
+# are present)
 
 # The optimisation sequence
 radatools_optim = "WN tfrf 1" 
@@ -130,18 +138,9 @@ radatools_optim = "WN tfrf 1"
 #
 # * 3) the last number is the number of repetitions of the algorithm, out of which the best one is chosen. The higher the number of repetitions, the higher the chance to reach the global maximum, but also the longer the computation takes. For testing, 1 is admissible, but it is expected to have at least 100 is required for reliable results #noqa 
 #
-# The graph pipeline contains several nodes, some are based on radatools
-#
-# Two nodes of particular interest are :
-#
-# * :class:`graphpype.interfaces.radatools.rada.CommRada` computes Community detection based on the previous radatools_optim parameters # noqa
-# * :class:`graphpype.interfaces.radatools.rada.NetPropRada` computes most of the classical graph-based metrics (Small-World, Efficiency, Assortativity, etc.) # noqa
-
-from graphpype.pipelines.conmat_to_graph import create_pipeline_conmat_to_graph_density # noqa
 
 graph_workflow = create_pipeline_conmat_to_graph_density(
     data_path, con_den=con_den, optim_seq = radatools_optim)
-
 
 ###############################################################################
 # We then connect the nodes two at a time. We connect the output

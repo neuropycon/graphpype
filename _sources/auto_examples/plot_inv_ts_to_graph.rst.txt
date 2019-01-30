@@ -13,7 +13,8 @@
 Compute Graph properties from a given connectivity matrix
 =========================================================
 The inv_ts_to_graph pipeline performs spectral connectivity and graph analysis
-over time series .
+over time series. This workflow makes use of two chained pipelines, and
+requires both graphpype AND ephypype to be installed.
 
 The **input** data should be a time series matrix in **npy** format.
 
@@ -61,7 +62,28 @@ needs to import neuropycon_data
 
 
 
-spectral_connectivity_parameters
+First, we create our workflow and specify the `base_dir` which tells
+nipype the directory in which to store the outputs.
+
+
+
+.. code-block:: python
+
+
+    # workflow directory within the `base_dir`
+    graph_analysis_name = 'inv_ts_to_graph_analysis'
+
+    main_workflow = pe.Workflow(name=graph_analysis_name)
+    main_workflow.base_dir = data_path
+
+
+
+
+
+
+
+We then use a special node from ephypype to get the proper frequency band,
+give its name
 
 
 
@@ -71,49 +93,7 @@ spectral_connectivity_parameters
     freq_bands = [[8, 12], [13, 29]]
     freq_band_names = ['alpha', 'beta']
 
-
     frequency_node = get_frequency_band(freq_band_names, freq_bands)
-
-
-    con_method = 'coh'
-    epoch_window_length = 3.0
-
-    sfreq = 2400
-    # workflow directory within the `base_dir`
-    #correl_analysis_name = 'spectral_connectivity_' + con_method
-
-    from ephypype.pipelines.ts_to_conmat import create_pipeline_time_series_to_spectral_connectivity # noqa
-    spectral_workflow = create_pipeline_time_series_to_spectral_connectivity(
-        data_path, con_method=con_method,
-        epoch_window_length=epoch_window_length)
-
-
-
-
-
-
-.. rst-class:: sphx-glr-script-out
-
- Out:
-
- .. code-block:: none
-
-    $$$$$$$$$$$$$$$$$$$$$$$$ Multiple trials $$$$$$$$$$$$$$$$$$$$$
-
-
-Then, we create our workflow and specify the `base_dir` which tells
-nipype the directory in which to store the outputs.
-
-
-
-.. code-block:: python
-
-
-    # workflow directory within the `base_dir`
-    graph_analysis_name = 'inv_to_graph_analysis'
-
-    main_workflow = pe.Workflow(name=graph_analysis_name)
-    main_workflow.base_dir = data_path
 
 
 
@@ -132,12 +112,6 @@ Then we create a node to pass input filenames to DataGrabber from nipype
     infosource = create_iterator(['subject_id', 'freq_band_name'],
                                  [subject_ids, freq_band_names])
 
-    #infosource = pe.Node(
-            #interface=IdentityInterface(fields=['freq_band_name']),
-            #name="infosource")
-
-    #infosource.iterables = [('freq_band_name',freq_band_names)]
-
 
 
 
@@ -152,13 +126,7 @@ the values in the infosource node
 .. code-block:: python
 
 
-    # template_path = '*%s/conmat_0_coh.npy'
-    # template_args = [['freq_band_name']
-    # datasource = create_datagrabber(data_path, template_path, template_args)
-
-
     template_path = '*%s_task-rest_run-01_meg_0_60_raw_filt_dsamp_ica_ROI_ts.npy'
-
 
     datasource = pe.Node(interface=nio.DataGrabber(infields=['subject_id'],
                                                    outfields=['ts_file']),
@@ -176,6 +144,40 @@ the values in the infosource node
 
 
 
+We then use the pipeline used in the previous example :ref:`conmat_to_graph
+pipeline <conmat_to_graph>
+
+
+
+.. code-block:: python
+
+
+    # spectral_connectivity_parameters
+    con_method = 'coh'
+    epoch_window_length = 3.0
+
+    sfreq = 2400 # sampling frequency
+    # when starting from raw MEG (.fif) data, can be directly extracted from the
+    # file info
+
+    from ephypype.pipelines.ts_to_conmat import create_pipeline_time_series_to_spectral_connectivity # noqa
+
+    spectral_workflow = create_pipeline_time_series_to_spectral_connectivity(
+        data_path, con_method=con_method,
+        epoch_window_length=epoch_window_length)
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    $$$$$$$$$$$$$$$$$$$$$$$$ Multiple trials $$$$$$$$$$$$$$$$$$$$$
+
 
 Graphpype creates for us a pipeline which can be connected to these
  nodes (datasource and infosource we created. The connectivity pipeline is implemented by the function
@@ -188,13 +190,49 @@ Graphpype creates for us a pipeline which can be connected to these
 .. code-block:: python
 
 
+    from graphpype.pipelines.conmat_to_graph import create_pipeline_conmat_to_graph_density # noqa
 
-    # In particular, the follwing parameters are of particular importance:
+
+
+
+
+
+
+The graph pipeline contains several nodes, some are based on radatools
+
+Two nodes of particular interest are :
+
+* :class:`graphpype.interfaces.radatools.rada.CommRada` computes Community detection based on the previous radatools_optim parameters # noqa
+
+* :class:`graphpype.interfaces.radatools.rada.NetPropRada` computes most of the classical graph-based metrics (Small-World, Efficiency, Assortativity, etc.) # noqa
+
+The follwing parameters are of particular importance:
+
+
+
+.. code-block:: python
+
+
     # density of the threshold
 
     con_den = 0.1 #
     #con_den = 0.05 #
     #con_den = 0.01 #
+
+
+
+
+
+
+
+This parameter corrdesponds to the percentage of highest connections retains
+for the analyses. con_den = 1.0 means a fully connected graphs (all edges
+are present)
+
+
+
+.. code-block:: python
+
 
     # The optimisation sequence
     radatools_optim = "WN tfrf 1" 
@@ -214,23 +252,14 @@ for more details, but very briefly:
 
 * 3) the last number is the number of repetitions of the algorithm, out of which the best one is chosen. The higher the number of repetitions, the higher the chance to reach the global maximum, but also the longer the computation takes. For testing, 1 is admissible, but it is expected to have at least 100 is required for reliable results #noqa 
 
-The graph pipeline contains several nodes, some are based on radatools
-
-Two nodes of particular interest are :
-
-* :class:`graphpype.interfaces.radatools.rada.CommRada` computes Community detection based on the previous radatools_optim parameters # noqa
-* :class:`graphpype.interfaces.radatools.rada.NetPropRada` computes most of the classical graph-based metrics (Small-World, Efficiency, Assortativity, etc.) # noqa
 
 
 
 .. code-block:: python
 
 
-    from graphpype.pipelines.conmat_to_graph import create_pipeline_conmat_to_graph_density # noqa
-
     graph_workflow = create_pipeline_conmat_to_graph_density(
         data_path, con_den=con_den, optim_seq = radatools_optim)
-
 
 
 
@@ -328,6 +357,264 @@ To do so, we first write the workflow graph (optional)
 
 
 
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    beta
+    1
+    in SpectralConn
+    multitaper
+    (1, 68, 48000)
+    7200
+    (68, 48000)
+    epoching data with 3.0s by window,resulting in 6.0 epochs (rest = 4800)
+    (6, 68, 7200)
+    MODE is multitaper
+    Connectivity computation...
+    only using indices for lower-triangular matrix
+        computing connectivity for 2278 connections
+        using t=0.000s..3.000s for estimation (7200 points)
+        frequencies: 13.0Hz..29.0Hz (49 points)
+        connectivity scores will be averaged for each band
+        using multitaper spectrum estimation with 7 DPSS windows
+        the following metrics will be computed: Coherence
+        computing connectivity for epoch 1
+        computing connectivity for epoch 2
+        computing connectivity for epoch 3
+        computing connectivity for epoch 4
+        computing connectivity for epoch 5
+        computing connectivity for epoch 6
+        assembling connectivity matrix (filling the upper triangular region of the matrix)
+    [Connectivity computation done]
+    (68, 68)
+    0.0 0.9523215712973069
+    in PlotSpectralConn
+    conmat_0_coh
+    (68, 68)
+
+     ********************** 
+
+    68
+    68
+
+     ********************** 
+
+    (68, 68)
+    (2278, 3)
+    Loading Pajek_net_file for reading node_corres
+    [[  0   0   0 ...   0 755   0]
+     [  0   0   0 ...   0   0 477]
+     [  0   0   0 ...   0   0   0]
+     ...
+     [  0   0   0 ...   0   0   0]
+     [  0   0   0 ...   0   0   0]
+     [  0   0   0 ...   0   0   0]]
+    (68,) (68, 68)
+    Loading community belonging file /home/INT/meunier.d/miniconda3/Packages/neuropycon_data/neuropycon_data/data/data_inv_ts/inv_ts_to_graph_analysis/graph_den_pipe_den_0_1/_freq_band_name_beta_subject_id_sub-0003/community_rada/Z_List.lol
+    [1 5 0 0 4 4 2 0 2 3 3 3 2 5 1 5 2 5 4 5 0 0 2 0 1 1 1 2 3 3 2 5 4 4 2 5 0
+     3 1 3 3 3 2 2 0 0 4 4 4 4 0 0 4 3 1 3 0 0 2 0 1 5 1 0 1 1 1 5]
+    Computing node roles
+
+    Node roles:
+    *Hubs 13/non-hubs 55
+    *provincials 21/connectors 47
+    [[1 1]
+     [1 1]
+     [1 2]
+     [2 2]
+     [1 2]
+     [1 2]
+     [1 1]
+     [1 2]
+     [1 2]
+     [1 2]
+     [1 2]
+     [1 1]
+     [2 2]
+     [1 2]
+     [1 2]
+     [1 1]
+     [1 2]
+     [1 1]
+     [1 2]
+     [1 2]
+     [1 2]
+     [1 1]
+     [1 1]
+     [1 2]
+     [1 1]
+     [1 2]
+     [2 2]
+     [1 2]
+     [1 2]
+     [2 2]
+     [1 2]
+     [1 2]
+     [1 2]
+     [1 2]
+     [1 1]
+     [2 2]
+     [1 2]
+     [1 2]
+     [1 1]
+     [1 2]
+     [1 2]
+     [1 2]
+     [1 1]
+     [2 2]
+     [1 2]
+     [1 1]
+     [2 2]
+     [2 2]
+     [1 1]
+     [1 1]
+     [1 2]
+     [1 1]
+     [1 2]
+     [1 2]
+     [1 2]
+     [1 1]
+     [2 2]
+     [2 2]
+     [1 2]
+     [1 1]
+     [1 1]
+     [2 2]
+     [1 2]
+     [1 2]
+     [2 1]
+     [1 2]
+     [2 2]
+     [1 1]]
+    alpha
+    0
+    in SpectralConn
+    multitaper
+    (1, 68, 48000)
+    7200
+    (68, 48000)
+    epoching data with 3.0s by window,resulting in 6.0 epochs (rest = 4800)
+    (6, 68, 7200)
+    MODE is multitaper
+    Connectivity computation...
+    only using indices for lower-triangular matrix
+        computing connectivity for 2278 connections
+        using t=0.000s..3.000s for estimation (7200 points)
+        frequencies: 8.0Hz..12.0Hz (13 points)
+        connectivity scores will be averaged for each band
+        using multitaper spectrum estimation with 7 DPSS windows
+        the following metrics will be computed: Coherence
+        computing connectivity for epoch 1
+        computing connectivity for epoch 2
+        computing connectivity for epoch 3
+        computing connectivity for epoch 4
+        computing connectivity for epoch 5
+        computing connectivity for epoch 6
+        assembling connectivity matrix (filling the upper triangular region of the matrix)
+    [Connectivity computation done]
+    (68, 68)
+    0.0 0.9541806655367927
+    in PlotSpectralConn
+    conmat_0_coh
+    (68, 68)
+
+     ********************** 
+
+    68
+    68
+
+     ********************** 
+
+    (68, 68)
+    (2278, 3)
+    Loading Pajek_net_file for reading node_corres
+    [[  0   0   0 ...   0 843   0]
+     [  0   0   0 ...   0   0 545]
+     [  0   0   0 ...   0   0   0]
+     ...
+     [  0   0   0 ...   0   0   0]
+     [  0   0   0 ...   0   0   0]
+     [  0   0   0 ...   0   0   0]]
+    (68,) (68, 68)
+    Loading community belonging file /home/INT/meunier.d/miniconda3/Packages/neuropycon_data/neuropycon_data/data/data_inv_ts/inv_ts_to_graph_analysis/graph_den_pipe_den_0_1/_freq_band_name_alpha_subject_id_sub-0003/community_rada/Z_List.lol
+    [0 1 2 2 2 1 3 3 3 5 4 4 3 5 0 1 0 5 0 1 2 6 3 1 0 0 5 3 4 4 0 5 1 1 3 5 2
+     2 0 4 2 2 3 3 2 6 1 1 1 1 3 6 4 4 0 4 2 2 3 6 0 1 0 6 0 0 0 1]
+    Computing node roles
+
+    Node roles:
+    *Hubs 9/non-hubs 59
+    *provincials 22/connectors 46
+    [[1 1]
+     [1 1]
+     [1 2]
+     [1 1]
+     [1 2]
+     [1 2]
+     [1 2]
+     [2 2]
+     [1 2]
+     [1 2]
+     [1 1]
+     [1 1]
+     [1 2]
+     [1 2]
+     [1 1]
+     [1 1]
+     [1 2]
+     [1 2]
+     [1 1]
+     [1 1]
+     [2 2]
+     [2 2]
+     [1 2]
+     [1 2]
+     [1 2]
+     [1 2]
+     [1 2]
+     [1 2]
+     [1 1]
+     [2 2]
+     [1 2]
+     [1 2]
+     [1 1]
+     [1 1]
+     [1 2]
+     [2 2]
+     [1 1]
+     [1 2]
+     [1 1]
+     [1 2]
+     [1 2]
+     [1 2]
+     [1 2]
+     [2 2]
+     [1 2]
+     [1 1]
+     [1 2]
+     [2 2]
+     [1 1]
+     [1 1]
+     [1 2]
+     [1 1]
+     [1 2]
+     [1 2]
+     [1 2]
+     [1 2]
+     [1 2]
+     [2 2]
+     [1 1]
+     [1 2]
+     [1 1]
+     [2 2]
+     [1 1]
+     [1 2]
+     [1 2]
+     [1 2]
+     [1 1]
+     [1 2]]
 
 
 
@@ -378,7 +665,7 @@ To do so, we first write the workflow graph (optional)
 
 
 
-**Total running time of the script:** ( 0 minutes  1.552 seconds)
+**Total running time of the script:** ( 0 minutes  6.104 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_inv_ts_to_graph.py:
