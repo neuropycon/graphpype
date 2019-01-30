@@ -224,32 +224,26 @@ our parameters to it.</dd>
 
 <span class="c1"># The optimisation sequence</span>
 <span class="n">radatools_optim</span> <span class="o">=</span> <span class="s2">&quot;WN tfrf 1&quot;</span>
-
-<span class="c1"># see</span>
-<span class="c1"># http://deim.urv.cat/~sergio.gomez/download.php?f=radatools-5.0-README.txt</span>
-<span class="c1"># for more details, but very briefly:</span>
-<span class="c1"># 1) WN for weighted unsigned (typically</span>
-<span class="c1"># coherence, pli, etc.) and WS for signed (e.g. Pearson correlation) +</span>
-<span class="c1"># 2) the optimisation sequence, can be used in different order. The sequence</span>
-<span class="c1"># tfrf is proposed in radatools, and means: t = tabu search , f = fast</span>
-<span class="c1"># algorithm, r = reposition algorithm and f = fast algorithm (again)</span>
-<span class="c1"># 3) the last number is the number of repetitions of the algorithm, out of</span>
-<span class="c1"># which the best one is chosen. The higher the number of repetitions, the</span>
-<span class="c1"># higher the chance to reach the global maximum, but also the longer the</span>
-<span class="c1"># computation takes. For testing, 1 is admissible, but it is expected to</span>
-<span class="c1"># have at least 100 is required for reliable results</span>
-
-
-<span class="c1"># The graph pipeline contains several nodes, some are based on radatools</span>
+</pre></div>
+</div>
+<p>see <a class="reference external" href="http://deim.urv.cat/~sergio.gomez/download.php?f=radatools-5.0-README.txt">http://deim.urv.cat/~sergio.gomez/download.php?f=radatools-5.0-README.txt</a>
+for more details, but very briefly:
+1) WN for weighted unsigned (typically
+coherence, pli, etc.) and WS for signed (e.g. Pearson correlation) +
+2) the optimisation sequence, can be used in different order. The sequence
+tfrf is proposed in radatools, and means: t = tabu search , f = fast
+algorithm, r = reposition algorithm and f = fast algorithm (again)
+3) the last number is the number of repetitions of the algorithm, out of
+which the best one is chosen. The higher the number of repetitions, the
+higher the chance to reach the global maximum, but also the longer the
+computation takes. For testing, 1 is admissible, but it is expected to
+have at least 100 is required for reliable results</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># The graph pipeline contains several nodes, some are based on radatools</span>
 <span class="c1">#</span>
-<span class="c1"># In particular, the two nodes are:</span>
+<span class="c1"># Two nodes of particular interest are :</span>
 <span class="c1">#</span>
-<span class="c1"># * :class:`ephypype.interfaces.mne.spectral.SpectralConn` computes spectral connectivity in a given frequency bands</span>
-<span class="c1"># * :class:`ephypype.interfaces.mne.spectral.PlotSpectralConn` plot connectivity matrix using the |plot_connectivity_circle| function</span>
-<span class="c1">#</span>
-<span class="c1"># .. |plot_connectivity_circle| raw:: html</span>
-<span class="c1">#</span>
-<span class="c1">#   &lt;a href=&quot;http://martinos.org/mne/stable/generated/mne.viz.plot_connectivity_circle.html#mne.viz.plot_connectivity_circle&quot; target=&quot;_blank&quot;&gt;spectral_connectivity function&lt;/a&gt;</span>
+<span class="c1"># * :class:`graphpype.interfaces.radatools.rada.CommRada` computes Community detection based on the previous radatools_optim parameters noqa</span>
+<span class="c1"># * :class:`graphpype.interfaces.radatools.rada..NetPropRada` computes most of the classical graph-based metrics (Small-World, Efficiency, Assortativity, etc.) noqa</span>
 
 <span class="kn">from</span> <span class="nn">graphpype.pipelines.conmat_to_graph</span> <span class="kn">import</span> <span class="n">create_pipeline_conmat_to_graph_density</span> <span class="c1"># noqa</span>
 
@@ -299,7 +293,6 @@ So, these two nodes taken together can grab data.</p>
 
 <span class="c1"># Run workflow locally on 2 CPUs</span>
 <span class="c1">#main_workflow.run(plugin=&#39;MultiProc&#39;, plugin_args={&#39;n_procs&#39;: 2})</span>
-
 <span class="c1"># Run workflow</span>
 <span class="n">main_workflow</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
 </pre></div>
@@ -308,25 +301,6 @@ So, these two nodes taken together can grab data.</p>
 
 <span class="n">labels_file</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="s2">&quot;label_names.txt&quot;</span><span class="p">)</span>
 <span class="n">coords_file</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="s2">&quot;label_centroid.txt&quot;</span><span class="p">)</span>
-
-<span class="c1">#for freq_band_name in freq_band_names:</span>
-
-    <span class="c1">#res_path = op.join(</span>
-        <span class="c1">#data_path,graph_analysis_name, &quot;graph_den_pipe_den_0_05&quot;,</span>
-        <span class="c1">#&quot;_freq_band_name_&quot;+freq_band_name)</span>
-
-    <span class="c1">#lol_file = op.join(res_path,&quot;community_rada&quot;, &quot;Z_List.lol&quot;)</span>
-
-    <span class="c1">#print(lol_file)</span>
-
-    <span class="c1">#net_file = op.join(res_path,&quot;prep_rada&quot;, &quot;Z_List.net&quot;)</span>
-
-    <span class="c1">#visu = visu_graph_modules(lol_file=lol_file, net_file=net_file,</span>
-                             <span class="c1">#coords_file=coords_file,</span>
-                             <span class="c1">#labels_file=labels_file,inter_modules=False,</span>
-                             <span class="c1">#z_offset=+50)</span>
-                             <span class="c1">##x_offset=0, y_offset=-20, z_offset=-50)</span>
-    <span class="c1">##visu.show()</span>
 
 <span class="kn">from</span> <span class="nn">visbrain.objects</span> <span class="kn">import</span> <span class="n">SceneObj</span><span class="p">,</span> <span class="n">BrainObj</span>
 
@@ -342,8 +316,6 @@ So, these two nodes taken together can grab data.</p>
     <span class="n">lol_file</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">res_path</span><span class="p">,</span><span class="s2">&quot;community_rada&quot;</span><span class="p">,</span> <span class="s2">&quot;Z_List.lol&quot;</span><span class="p">)</span>
 
     <span class="n">net_file</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">res_path</span><span class="p">,</span><span class="s2">&quot;prep_rada&quot;</span><span class="p">,</span> <span class="s2">&quot;Z_List.net&quot;</span><span class="p">)</span>
-
-    <span class="c1">#net_file = op.join(res_path,&quot;net_prop&quot;, &quot;Z_List.net&quot;)</span>
 
     <span class="n">b_obj</span> <span class="o">=</span> <span class="n">BrainObj</span><span class="p">(</span><span class="s2">&quot;white&quot;</span><span class="p">,</span> <span class="n">translucent</span> <span class="o">=</span> <span class="bp">True</span><span class="p">)</span>
 
@@ -363,7 +335,7 @@ So, these two nodes taken together can grab data.</p>
 </pre></div>
 </div>
 <img alt="../_images/sphx_glr_plot_inv_ts_to_graph_002.png" class="sphx-glr-single-img" src="../_images/sphx_glr_plot_inv_ts_to_graph_002.png" />
-<p><strong>Total running time of the script:</strong> ( 0 minutes  1.525 seconds)</p>
+<p><strong>Total running time of the script:</strong> ( 0 minutes  1.547 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-inv-ts-to-graph-py">
 <div class="sphx-glr-download docutils container">
 <a class="reference download internal" download="" href="../_downloads/c408898dc7b654b78c9005349545b8bd/plot_inv_ts_to_graph.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_inv_ts_to_graph.py</span></code></a></div>

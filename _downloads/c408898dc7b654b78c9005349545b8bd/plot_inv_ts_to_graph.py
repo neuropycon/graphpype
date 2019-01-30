@@ -128,8 +128,8 @@ con_den = 0.1 #
 # The optimisation sequence
 radatools_optim = "WN tfrf 1" 
 
-# see
-# http://deim.urv.cat/~sergio.gomez/download.php?f=radatools-5.0-README.txt
+###############################################################################
+# see http://deim.urv.cat/~sergio.gomez/download.php?f=radatools-5.0-README.txt
 # for more details, but very briefly:
 # 1) WN for weighted unsigned (typically
 # coherence, pli, etc.) and WS for signed (e.g. Pearson correlation) +
@@ -142,17 +142,12 @@ radatools_optim = "WN tfrf 1"
 # computation takes. For testing, 1 is admissible, but it is expected to
 # have at least 100 is required for reliable results
 
-
 # The graph pipeline contains several nodes, some are based on radatools
 #
-# In particular, the two nodes are:
+# Two nodes of particular interest are :
 #
-# * :class:`ephypype.interfaces.mne.spectral.SpectralConn` computes spectral connectivity in a given frequency bands
-# * :class:`ephypype.interfaces.mne.spectral.PlotSpectralConn` plot connectivity matrix using the |plot_connectivity_circle| function
-#
-# .. |plot_connectivity_circle| raw:: html
-#
-#   <a href="http://martinos.org/mne/stable/generated/mne.viz.plot_connectivity_circle.html#mne.viz.plot_connectivity_circle" target="_blank">spectral_connectivity function</a>
+# * :class:`graphpype.interfaces.radatools.rada.CommRada` computes Community detection based on the previous radatools_optim parameters noqa
+# * :class:`graphpype.interfaces.radatools.rada..NetPropRada` computes most of the classical graph-based metrics (Small-World, Efficiency, Assortativity, etc.) noqa
 
 from graphpype.pipelines.conmat_to_graph import create_pipeline_conmat_to_graph_density # noqa
 
@@ -206,16 +201,8 @@ main_workflow.config['execution'] = {'remove_unnecessary_outputs': 'false'}
 
 # Run workflow locally on 2 CPUs
 #main_workflow.run(plugin='MultiProc', plugin_args={'n_procs': 2})
-
 # Run workflow
 main_workflow.run()
-
-
-
-
-
-
-
 
 ########################################## plotting
 
@@ -223,25 +210,6 @@ from graphpype.utils_visbrain import visu_graph_modules
 
 labels_file = op.join(data_path, "label_names.txt")
 coords_file = op.join(data_path, "label_centroid.txt")
-
-#for freq_band_name in freq_band_names:
-
-    #res_path = op.join(
-        #data_path,graph_analysis_name, "graph_den_pipe_den_0_05",
-        #"_freq_band_name_"+freq_band_name)
-
-    #lol_file = op.join(res_path,"community_rada", "Z_List.lol")
-
-    #print(lol_file)
-
-    #net_file = op.join(res_path,"prep_rada", "Z_List.net")
-
-    #visu = visu_graph_modules(lol_file=lol_file, net_file=net_file,
-                             #coords_file=coords_file,
-                             #labels_file=labels_file,inter_modules=False,
-                             #z_offset=+50)
-                             ##x_offset=0, y_offset=-20, z_offset=-50)
-    ##visu.show()
 
 from visbrain.objects import SceneObj, BrainObj
 
@@ -257,8 +225,6 @@ for nf,freq_band_name in enumerate(freq_band_names):
     lol_file = op.join(res_path,"community_rada", "Z_List.lol")
 
     net_file = op.join(res_path,"prep_rada", "Z_List.net")
-
-    #net_file = op.join(res_path,"net_prop", "Z_List.net")
 
     b_obj = BrainObj("white", translucent = True)
 
