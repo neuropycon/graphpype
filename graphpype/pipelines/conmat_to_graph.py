@@ -11,7 +11,7 @@ from graphpype.nodes.modularity import ComputeNetList, ComputeNodeRoles
 
 def create_pipeline_conmat_to_graph_density(
         main_path, pipeline_name="graph_den_pipe", con_den=1.0, multi=False,
-        mod=True, plot=False, optim_seq="WS trfr 100"):
+        mod=True, plot=False, optim_seq="WS trfr 100", compute_ndi=False):
     """
     Description:
 
@@ -77,6 +77,8 @@ def create_pipeline_conmat_to_graph_density(
             pipeline.connect(community_rada, 'rada_lol_file',
                              node_roles, 'rada_lol_file')
 
+            node_roles.inputs.compute_ndi = compute_ndi
+
         # compute network properties with rada
         net_prop = pe.MapNode(interface=NetPropRada(
             optim_seq="A"), name='net_prop', iterfield=["Pajek_net_file"])
@@ -123,6 +125,8 @@ def create_pipeline_conmat_to_graph_density(
             pipeline.connect(community_rada, 'rada_lol_file',
                              node_roles, 'rada_lol_file')
 
+            node_roles.inputs.compute_ndi = compute_ndi
+
         # compute network properties with rada
         net_prop = pe.Node(interface=NetPropRada(
             optim_seq="A"), name='net_prop')
@@ -135,7 +139,7 @@ def create_pipeline_conmat_to_graph_density(
 
 def create_pipeline_conmat_to_graph_threshold(
         main_path, pipeline_name="graph_thr_pipe", con_thr=1.0, multi=False,
-        mod=True, plot=True, optim_seq="WS trfr 100"):
+        mod=True, plot=True, optim_seq="WS trfr 100", compute_ndi=False):
     """
     Description:
 
@@ -190,6 +194,18 @@ def create_pipeline_conmat_to_graph_threshold(
             pipeline.connect(prep_rada, 'Pajek_net_file',
                              community_rada, 'Pajek_net_file')
 
+            # node roles
+            node_roles = pe.Node(
+                interface=ComputeNodeRoles(role_type="4roles"),
+                name='node_roles')
+
+            pipeline.connect(prep_rada, 'Pajek_net_file',
+                             node_roles, 'Pajek_net_file')
+            pipeline.connect(community_rada, 'rada_lol_file',
+                             node_roles, 'rada_lol_file')
+
+            node_roles.inputs.compute_ndi = compute_ndi
+
         # compute network properties with rada
         net_prop = pe.Node(interface=NetPropRada(
             optim_seq="A"), name='net_prop')
@@ -238,6 +254,8 @@ def create_pipeline_conmat_to_graph_threshold(
             pipeline.connect(community_rada, 'rada_lol_file',
                              node_roles, 'rada_lol_file')
 
+            node_roles.inputs.compute_ndi = compute_ndi
+
         # compute network properties with rada
         net_prop = pe.MapNode(interface=NetPropRada(
             optim_seq="A"), name='net_prop', iterfield=["Pajek_net_file"])
@@ -250,7 +268,7 @@ def create_pipeline_conmat_to_graph_threshold(
 
 def create_pipeline_net_list_to_graph(
         main_path, pipeline_name="graph_net_pipe", multi=False, mod=True,
-        plot=False, optim_seq="WS trfr 100"):
+        plot=False, optim_seq="WS trfr 100", compute_ndi=False):
     """
     Description:
 
@@ -304,6 +322,8 @@ def create_pipeline_net_list_to_graph(
             pipeline.connect(community_rada, 'rada_lol_file',
                              node_roles, 'rada_lol_file')
 
+            node_roles.inputs.compute_ndi = compute_ndi
+
         # compute network properties with rada
         net_prop = pe.Node(interface=NetPropRada(
             optim_seq="A"), name='net_prop')
@@ -344,6 +364,7 @@ def create_pipeline_net_list_to_graph(
                              node_roles, 'Pajek_net_file')
             pipeline.connect(community_rada, 'rada_lol_file',
                              node_roles, 'rada_lol_file')
+            node_roles.inputs.compute_ndi = compute_ndi
 
         # compute network properties with rada
         net_prop = pe.MapNode(interface=NetPropRada(

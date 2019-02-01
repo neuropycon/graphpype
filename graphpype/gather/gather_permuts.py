@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 import os
-
 import glob
 
 import pandas as pd
@@ -251,6 +250,16 @@ def compute_nodes_rada_df(local_dir, gm_coords, coords_file, labels_file,
             np.concatenate((node_roles, part_coeff, Z_com_degree), axis=1),
             columns=['Role_quality', 'Role_quantity',
                      'Participation_coefficient', 'Z_community_degree']))
+    # ndi values
+    ndi_values_file = os.path.join(
+        local_dir, "node_roles", "ndi_values.txt")
+
+    if os.path.exists(ndi_values_file):
+
+        # loding node roles
+        ndi_values = np.array(np.loadtxt(ndi_values_file))
+        list_df.append(pd.DataFrame(ndi_values,
+                                    columns=['Node_Dissociation_Index']))
 
     return list_df
 
@@ -317,6 +326,7 @@ def compute_signif_permuts(permut_df, permut_col="Seed",
     cols = []
 
     if session_col == -1 or len(permut_df[session_col].unique()) == 1:
+        print("Compairing one session with itself")
 
         for index_col, col in enumerate(data_cols):
 
@@ -336,6 +346,7 @@ def compute_signif_permuts(permut_df, permut_col="Seed",
 
             cols.append(str(col))
     else:
+        print("Compairing diffences between two sessions")
         # all unique values should have 2 different samples
         count_elements = Counter(permut_df[permut_col].values)
 
@@ -350,7 +361,6 @@ def compute_signif_permuts(permut_df, permut_col="Seed",
                   .format(count_elements))
 
         # computing diff df
-
         for index_col, col in enumerate(data_cols):
 
             df_col = permut_df.pivot(
@@ -359,17 +369,13 @@ def compute_signif_permuts(permut_df, permut_col="Seed",
             df_col["Diff"] = pd.to_numeric(
                 df_col.iloc[:, 0]) - pd.to_numeric(df_col.iloc[:, 1])
 
-            diff_col = df_col["Diff"].dropna()
+            diff_col = df_col["Diff"].dropna().reset_index(drop=True)
 
-            if not all(val == 2 for val in list(count_elements.values())):
-                print("Error, all permut indexes should have 2 lines: {}"
-                      .format(count_elements))
-
-                print(diff_col)
-                print(diff_col.shape)
+            assert all(val == 2 for val in list(count_elements.values())),\
+                ("Error, all permut indexes should have 2 lines: \
+                    {}".format(count_elements))
 
             if diff_col.shape[0] == 0:
-
                 all_p_higher[index_col] = np.nan
                 all_p_lower[index_col] = np.nan
                 cols.append(col)

@@ -38,12 +38,15 @@ def test_compute_node_roles():
     compute_node_roles = ComputeNodeRoles()
     compute_node_roles.inputs.rada_lol_file = lol_file
     compute_node_roles.inputs.Pajek_net_file = Pajek_net_file
+    compute_node_roles.inputs.compute_ndi = True
 
     val = compute_node_roles.run().outputs
     print(val)
     assert os.path.exists(val.node_roles_file)
     assert os.path.exists(val.all_Z_com_degree_file)
     assert os.path.exists(val.all_participation_coeff_file)
+
+    assert os.path.exists(val.ndi_values_file)
 
     os.remove(val.node_roles_file)
     os.remove(val.all_Z_com_degree_file)
