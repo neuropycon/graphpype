@@ -220,9 +220,11 @@ for nf, freq_band_name in enumerate(freq_band_names):
                       title=("Module for {} band".format(freq_band_name)),
                       title_size=14, title_bold=True, title_color='white')
 
-    c_obj = visu_graph_modules(lol_file=lol_file, net_file=net_file,
+    c_obj,s_obj = visu_graph_modules(lol_file=lol_file, net_file=net_file,
                                coords_file=coords_file,
                                labels_file=labels_file, inter_modules=False)
+
     sc.add_to_subplot(c_obj, row=nf)
+    sc.add_to_subplot(s_obj, row=nf)
 
 sc.preview()

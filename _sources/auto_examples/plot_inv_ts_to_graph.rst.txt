@@ -392,10 +392,12 @@ plotting
                           title=("Module for {} band".format(freq_band_name)),
                           title_size=14, title_bold=True, title_color='white')
 
-        c_obj = visu_graph_modules(lol_file=lol_file, net_file=net_file,
+        c_obj,s_obj = visu_graph_modules(lol_file=lol_file, net_file=net_file,
                                    coords_file=coords_file,
                                    labels_file=labels_file, inter_modules=False)
+
         sc.add_to_subplot(c_obj, row=nf)
+        sc.add_to_subplot(s_obj, row=nf)
 
     sc.preview()
 
@@ -407,7 +409,7 @@ plotting
 
 
 
-**Total running time of the script:** ( 0 minutes  23.070 seconds)
+**Total running time of the script:** ( 0 minutes  23.970 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_inv_ts_to_graph.py:
