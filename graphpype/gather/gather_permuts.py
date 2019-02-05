@@ -37,12 +37,14 @@ def compute_rada_df(iter_path, df, radatools_version="3.2", mapflow=[],
                     mapflow_name=""):
     """gather rada """
     if radatools_version == "3.2":
-
         net_prop_dir = "net_prop"
 
     elif radatools_version == "4.0":
-
         net_prop_dir = "prep_rada"
+
+    if radatools_version == "5.0":
+        net_prop_dir = "net_prop"
+
     else:
         print("Warning, could not find radatools_version {}"
               .format(radatools_version))
@@ -154,12 +156,18 @@ def compute_nodes_rada_df(local_dir, gm_coords, coords_file, labels_file,
                           radatools_version="3.2"):
     """node properties df"""
     if radatools_version == "3.2":
-
         net_prop_dir = "net_prop"
 
     elif radatools_version == "4.0":
-
         net_prop_dir = "prep_rada"
+
+    elif radatools_version == "5.0":
+        net_prop_dir = "net_prop"
+
+    else:
+        print("Warning, could not find radatools_version {}"
+              .format(radatools_version))
+        return
 
     list_df = []
 
