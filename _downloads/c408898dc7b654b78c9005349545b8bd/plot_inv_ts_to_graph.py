@@ -190,12 +190,12 @@ plt.show()
 
 main_workflow.config['execution'] = {'remove_unnecessary_outputs': 'false'}
 
-###############################################################################
+##############################################################################
 # Run workflow locally on 2 CPUs in parrallel
 main_workflow.run(plugin='MultiProc', plugin_args={'n_procs': 2})
 
-###############################################################################
-# plotting
+##############################################################################
+# plotting modules and labels
 
 from graphpype.utils_visbrain import visu_graph_modules # noqa
 
@@ -226,5 +226,44 @@ for nf, freq_band_name in enumerate(freq_band_names):
 
     sc.add_to_subplot(c_obj, row=nf)
     sc.add_to_subplot(s_obj, row=nf)
+
+sc.preview()
+
+
+###############################################################################
+# plotting modules and roles
+
+from graphpype.utils_visbrain import visu_graph_modules_roles # noqa
+
+labels_file = op.join(data_path, "label_names.txt")
+coords_file = op.join(data_path, "label_centroid.txt")
+
+from visbrain.objects import SceneObj, BrainObj # noqa
+
+sc = SceneObj(size=(1000, 1000), bgcolor=(.1, .1, .1))
+
+for nf, freq_band_name in enumerate(freq_band_names):
+    res_path = op.join(
+        data_path, graph_analysis_name,
+        "graph_den_pipe_den_"+str(con_den).replace(".", "_"),
+        "_freq_band_name_"+freq_band_name+"_subject_id_sub-0003")
+
+    lol_file = op.join(res_path, "community_rada", "Z_List.lol")
+    net_file = op.join(res_path, "prep_rada", "Z_List.net")
+    roles_file = op.join(res_path, "node_roles", "node_roles.txt")
+
+    b_obj = BrainObj("white", translucent=True)
+    sc.add_to_subplot(b_obj, row=nf, use_this_cam=True, rotate='left',
+                      title=("Module for {} band".format(freq_band_name)),
+                      title_size=14, title_bold=True, title_color='white')
+
+    c_obj,list_sources = visu_graph_modules_roles(
+        lol_file=lol_file, net_file=net_file, roles_file=roles_file,
+        coords_file=coords_file, inter_modules=True)
+
+    sc.add_to_subplot(c_obj, row=nf)
+
+    for source in list_sources:
+        sc.add_to_subplot(source, row=nf)
 
 sc.preview()

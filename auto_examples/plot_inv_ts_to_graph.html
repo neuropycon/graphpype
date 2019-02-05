@@ -302,7 +302,7 @@ correspond to how we connected the nodes.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">main_workflow</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">plugin</span><span class="o">=</span><span class="s1">&#39;MultiProc&#39;</span><span class="p">,</span> <span class="n">plugin_args</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;n_procs&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">})</span>
 </pre></div>
 </div>
-<p>plotting</p>
+<p>plotting modules and labels</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">graphpype.utils_visbrain</span> <span class="kn">import</span> <span class="n">visu_graph_modules</span> <span class="c1"># noqa</span>
 
 <span class="n">labels_file</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="s2">&quot;label_names.txt&quot;</span><span class="p">)</span>
@@ -337,7 +337,184 @@ correspond to how we connected the nodes.</p>
 </pre></div>
 </div>
 <img alt="../_images/sphx_glr_plot_inv_ts_to_graph_002.png" class="sphx-glr-single-img" src="../_images/sphx_glr_plot_inv_ts_to_graph_002.png" />
-<p><strong>Total running time of the script:</strong> ( 0 minutes  23.970 seconds)</p>
+<p>plotting modules and roles</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">graphpype.utils_visbrain</span> <span class="kn">import</span> <span class="n">visu_graph_modules_roles</span> <span class="c1"># noqa</span>
+
+<span class="n">labels_file</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="s2">&quot;label_names.txt&quot;</span><span class="p">)</span>
+<span class="n">coords_file</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="s2">&quot;label_centroid.txt&quot;</span><span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">visbrain.objects</span> <span class="kn">import</span> <span class="n">SceneObj</span><span class="p">,</span> <span class="n">BrainObj</span> <span class="c1"># noqa</span>
+
+<span class="n">sc</span> <span class="o">=</span> <span class="n">SceneObj</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="mi">1000</span><span class="p">),</span> <span class="n">bgcolor</span><span class="o">=</span><span class="p">(</span><span class="o">.</span><span class="mi">1</span><span class="p">,</span> <span class="o">.</span><span class="mi">1</span><span class="p">,</span> <span class="o">.</span><span class="mi">1</span><span class="p">))</span>
+
+<span class="k">for</span> <span class="n">nf</span><span class="p">,</span> <span class="n">freq_band_name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">freq_band_names</span><span class="p">):</span>
+    <span class="n">res_path</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+        <span class="n">data_path</span><span class="p">,</span> <span class="n">graph_analysis_name</span><span class="p">,</span>
+        <span class="s2">&quot;graph_den_pipe_den_&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">con_den</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="s2">&quot;_&quot;</span><span class="p">),</span>
+        <span class="s2">&quot;_freq_band_name_&quot;</span><span class="o">+</span><span class="n">freq_band_name</span><span class="o">+</span><span class="s2">&quot;_subject_id_sub-0003&quot;</span><span class="p">)</span>
+
+    <span class="n">lol_file</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">res_path</span><span class="p">,</span> <span class="s2">&quot;community_rada&quot;</span><span class="p">,</span> <span class="s2">&quot;Z_List.lol&quot;</span><span class="p">)</span>
+    <span class="n">net_file</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">res_path</span><span class="p">,</span> <span class="s2">&quot;prep_rada&quot;</span><span class="p">,</span> <span class="s2">&quot;Z_List.net&quot;</span><span class="p">)</span>
+    <span class="n">roles_file</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">res_path</span><span class="p">,</span> <span class="s2">&quot;node_roles&quot;</span><span class="p">,</span> <span class="s2">&quot;node_roles.txt&quot;</span><span class="p">)</span>
+
+    <span class="n">b_obj</span> <span class="o">=</span> <span class="n">BrainObj</span><span class="p">(</span><span class="s2">&quot;white&quot;</span><span class="p">,</span> <span class="n">translucent</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">sc</span><span class="o">.</span><span class="n">add_to_subplot</span><span class="p">(</span><span class="n">b_obj</span><span class="p">,</span> <span class="n">row</span><span class="o">=</span><span class="n">nf</span><span class="p">,</span> <span class="n">use_this_cam</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">rotate</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">,</span>
+                      <span class="n">title</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;Module for {} band&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">freq_band_name</span><span class="p">)),</span>
+                      <span class="n">title_size</span><span class="o">=</span><span class="mi">14</span><span class="p">,</span> <span class="n">title_bold</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">title_color</span><span class="o">=</span><span class="s1">&#39;white&#39;</span><span class="p">)</span>
+
+    <span class="n">c_obj</span><span class="p">,</span><span class="n">list_sources</span> <span class="o">=</span> <span class="n">visu_graph_modules_roles</span><span class="p">(</span>
+        <span class="n">lol_file</span><span class="o">=</span><span class="n">lol_file</span><span class="p">,</span> <span class="n">net_file</span><span class="o">=</span><span class="n">net_file</span><span class="p">,</span> <span class="n">roles_file</span><span class="o">=</span><span class="n">roles_file</span><span class="p">,</span>
+        <span class="n">coords_file</span><span class="o">=</span><span class="n">coords_file</span><span class="p">,</span> <span class="n">inter_modules</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+    <span class="n">sc</span><span class="o">.</span><span class="n">add_to_subplot</span><span class="p">(</span><span class="n">c_obj</span><span class="p">,</span> <span class="n">row</span><span class="o">=</span><span class="n">nf</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">source</span> <span class="ow">in</span> <span class="n">list_sources</span><span class="p">:</span>
+        <span class="n">sc</span><span class="o">.</span><span class="n">add_to_subplot</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">row</span><span class="o">=</span><span class="n">nf</span><span class="p">)</span>
+
+<span class="n">sc</span><span class="o">.</span><span class="n">preview</span><span class="p">()</span>
+</pre></div>
+</div>
+<img alt="../_images/sphx_glr_plot_inv_ts_to_graph_003.png" class="sphx-glr-single-img" src="../_images/sphx_glr_plot_inv_ts_to_graph_003.png" />
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[[1 1]
+ [1 1]
+ [1 2]
+ [1 1]
+ [1 2]
+ [1 2]
+ [1 2]
+ [2 2]
+ [1 2]
+ [1 2]
+ [1 1]
+ [1 1]
+ [1 2]
+ [1 2]
+ [1 1]
+ [1 1]
+ [1 2]
+ [1 2]
+ [1 1]
+ [1 1]
+ [2 2]
+ [2 2]
+ [1 2]
+ [1 2]
+ [1 2]
+ [1 2]
+ [1 2]
+ [1 2]
+ [1 1]
+ [2 2]
+ [1 2]
+ [1 2]
+ [1 1]
+ [1 1]
+ [1 2]
+ [2 2]
+ [1 1]
+ [1 2]
+ [1 1]
+ [1 2]
+ [1 2]
+ [1 2]
+ [1 2]
+ [2 2]
+ [1 2]
+ [1 1]
+ [1 2]
+ [2 2]
+ [1 1]
+ [1 1]
+ [1 2]
+ [1 1]
+ [1 2]
+ [1 2]
+ [1 2]
+ [1 2]
+ [1 2]
+ [2 2]
+ [1 1]
+ [1 2]
+ [1 1]
+ [2 2]
+ [1 1]
+ [1 2]
+ [1 2]
+ [1 2]
+ [1 1]
+ [1 2]]
+[[1 1]
+ [1 1]
+ [1 2]
+ [2 2]
+ [1 2]
+ [1 2]
+ [1 1]
+ [1 2]
+ [1 2]
+ [1 2]
+ [1 2]
+ [1 1]
+ [2 2]
+ [1 2]
+ [1 2]
+ [1 1]
+ [1 2]
+ [1 1]
+ [1 2]
+ [1 2]
+ [1 2]
+ [1 1]
+ [1 1]
+ [1 2]
+ [1 1]
+ [1 2]
+ [2 2]
+ [1 2]
+ [1 2]
+ [2 2]
+ [1 2]
+ [1 2]
+ [1 2]
+ [1 2]
+ [1 1]
+ [2 2]
+ [1 2]
+ [1 2]
+ [1 1]
+ [1 2]
+ [1 2]
+ [1 2]
+ [1 1]
+ [2 2]
+ [1 2]
+ [1 1]
+ [2 2]
+ [2 2]
+ [1 1]
+ [1 1]
+ [1 2]
+ [1 1]
+ [1 2]
+ [1 2]
+ [1 2]
+ [1 1]
+ [2 2]
+ [2 2]
+ [1 2]
+ [1 1]
+ [1 1]
+ [2 2]
+ [1 2]
+ [1 2]
+ [2 1]
+ [1 2]
+ [2 2]
+ [1 1]]
+</pre></div>
+</div>
+<p><strong>Total running time of the script:</strong> ( 0 minutes  25.923 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-inv-ts-to-graph-py">
 <div class="sphx-glr-download docutils container">
 <a class="reference download internal" download="" href="../_downloads/c408898dc7b654b78c9005349545b8bd/plot_inv_ts_to_graph.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_inv_ts_to_graph.py</span></code></a></div>
@@ -359,7 +536,7 @@ correspond to how we connected the nodes.</p>
       
     </p>
     <p>
-        &copy; Copyright 2019, Neuropycon Developers. Last updated on 2019-02-01.<br/>
+        &copy; Copyright 2019, Neuropycon Developers. Last updated on 2019-02-05.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.2.<br/>
     </p>
   </div>
