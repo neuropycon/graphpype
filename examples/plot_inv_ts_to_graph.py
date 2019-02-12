@@ -260,7 +260,7 @@ for nf, freq_band_name in enumerate(freq_band_names):
     c_obj,list_sources = visu_graph_modules_roles(
         lol_file=lol_file, net_file=net_file, roles_file=roles_file,
         coords_file=coords_file, inter_modules=True, default_size=10,
-        hub_to_non_hub=5)
+        hub_to_non_hub=3)
 
     sc.add_to_subplot(c_obj, row=nf)
 
