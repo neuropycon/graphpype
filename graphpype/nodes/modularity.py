@@ -308,8 +308,6 @@ class ComputeNodeRoles(BaseInterface):
         node_roles, all_Z_com_degree, all_participation_coeff = compute_roles(
             community_vect, sparse_mat, role_type=self.inputs.role_type)
 
-        print(node_roles)
-
         node_roles_file = os.path.abspath('node_roles.txt')
 
         np.savetxt(node_roles_file, node_roles, fmt='%d')

@@ -669,7 +669,7 @@ class ShuffleMatrix(BaseInterface):
 
         if seed == -1:
             print("keeping original matrix")
-            shuffled_matrix = orig_mat
+            shuf_mat = orig_mat
 
         else:
 
@@ -699,7 +699,7 @@ class ShuffleMatrix(BaseInterface):
                         bool_ok = True
 
         shuffled_matrix_file = os.path.abspath("shuffled_matrix.npy")
-        np.save(shuffled_matrix_file, shuffled_matrix)
+        np.save(shuffled_matrix_file, shuf_mat)
         return runtime
 
     def _list_outputs(self):
