@@ -153,7 +153,7 @@ def visu_graph_modules_roles(net_file, lol_file, roles_file, coords_file,
                              inter_modules=True, modality_type="",
                              s_textcolor="white", c_colval=c_colval_modules,
                              umin=0, umax=50, x_offset=0, y_offset=0,
-                             z_offset=0, default_size=10, hub_to_non_hub=5):
+                             z_offset=0, default_size=10, hub_to_non_hub=3):
 
     # coords
     coords = np.loadtxt(coords_file)
@@ -197,14 +197,14 @@ def visu_graph_modules_roles(net_file, lol_file, roles_file, coords_file,
     node_roles = np.array(np.loadtxt(roles_file), dtype='int64')
 
     coords_prov_hubs = corres_coords[(
-        node_roles[node_corres, 0] == 1) & (node_roles[node_corres, 1] == 2)]
+        node_roles[node_corres, 0] == 2) & (node_roles[node_corres, 1] == 1)]
     coords_prov_no_hubs = corres_coords[(
         node_roles[node_corres, 0] == 1) & (node_roles[node_corres, 1] == 1)]
 
     coords_connec_hubs = corres_coords[(
         node_roles[node_corres, 0] == 2) & (node_roles[node_corres, 1] == 2)]
     coords_connec_no_hubs = corres_coords[(
-        node_roles[node_corres, 0] == 2) & (node_roles[node_corres, 1] == 1)]
+        node_roles[node_corres, 0] == 1) & (node_roles[node_corres, 1] == 2)]
 
     list_sources = []
 
@@ -221,7 +221,7 @@ def visu_graph_modules_roles(net_file, lol_file, roles_file, coords_file,
             symbol='square')
         list_sources.append(s_obj2)
 
-    if len(coords_connec_no_hubs != 0):
+    if len(coords_prov_hubs != 0):
         s_obj3 = SourceObj(
             'prov_hubs', coords_prov_hubs, color='crimson', alpha=.5,
             edge_width=2., radius_min=default_size*hub_to_non_hub,
