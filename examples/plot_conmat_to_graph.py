@@ -32,7 +32,7 @@ except ImportError:
     print("Warning, neuropycon_data not found")
     exit()
 
-data_path = op.join(nd.__path__[0], "data", "data_con")
+data_path = op.join(nd.__path__[0], "data", "data_con_meg")
 
 ###############################################################################
 # This will be what we will loop on
