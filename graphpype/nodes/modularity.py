@@ -2,6 +2,7 @@
 
 import os
 import numpy as np
+import glob
 
 from nipype.interfaces.base import BaseInterface, BaseInterfaceInputSpec
 from nipype.interfaces.base import traits, File, TraitedSpec, isdefined
@@ -358,9 +359,9 @@ class ComputeModuleMatPropInputSpec(BaseInterfaceInputSpec):
         exists=True,
         desc='net description in Pajek format', mandatory=True)
 
-    conmat_file = File(
+    group_conmat_file = File(
         exists=True,
-        desc='full matrix in npy format', mandatory=True)
+        desc='list of several full matrix in npy format', mandatory=True)
 
     export_excel = traits.Bool(
         False, desc="export data as xls (as well as csv)",
@@ -369,12 +370,12 @@ class ComputeModuleMatPropInputSpec(BaseInterfaceInputSpec):
 
 class ComputeModuleMatPropOutputSpec(TraitedSpec):
 
-    df_avgmat_file = File(
+    df_avgmat_files = traits.List(File(
         exists=True,
-        desc="module properties")
+        desc="module properties"))
 
-    df_avgmat_excel_file = File(
-        desc="module properties in xls format")
+    df_avgmat_excel_files = traits.List(File(
+        desc="module properties in xls format"))
 
 
 class ComputeModuleMatProp(BaseInterface):
@@ -424,7 +425,7 @@ class ComputeModuleMatProp(BaseInterface):
 
         rada_lol_file = self.inputs.rada_lol_file
         Pajek_net_file = self.inputs.Pajek_net_file
-        conmat_file = self.inputs.conmat_file
+        group_conmat_file = self.inputs.group_conmat_file
         export_excel = self.inputs.export_excel
 
         community_vect = read_lol_file(rada_lol_file)
@@ -432,33 +433,44 @@ class ComputeModuleMatProp(BaseInterface):
             read_Pajek_corres_nodes_and_sparse_matrix(Pajek_net_file)
 
         # density
-        conmat = np.load(conmat_file)
-        corres_mat = conmat[:, corres_nodes][corres_nodes, :]
+        group_conmats = np.load(group_conmat_file)
 
-        # intermodule
-        if not is_symetrical(corres_mat):
-            corres_mat = corres_mat + np.transpose(corres_mat)
+        if len(group_conmats.shape) == 2:
+            group_conmats = group_conmats.reshape(
+                group_conmats.shape[0], group_conmats.shape[1], 1)
 
-        df_avgmat = _inter_module_avgmat(corres_mat, community_vect)
-        df_avgmat_file = os.path.abspath("res_avgmat.csv")
-        df_avgmat.to_csv(df_avgmat_file)
+        print(group_conmats.shape)
 
-        if export_excel:
-            try:
-                import xlwt # noqa
-                df_avgmat_excel_file = os.path.abspath("res_avgmat.xls")
-                df_avgmat.to_excel(df_avgmat_excel_file)
+        for i in range(group_conmats.shape[2]):
+            conmat = group_conmats[:, :, i]
+            corres_mat = conmat[:, corres_nodes][corres_nodes, :]
 
-            except ImportError:
-                print("Error, xlwt not installed, cannot export Excel file")
+            # intermodule
+            if not is_symetrical(corres_mat):
+                corres_mat = corres_mat + np.transpose(corres_mat)
+
+            df_avgmat = _inter_module_avgmat(corres_mat, community_vect)
+            df_avgmat_file = os.path.abspath("res_avgmat_"+str(i)+".csv")
+            df_avgmat.to_csv(df_avgmat_file)
+
+            if export_excel:
+                try:
+                    import xlwt # noqa
+                    df_avgmat.to_excel(
+                        os.path.abspath("res_avgmat_"+str(i)+".xls"))
+
+                except ImportError:
+                    print("Error xlwt not installed, cannot export Excel file")
 
         return runtime
 
     def _list_outputs(self):
         outputs = self._outputs().get()
-        outputs["df_avgmat_file"] = os.path.abspath("res_avgmat.csv")
+        outputs["df_avgmat_files"] = glob.glob(
+            os.path.abspath("res_avgmat_*.csv"))
 
         if self.inputs.export_excel:
-            outputs["df_avgmat_excel_file"] = os.path.abspath("res_avgmat.xls")
+            outputs["df_avgmat_excel_files"] = glob.glob(
+                os.path.abspath("res_avgmat_*.xls"))
 
         return outputs

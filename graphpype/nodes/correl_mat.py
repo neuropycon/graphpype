@@ -1717,7 +1717,7 @@ class PrepareMeanCorrelInputSpec(BaseInterfaceInputSpec):
 
 class PrepareMeanCorrelOutputSpec(TraitedSpec):
 
-    group_cor_mat_matrix_file = File(
+    group_conmat_file = File(
         exists=True, desc="npy file containing all correlation matrices in 3D")
 
     sum_cor_mat_matrix_file = File(
@@ -1764,7 +1764,7 @@ class PrepareMeanCorrel(BaseInterface):
 
     Outputs:
 
-    group_cor_mat_matrix_file:
+    group_conmat_file:
         type = File,exists=True,
         desc="npy file containing all correlation matrices in 3D"
 
@@ -1914,10 +1914,10 @@ class PrepareMeanCorrel(BaseInterface):
             sum_possible_edge_matrix = np.ones(
                 shape=sum_cor_mat_matrix.shape)*len(cor_mat_files)
 
-        self.group_cor_mat_matrix_file = os.path.abspath(
+        self.group_conmat_file = os.path.abspath(
             'group_cor_mat_matrix.npy')
 
-        np.save(self.group_cor_mat_matrix_file, group_cor_mat_matrix)
+        np.save(self.group_conmat_file, group_cor_mat_matrix)
 
         self.sum_cor_mat_matrix_file = os.path.abspath(
             'sum_cor_mat_matrix.npy')
@@ -1983,7 +1983,7 @@ class PrepareMeanCorrel(BaseInterface):
 
         outputs = self._outputs().get()
 
-        outputs["group_cor_mat_matrix_file"] = self.group_cor_mat_matrix_file
+        outputs["group_conmat_file"] = self.group_conmat_file
         outputs["sum_cor_mat_matrix_file"] = self.sum_cor_mat_matrix_file
         outputs["sum_possible_edge_matrix_file"] = \
             self.sum_possible_edge_matrix_file

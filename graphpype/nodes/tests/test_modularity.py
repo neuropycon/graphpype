@@ -60,9 +60,9 @@ def test_compute_module_mat_prop():
     compute_module_graph_prop = ComputeModuleMatProp()
     compute_module_graph_prop.inputs.rada_lol_file = lol_file
     compute_module_graph_prop.inputs.Pajek_net_file = Pajek_net_file
-    compute_module_graph_prop.inputs.conmat_file = conmat_file
+    compute_module_graph_prop.inputs.group_conmat_file = conmat_file
 
     val = compute_module_graph_prop.run().outputs
     print(val)
 
-    assert os.path.exists(val.df_avgmat_file)
+    assert os.path.exists(val.df_avgmat_files[0])

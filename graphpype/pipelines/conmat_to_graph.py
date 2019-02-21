@@ -6,7 +6,8 @@ import nipype.pipeline.engine as pe
 import nipype.interfaces.utility as niu
 
 from graphpype.interfaces.radatools.rada import PrepRada, NetPropRada, CommRada
-from graphpype.nodes.modularity import ComputeNetList, ComputeNodeRoles
+from graphpype.nodes.modularity import (ComputeNetList, ComputeNodeRoles,
+                                        ComputeModuleMatProp)
 
 
 def create_pipeline_conmat_to_graph_density(
@@ -373,4 +374,47 @@ def create_pipeline_net_list_to_graph(
         pipeline.connect(prep_rada, 'Pajek_net_file',
                          net_prop, 'Pajek_net_file')
 
+    return pipeline
+
+
+def create_pipeline_graph_module_properties(
+        main_path, pipeline_name="graph_mod_pipe", con_den=1.0, multi=False,
+        plot=True, export_excel=False):
+    """
+    Description:
+
+    Pipeline for computing module based graph properties
+
+    Threshold is density based
+
+    Inputs (inputnode):
+
+        * conmat_files
+        * lol_file
+
+    """
+    # TODO plot=True is kept for sake of clarity but is now unused
+    pipeline = pe.Workflow(name=pipeline_name)
+    pipeline.base_dir = main_path
+
+    # input node
+    inputnode = pe.Node(niu.IdentityInterface(
+        fields=['group_conmat_file', 'rada_lol_file', 'Pajek_net_file']),
+        name='inputnode')
+
+    # module to graph properties
+    mod_graph = pe.Node(
+        interface=ComputeModuleMatProp(),
+        name="mod_graph")
+
+    mod_graph.inputs.export_excel = export_excel
+
+    pipeline.connect(inputnode, 'Pajek_net_file',
+                     mod_graph, 'Pajek_net_file')
+
+    pipeline.connect(inputnode, 'rada_lol_file',
+                     mod_graph, 'rada_lol_file')
+
+    pipeline.connect(inputnode, 'group_conmat_file',
+                     mod_graph, 'group_conmat_file')
     return pipeline
