@@ -42,11 +42,25 @@ main_workflow = pe.Workflow(name=graph_analysis_name)
 main_workflow.base_dir = data_path
 
 ###############################################################################
-# We then use a special node from ephypype to get the proper frequency band,
-# give its name
+# We now use a json file for describing the connectivity parameters, loaded
+# from a json as a dictionnary
 
-freq_bands = [[8, 12], [13, 29]]
-freq_band_names = ['alpha', 'beta']
+import json  # noqa
+import pprint  # noqa
+
+data_con = json.load(open("params_connectivity.json"))
+pprint.pprint({'connectivity parameters': data_con})
+
+freq_band_names = data_con['freq_band_names']
+freq_bands = data_con['freq_bands']
+
+# spectral_connectivity_parameters
+con_method = data_con['con_method']
+epoch_window_length = data_con['epoch_window_length']
+
+# sampling frequency
+sfreq = data_con['sfreq'] # When starting from raw MEG
+# (.fif) data, can be directly extracted from the file info
 
 frequency_node = get_frequency_band(freq_band_names, freq_bands)
 
@@ -74,16 +88,7 @@ datasource.inputs.template_args = dict(ts_file=[['subject_id']])
 datasource.inputs.sort_filelist = True
 
 ###############################################################################
-# We then use the pipeline used in the previous example :ref:`conmat_to_graph
-# pipeline <conmat_to_graph>
-
-# spectral_connectivity_parameters
-con_method = 'coh'
-epoch_window_length = 3.0
-
-sfreq = 2400  # sampling frequency
-# when starting from raw MEG (.fif) data, can be directly extracted from the
-# file info
+# We then use the pipeline used in the previous example :ref:`conmat_to_graph pipeline <conmat_to_graph>`
 
 from ephypype.pipelines.ts_to_conmat import create_pipeline_time_series_to_spectral_connectivity # noqa
 
@@ -91,12 +96,41 @@ spectral_workflow = create_pipeline_time_series_to_spectral_connectivity(
     data_path, con_method=con_method,
     epoch_window_length=epoch_window_length)
 
+
 ###############################################################################
-# Graphpype creates for us a pipeline which can be connected to these
-# nodes (datasource and infosource we created. The connectivity pipeline is
-# implemented by the function
-# :func:
-# `graphpype.pipelines.conmat_to_graph.create_pipeline_conmat_to_graph_density`
+# We now use a json file for describing the graph parameters, loaded
+# from a json as a dictionnary
+
+data_graph = json.load(open("params_graph.json"))
+pprint.pprint({'graph parameters': data_graph})
+
+# density of the threshold. This parameter corrdesponds to the percentage of
+# highest connections retains for the analyses. con_den = 1.0 means a fully
+# connected graphs (all edges are present)
+
+con_den = data_graph['con_den']
+
+# The optimisation sequence
+radatools_optim = data_graph['radatools_optim']
+
+###############################################################################
+# see http://deim.urv.cat/~sergio.gomez/download.php?f=radatools-5.0-README.txt
+# for more details, but very briefly:
+# * 1) WN for weighted unsigned (typically coherence, pli, etc.) and WS for
+# signed (e.g. Pearson correlation)
+# * 2) the optimisation sequence, can be used in different order. The sequence
+# tfrf is proposed in radatools, and means: t = tabu search , f = fast
+# algorithm, r = reposition algorithm and f = fast algorithm (again)
+# * 3) the last number is the number of repetitions of the algorithm, out of
+# which the best one is chosen. The higher the number of repetitions, the
+# higher the chance to reach the global maximum, but also the longer the
+# computation takes. For testing, 1 is admissible, but it is expected to have
+# at least 100 is required for reliable results
+#
+
+###############################################################################
+# Graphpype creates for us a graph pipeline,
+# implemented by the function :func: `graphpype.pipelines.conmat_to_graph.create_pipeline_conmat_to_graph_density`
 # ,thus to instantiate this graph pipeline node, we import it and pass
 # our parameters to it.
 #
@@ -104,43 +138,9 @@ spectral_workflow = create_pipeline_time_series_to_spectral_connectivity(
 #
 # Two nodes of particular interest are :
 #
-# * :class:`graphpype.interfaces.radatools.rada.CommRada` computes Community
-# detection based on the previous radatools_optim parameters
+# * :class:`graphpype.interfaces.radatools.rada.CommRada` computes Community detection based on the previous radatools_optim parameters
 #
-# * :class:`graphpype.interfaces.radatools.rada.NetPropRada` computes most of
-# the classical graph-based metrics (Small-World, Efficiency, Assortativity,
-# etc.)
-#
-# The follwing parameters are of particular importance:
-
-# density of the threshold
-con_den = 0.1
-
-###############################################################################
-# This parameter corrdesponds to the percentage of highest connections retains
-# for the analyses. con_den = 1.0 means a fully connected graphs (all edges
-# are present)
-
-# The optimisation sequence
-radatools_optim = "WN tfrf 1"
-
-###############################################################################
-# see http://deim.urv.cat/~sergio.gomez/download.php?f=radatools-5.0-README.txt
-# for more details, but very briefly:
-#
-# * 1) WN for weighted unsigned (typically coherence, pli, etc.) and WS for
-# signed (e.g. Pearson correlation)
-#
-# * 2) the optimisation sequence, can be used in different order. The sequence
-# tfrf is proposed in radatools, and means: t = tabu search , f = fast
-# algorithm, r = reposition algorithm and f = fast algorithm (again)
-#
-# * 3) the last number is the number of repetitions of the algorithm, out of
-# which the best one is chosen. The higher the number of repetitions, the
-# higher the chance to reach the global maximum, but also the longer the
-# computation takes. For testing, 1 is admissible, but it is expected to have
-# at least 100 is required for reliable results
-#
+# * :class:`graphpype.interfaces.radatools.rada.NetPropRada` computes most of the classical graph-based metrics (Small-World, Efficiency, Assortativity, etc.)
 
 from graphpype.pipelines.conmat_to_graph import create_pipeline_conmat_to_graph_density ## noqa
 
