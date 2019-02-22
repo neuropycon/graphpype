@@ -205,13 +205,5 @@ import os.path as op
 path = op.join(op.dirname(__file__), '../examples/')
 sys.path.insert(0, path)
 
-
-import sys
-import os.path as op
-
-path = op.join(op.dirname(__file__), '../examples/')
-sys.path.insert(0, path)
-
-
 from visbrain.config import CONFIG
 CONFIG['MPL_RENDER'] = True
