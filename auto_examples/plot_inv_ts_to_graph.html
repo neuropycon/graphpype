@@ -227,17 +227,21 @@ from a json as a dictionnary</p>
 </pre></div>
 </div>
 <p>see <a class="reference external" href="http://deim.urv.cat/~sergio.gomez/download.php?f=radatools-5.0-README.txt">http://deim.urv.cat/~sergio.gomez/download.php?f=radatools-5.0-README.txt</a>
-for more details, but very briefly:
-* 1) WN for weighted unsigned (typically coherence, pli, etc.) and WS for
-signed (e.g. Pearson correlation)
-* 2) the optimisation sequence, can be used in different order. The sequence
-tfrf is proposed in radatools, and means: t = tabu search , f = fast
-algorithm, r = reposition algorithm and f = fast algorithm (again)
-* 3) the last number is the number of repetitions of the algorithm, out of
-which the best one is chosen. The higher the number of repetitions, the
-higher the chance to reach the global maximum, but also the longer the
-computation takes. For testing, 1 is admissible, but it is expected to have
-at least 100 is required for reliable results</p>
+for more details, but very briefly:</p>
+<ul class="simple">
+<li><ol class="first arabic">
+<li>WN for weighted unsigned (typically coherence, pli, etc.) and WS for signed (e.g. Pearson correlation)</li>
+</ol>
+</li>
+<li><ol class="first arabic" start="2">
+<li>the optimisation sequence, can be used in different order. The sequence tfrf is proposed in radatools, and means: t = tabu search , f = fast algorithm, r = reposition algorithm and f = fast algorithm (again)</li>
+</ol>
+</li>
+<li><ol class="first arabic" start="3">
+<li>the last number is the number of repetitions of the algorithm, out of which the best one is chosen. The higher the number of repetitions, the higher the chance to reach the global maximum, but also the longer the computation takes. For testing, 1 is admissible, but it is expected to have at least 100 is required for reliable results</li>
+</ol>
+</li>
+</ul>
 <p>Graphpype creates for us a graph pipeline,
 implemented by the function :func: <cite>graphpype.pipelines.conmat_to_graph.create_pipeline_conmat_to_graph_density</cite>
 ,thus to instantiate this graph pipeline node, we import it and pass
@@ -373,7 +377,7 @@ correspond to how we connected the nodes.</p>
 </pre></div>
 </div>
 <img alt="../_images/sphx_glr_plot_inv_ts_to_graph_003.png" class="sphx-glr-single-img" src="../_images/sphx_glr_plot_inv_ts_to_graph_003.png" />
-<p><strong>Total running time of the script:</strong> ( 0 minutes  27.637 seconds)</p>
+<p><strong>Total running time of the script:</strong> ( 0 minutes  25.381 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-inv-ts-to-graph-py">
 <div class="sphx-glr-download docutils container">
 <a class="reference download internal" download="" href="../_downloads/c408898dc7b654b78c9005349545b8bd/plot_inv_ts_to_graph.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_inv_ts_to_graph.py</span></code></a></div>
