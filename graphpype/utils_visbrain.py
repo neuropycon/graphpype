@@ -92,10 +92,10 @@ def visu_graph_signif(indexed_mat_file, coords_file, labels_file,
 
 
 c_colval_modules = {0: "red", 1: "orange", 2: "blue", 3: "green", 4: "yellow",
-                    5: "darksalmon"}
+                    5: "darksalmon", 6: "brown"}
 
 
-def visu_graph_modules(net_file, lol_file, coords_file, labels_file,
+def visu_graph_modules(net_file, lol_file, coords_file, labels_file=0,
                        inter_modules=True, modality_type="",
                        s_textcolor="white", c_colval=c_colval_modules,
                        umin=0, umax=50, x_offset=0, y_offset=0,
@@ -114,8 +114,9 @@ def visu_graph_modules(net_file, lol_file, coords_file, labels_file,
     coords[:, 0] += x_offset
 
     # labels
-    labels = [line.strip() for line in open(labels_file)]
-    np_labels = np.array(labels)
+    if labels_file:
+        labels = [line.strip() for line in open(labels_file)]
+        np_labels = np.array(labels)
 
     # net file
     node_corres, sparse_matrix = read_Pajek_corres_nodes_and_sparse_matrix(
@@ -131,7 +132,6 @@ def visu_graph_modules(net_file, lol_file, coords_file, labels_file,
     c_connect.mask[c_connect > -1.0] = False
 
     corres_coords = coords[node_corres, :]
-    corres_labels = np_labels[node_corres]
 
     if inter_modules:
         c_colval[-1] = "grey"
@@ -141,10 +141,25 @@ def visu_graph_modules(net_file, lol_file, coords_file, labels_file,
                        color_by='strength', custom_colors=c_colval)
 
     # source object
-    s_obj = SourceObj(
-        'SourceObj1', corres_coords, text=corres_labels,
-        text_color=s_textcolor, text_size=10, color='crimson', alpha=.5,
-        edge_width=2., radius_min=2., radius_max=10.)
+    colors_nodes = []
+    for i in community_vect:
+        if i in c_colval.keys():
+            colors_nodes.append(c_colval[i])
+        else:
+            colors_nodes.append("grey")
+
+    if labels_file:
+        corres_labels = np_labels[node_corres]
+        s_obj = SourceObj(
+            'SourceObj1', corres_coords, text=corres_labels,
+            text_color=s_textcolor, text_size=10, color=colors_nodes, alpha=.5,
+            edge_width=2., radius_min=10., radius_max=10.)
+
+    else:
+        s_obj = SourceObj(
+            'SourceObj1', corres_coords, text_color=s_textcolor, text_size=10,
+            color=colors_nodes, alpha=.5, edge_width=2., radius_min=10.,
+            radius_max=10.)
 
     return c_obj, s_obj
 
@@ -172,8 +187,12 @@ def visu_graph_modules_roles(net_file, lol_file, roles_file, coords_file,
     node_corres, sparse_matrix = read_Pajek_corres_nodes_and_sparse_matrix(
         net_file)
 
+    corres_coords = coords[node_corres, :]
+
     # lol file
     community_vect = read_lol_file(lol_file)
+
+    """Create the connectivity object :"""
 
     c_connect = np.array(compute_modular_matrix(
         sparse_matrix, community_vect), dtype='float64')
@@ -181,58 +200,75 @@ def visu_graph_modules_roles(net_file, lol_file, roles_file, coords_file,
     c_connect = np.ma.masked_array(c_connect, mask=True)
     c_connect.mask[-1.0 <= c_connect] = False
 
-    corres_coords = coords[node_corres, :]
-
     if inter_modules:
         c_colval[-1] = "grey"
 
     else:
         c_connect.mask[-1.0 == c_connect] = True
 
-    """Create the connectivity object :"""
     c_obj = ConnectObj('ConnectObj1', corres_coords, c_connect,
                        color_by='strength', custom_colors=c_colval)
 
-    # source object
+    """Create the source object :"""
     node_roles = np.array(np.loadtxt(roles_file), dtype='int64')
 
-    coords_prov_hubs = corres_coords[(
-        node_roles[node_corres, 0] == 2) & (node_roles[node_corres, 1] == 1)]
-    coords_prov_no_hubs = corres_coords[(
-        node_roles[node_corres, 0] == 1) & (node_roles[node_corres, 1] == 1)]
+    # prov_hubs
+    prov_hubs = (
+        node_roles[node_corres, 0] == 2) & (node_roles[node_corres, 1] == 1)
+    coords_prov_hubs = corres_coords[prov_hubs]
+    colors_prov_hubs = [c_colval[i] for i in community_vect[prov_hubs]]
 
-    coords_connec_hubs = corres_coords[(
-        node_roles[node_corres, 0] == 2) & (node_roles[node_corres, 1] == 2)]
-    coords_connec_no_hubs = corres_coords[(
-        node_roles[node_corres, 0] == 1) & (node_roles[node_corres, 1] == 2)]
+    # prov_no_hubs
+    prov_no_hubs = (
+        node_roles[node_corres, 0] == 1) & (node_roles[node_corres, 1] == 1)
+    coords_prov_no_hubs = corres_coords[prov_no_hubs]
+    colors_prov_no_hubs = [c_colval[i] for i in community_vect[prov_no_hubs]]
+
+    # connec_hubs
+    connec_hubs = (
+        node_roles[node_corres, 0] == 2) & (node_roles[node_corres, 1] == 2)
+    coords_connec_hubs = corres_coords[connec_hubs]
+    colors_connec_hubs = [c_colval[i] for i in community_vect[connec_hubs]]
+
+    # connec_no_hubs
+    connec_no_hubs = (
+        node_roles[node_corres, 0] == 1) & (node_roles[node_corres, 1] == 2)
+    coords_connec_no_hubs = corres_coords[connec_no_hubs]
+    colors_connec_no_hubs = [
+        c_colval[i] for i in community_vect[connec_no_hubs]]
 
     list_sources = []
 
     if len(coords_prov_no_hubs != 0):
         s_obj1 = SourceObj(
-            'prov_no_hubs', coords_prov_no_hubs, color='crimson', alpha=.5,
-            edge_width=2., radius_min=default_size, radius_max=default_size)
+            'prov_no_hubs', coords_prov_no_hubs, color=colors_prov_no_hubs,
+            alpha=.5, edge_width=2., radius_min=default_size,
+            radius_max=default_size)
+
         list_sources.append(s_obj1)
 
     if len(coords_connec_no_hubs != 0):
         s_obj2 = SourceObj(
-            'connec_no_hubs', coords_connec_no_hubs, color='crimson', alpha=.5,
-            edge_width=2., radius_min=default_size, radius_max=default_size,
-            symbol='square')
+            'connec_no_hubs', coords_connec_no_hubs,
+            color=colors_connec_no_hubs, alpha=.5, edge_width=2.,
+            radius_min=default_size, radius_max=default_size, symbol='square')
+
         list_sources.append(s_obj2)
 
     if len(coords_prov_hubs != 0):
         s_obj3 = SourceObj(
-            'prov_hubs', coords_prov_hubs, color='crimson', alpha=.5,
+            'prov_hubs', coords_prov_hubs, color=colors_prov_hubs, alpha=.5,
             edge_width=2., radius_min=default_size*hub_to_non_hub,
             radius_max=default_size*hub_to_non_hub)
+
         list_sources.append(s_obj3)
 
     if len(coords_connec_hubs != 0):
         s_obj4 = SourceObj(
-            'connec_hubs', coords_connec_hubs, color='crimson', alpha=.5,
-            edge_width=2., radius_min=default_size*hub_to_non_hub,
+            'connec_hubs', coords_connec_hubs, color=colors_connec_hubs,
+            alpha=.5, edge_width=2., radius_min=default_size*hub_to_non_hub,
             radius_max=default_size*hub_to_non_hub, symbol='square')
+
         list_sources.append(s_obj4)
 
     return c_obj, list_sources
