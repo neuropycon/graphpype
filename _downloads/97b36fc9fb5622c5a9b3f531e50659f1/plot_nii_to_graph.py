@@ -1,5 +1,5 @@
 """
-.. _conmat_to_graph:
+.. _nii_to_graph:
 
 =========================================================
 Compute Conmat from nii files properties from a given connectivity matrix
