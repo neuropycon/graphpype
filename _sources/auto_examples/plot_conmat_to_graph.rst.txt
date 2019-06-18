@@ -316,7 +316,7 @@ plotting
 
     from visbrain.objects import SceneObj, BrainObj # noqa
 
-    sc = SceneObj(size=(500, 1000), bgcolor=(1, 1, 1))
+    sc = SceneObj(size=(1000, 1000), bgcolor=(1, 1, 1))
 
     for nf, freq_band_name in enumerate(freq_band_names):
 
@@ -328,16 +328,16 @@ plotting
         lol_file = op.join(res_path, "community_rada", "Z_List.lol")
         net_file = op.join(res_path, "prep_rada", "Z_List.net")
 
-        b_obj = BrainObj("B1", translucent=False)
-        sc.add_to_subplot(
-            b_obj, row=nf, use_this_cam=True, rotate='left',
-            title=("Modules for {} band".format(freq_band_name)),
-            title_size=14, title_bold=True, title_color='black')
-
         c_obj,s_obj = visu_graph_modules(
             lol_file=lol_file, net_file=net_file, coords_file=coords_file, inter_modules=False, z_offset=+50)
         sc.add_to_subplot(c_obj, row=nf)
         sc.add_to_subplot(s_obj, row=nf)
+
+        b_obj = BrainObj("B1", translucent=True)
+        sc.add_to_subplot(
+            b_obj, row=nf, use_this_cam=True, rotate='left',
+            title=("Modules for {} band".format(freq_band_name)),
+            title_size=14, title_bold=True, title_color='black')
 
     sc.preview()
 
@@ -349,7 +349,7 @@ plotting
 
 
 
-**Total running time of the script:** ( 0 minutes  14.345 seconds)
+**Total running time of the script:** ( 0 minutes  13.670 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_conmat_to_graph.py:
