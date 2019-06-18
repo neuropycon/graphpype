@@ -173,13 +173,13 @@ main_workflow.write_graph(graph2use='colored')  # colored
 # and visualize it. Take a moment to pause and notice how the connections
 # correspond to how we connected the nodes.
 
-#from scipy.misc import imread  # noqa
-#import matplotlib.pyplot as plt  # noqa
-#img = plt.imread(op.join(data_path, graph_analysis_name, 'graph.png'))
-#plt.figure(figsize=(8, 8))
-#plt.imshow(img)
-#plt.axis('off')
-#plt.show()
+from scipy.misc import imread  # noqa
+import matplotlib.pyplot as plt  # noqa
+img = plt.imread(op.join(data_path, graph_analysis_name, 'graph.png'))
+plt.figure(figsize=(8, 8))
+plt.imshow(img)
+plt.axis('off')
+plt.show()
 
 ###############################################################################
 # Finally, we are now ready to execute our workflow.
@@ -188,44 +188,44 @@ main_workflow.config['execution'] = {'remove_unnecessary_outputs': 'false'}
 
 ##############################################################################
 # Run workflow locally on 2 CPUs in parrallel
-#main_workflow.run(plugin='MultiProc', plugin_args={'n_procs': 2})
+main_workflow.run(plugin='MultiProc', plugin_args={'n_procs': 2})
 
 ##############################################################################
 # plotting modules
 
-#from graphpype.utils_visbrain import visu_graph_modules # noqa
+from graphpype.utils_visbrain import visu_graph_modules # noqa
 
-#labels_file = op.join(data_path, "label_names.txt")
-#coords_file = op.join(data_path, "label_centroid.txt")
+labels_file = op.join(data_path, "label_names.txt")
+coords_file = op.join(data_path, "label_centroid.txt")
 
-#from visbrain.objects import SceneObj, BrainObj # noqa
+from visbrain.objects import SceneObj, BrainObj # noqa
 
-#sc = SceneObj(size=(1000, 1000), bgcolor=(1,1,1))
+sc = SceneObj(size=(500, 1000), bgcolor=(1,1,1))
 
-#for nf, freq_band_name in enumerate(freq_band_names):
-    #res_path = op.join(
-        #data_path, graph_analysis_name,
-        #"graph_den_pipe_den_"+str(con_den).replace(".", "_"),
-        #"_freq_band_name_"+freq_band_name+"_subject_id_sub-0003")
+for nf, freq_band_name in enumerate(freq_band_names):
+    res_path = op.join(
+        data_path, graph_analysis_name,
+        "graph_den_pipe_den_"+str(con_den).replace(".", "_"),
+        "_freq_band_name_"+freq_band_name+"_subject_id_sub-0003")
 
-    #lol_file = op.join(res_path, "community_rada", "Z_List.lol")
-    #net_file = op.join(res_path, "prep_rada", "Z_List.net")
+    lol_file = op.join(res_path, "community_rada", "Z_List.lol")
+    net_file = op.join(res_path, "prep_rada", "Z_List.net")
 
-    #b_obj = BrainObj("B1", translucent=True)
-    #sc.add_to_subplot(b_obj, row=nf, use_this_cam=True, rotate='left',
-                      #title=("Module for {} band".format(freq_band_name)),
-                      #title_size=14, title_bold=True, title_color='black')
+    b_obj = BrainObj("B1", translucent=True)
+    sc.add_to_subplot(b_obj, row=nf, use_this_cam=True, rotate='left',
+                      title=("Module for {} band".format(freq_band_name)),
+                      title_size=14, title_bold=True, title_color='black')
 
-    #c_obj,s_obj = visu_graph_modules(lol_file=lol_file, net_file=net_file,
-                               #coords_file=coords_file,
-                               #inter_modules=False)
+    c_obj,s_obj = visu_graph_modules(lol_file=lol_file, net_file=net_file,
+                               coords_file=coords_file,
+                               inter_modules=False)
 
-    #sc.add_to_subplot(c_obj, row=nf)
-    #sc.add_to_subplot(s_obj, row=nf)
+    sc.add_to_subplot(c_obj, row=nf)
+    sc.add_to_subplot(s_obj, row=nf)
 
-#sc.preview()
+sc.preview()
 
-###############################################################################
+################################################################################
 # plotting modules and roles
 
 from graphpype.utils_visbrain import visu_graph_modules_roles # noqa
@@ -235,7 +235,7 @@ coords_file = op.join(data_path, "label_centroid.txt")
 
 from visbrain.objects import SceneObj, BrainObj # noqa
 
-sc = SceneObj(size=(1000, 1000), bgcolor=(1,1,1))
+sc = SceneObj(size=(500, 1000), bgcolor=(1,1,1))
 
 for nf, freq_band_name in enumerate(freq_band_names):
     res_path = op.join(
