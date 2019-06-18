@@ -41,9 +41,7 @@ install:
     - conda create -q -n testenv python=$TRAVIS_PYTHON_VERSION numpy pip cython matplotlib;
     - source activate testenv
     # Testing dependencies
-    #- pip install patsy
     - pip install codecov pytest pytest-cov;
-    - pip install neuropycon_data
     # Install graphpype
     - cd ${SRC_DIR}
     - pip install -e .

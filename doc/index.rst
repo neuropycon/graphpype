@@ -63,6 +63,8 @@ The graphpype package provides the following **pipelines**:
 
 * the :ref:`inv_ts_to_graph pipeline <inv_ts_to_graph>` runs the spectral connectivity and the graph computation over time series.
 
+* the :ref:`nii_to_graph <nii_to_graph>` pipeline provide a script to compute connectivity matrices and graphs computations from prepocessed functional MRI.
+
 Installation
 ============
 

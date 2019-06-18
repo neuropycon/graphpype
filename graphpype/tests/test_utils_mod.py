@@ -14,14 +14,10 @@ from graphpype.utils_mod import (get_modularity_value_from_lol_file,
                                  get_degree_neg_values_from_info_nodes_file,
                                  compute_roles)
 
-try:
-    import neuropycon_data as nd
+from graphpype.utils_tests import load_test_data
 
-except ImportError:
-    print("neuropycon_data not installed")
-    exit()
+data_path = load_test_data("data_con")
 
-data_path = os.path.join(nd.__path__[0], "data", "data_con")
 lol_file = os.path.join(data_path, "data_graph", "Z_List.lol")
 Pajek_net_file = os.path.join(data_path, "data_graph", "Z_List.net")
 info_nodes_file = os.path.join(
@@ -32,6 +28,16 @@ info_dists_file = os.path.join(
     data_path, "data_graph", "Z_List-info_dists.txt")
 node_roles_file = os.path.join(
     data_path, "data_graph", "node_roles.txt")
+
+
+def test_data():
+    """test if test_data is accessible"""
+    assert os.path.exists(data_path)
+    assert os.path.exists(Pajek_net_file)
+    assert os.path.exists(info_nodes_file)
+    assert os.path.exists(info_global_file)
+    assert os.path.exists(info_dists_file)
+    assert os.path.exists(node_roles_file)
 
 
 def test_read_lol_file():

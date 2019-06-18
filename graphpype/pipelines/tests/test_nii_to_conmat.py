@@ -8,31 +8,31 @@ from graphpype.pipelines.nii_to_conmat import (
 from graphpype.pipelines.nii_to_conmat import create_pipeline_nii_to_conmat
 from graphpype.utils import _make_tmp_dir
 
-try:
-    import neuropycon_data as nd
-except ImportError:
-    print("Warning, neuropycon_data not found")
-    exit()
+from graphpype.utils_tests import load_test_data
 
-data_path = os.path.join(nd.__path__[0], "data", "data_nii")
+data_path = load_test_data("data_nii")
+nii_4D_file = os.path.join(data_path, "wrsub-01_task-rest_bold.nii")
+gm_mask_file = os.path.join(data_path, "rwc1sub-01_T1w.nii")
+wm_mask_file = os.path.join(data_path, "rwc2sub-01_T1w.nii")
+csf_mask_file = os.path.join(data_path, "rwc3sub-01_T1w.nii")
+
+indexed_mask_file = os.path.join(data_path, "ROI_HCP",
+                                 "indexed_mask-ROI_HCP.nii")
+labels_file = os.path.join(data_path, "ROI_HCP", "ROI_labels-ROI_HCP.txt")
+coords_file = os.path.join(data_path, "ROI_HCP", "ROI_coords-ROI_HCP.txt")
+MNI_coords_file = os.path.join(data_path, "ROI_HCP",
+                               "ROI_MNI_coords-ROI_HCP.txt")
 
 
-# Mandatory for create_pipeline_nii_to_conmat_simple
-# 4D functionnal MRI volumes
-nii_4D_file = os.path.join(data_path, "sub-test_task-rs_bold.nii")
+def test_neuropycon_data():
+    """test if neuropycon_data is installed"""
+    assert os.path.exists(data_path)
+    assert os.path.exists(nii_4D_file)
+    assert os.path.exists(gm_mask_file)
+    assert os.path.exists(wm_mask_file)
+    assert os.path.exists(csf_mask_file)
+    assert os.path.exists(indexed_mask_file)
 
-# indexed ROI mask - should be the same dimestions as the functional data
-indexed_mask_file = os.path.join(data_path, "Atlas", "indexed_mask-Atlas.nii")
-
-# Optionnal for create_pipeline_nii_to_conmat_simple
-labels_file = os.path.join(data_path, "Atlas", "ROI_labels-Atlas.txt")
-coords_file = os.path.join(data_path, "Atlas", "ROI_coords-Atlas.txt")
-MNI_coords_file = os.path.join(data_path, "Atlas", "ROI_MNI_coords-Atlas.txt")
-
-# mandatory for create_pipeline_nii_to_conmat_seg_template
-wm_anat_file = os.path.join(data_path, "sub-test_mask-anatWM.nii")
-csf_anat_file = os.path.join(data_path, "sub-test_mask-anatCSF.nii")
-gm_anat_file = os.path.join(data_path, "sub-test_mask-anatGM.nii")
 
 # Test is simple works with and without labels
 
@@ -126,8 +126,6 @@ def test_create_pipeline_nii_to_subj_ROI():
 
 
 # the full pipeline
-
-
 def test_create_pipeline_nii_to_conmat():
     tmp_dir = _make_tmp_dir()
     wf = create_pipeline_nii_to_conmat(
@@ -136,9 +134,9 @@ def test_create_pipeline_nii_to_conmat():
     wf.inputs.inputnode.nii_4D_file = nii_4D_file
     wf.inputs.inputnode.ROI_mask_file = indexed_mask_file
 
-    wf.inputs.inputnode.gm_anat_file = gm_anat_file
-    wf.inputs.inputnode.wm_anat_file = wm_anat_file
-    wf.inputs.inputnode.csf_anat_file = csf_anat_file
+    wf.inputs.inputnode.gm_anat_file = gm_mask_file
+    wf.inputs.inputnode.wm_anat_file = wm_mask_file
+    wf.inputs.inputnode.csf_anat_file = csf_mask_file
 
     # Warning, is necessary, otherwise Figures are removed!
     wf.config['execution'] = {"remove_unnecessary_outputs": False}

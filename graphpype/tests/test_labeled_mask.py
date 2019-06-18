@@ -3,22 +3,15 @@ from graphpype.labeled_mask import (segment_mask_in_ROI)
 import os
 import shutil
 
-try:
-    import neuropycon_data as nd
+from graphpype.utils_tests import load_test_data
 
-except ImportError:
-    print("neuropycon_data not installed")
-
-
-data_path = os.path.join(nd.__path__[0], "data", "data_nii")
-mask_file = os.path.join(data_path, "sub-test_mask-anatGM.nii")
+data_path = load_test_data("data_nii")
+mask_file = os.path.join(data_path, "rwc1sub-01_T1w.nii")
 
 
-def test_neuropycon_data():
-    """test if neuropycon_data is installed"""
-    assert os.path.exists(nd.__path__[0])
-    assert os.path.exists(os.path.join(nd.__path__[0], 'data'))
-    assert os.path.exists(os.path.join(nd.__path__[0], 'data', 'data_nii'))
+def test_data():
+    """test if test_data is accessible"""
+    assert os.path.exists(data_path)
     assert os.path.exists(mask_file)
 
 
@@ -42,5 +35,5 @@ def test_segment_mask_in_ROI():
     # with disjoint_comp
     indexed_mask_rois_file, _, _ = segment_mask_in_ROI(
         mask_file, save_dir=tmp_dir, segment_type="disjoint_comp",
-        mask_thr=0.99)
+        mask_thr=0.99, min_count_voxel_in_ROI=40)
     assert os.path.exists(indexed_mask_rois_file)
