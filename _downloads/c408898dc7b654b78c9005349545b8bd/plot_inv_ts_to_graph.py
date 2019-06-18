@@ -213,7 +213,7 @@ for nf, freq_band_name in enumerate(freq_band_names):
 
     b_obj = BrainObj("B1", translucent=True)
     sc.add_to_subplot(b_obj, row=nf, use_this_cam=True, rotate='left',
-                      title=("Module for {} band".format(freq_band_name)),
+                      title=("Modules for {} band".format(freq_band_name)),
                       title_size=14, title_bold=True, title_color='black')
 
     c_obj,s_obj = visu_graph_modules(lol_file=lol_file, net_file=net_file,
@@ -249,7 +249,7 @@ for nf, freq_band_name in enumerate(freq_band_names):
 
     b_obj = BrainObj('B1', translucent=True)
     sc.add_to_subplot(b_obj, row=nf, use_this_cam=True, rotate='left',
-                      title=("Module for {} band".format(freq_band_name)),
+                      title=("Modules and node roles for {} band".format(freq_band_name)),
                       title_size=14, title_bold=True, title_color='black')
 
     c_obj,list_sources = visu_graph_modules_roles(
