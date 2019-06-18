@@ -339,7 +339,6 @@ plotting
         sc.add_to_subplot(c_obj, row=nf)
         sc.add_to_subplot(s_obj, row=nf)
 
-
     sc.preview()
 
 
@@ -350,7 +349,7 @@ plotting
 
 
 
-**Total running time of the script:** ( 0 minutes  14.279 seconds)
+**Total running time of the script:** ( 0 minutes  14.221 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_conmat_to_graph.py:

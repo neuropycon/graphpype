@@ -197,5 +197,4 @@ for nf, freq_band_name in enumerate(freq_band_names):
     sc.add_to_subplot(c_obj, row=nf)
     sc.add_to_subplot(s_obj, row=nf)
 
-
 sc.preview()
