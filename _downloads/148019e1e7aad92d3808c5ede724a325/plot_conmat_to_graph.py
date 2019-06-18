@@ -174,7 +174,7 @@ coords_file = op.join(data_path, "MNI_coords.txt")
 
 from visbrain.objects import SceneObj, BrainObj # noqa
 
-sc = SceneObj(size=(1000, 1000), bgcolor=(.1, .1, .1))
+sc = SceneObj(size=(500, 1000), bgcolor=(1, 1, 1))
 
 for nf, freq_band_name in enumerate(freq_band_names):
 
@@ -186,16 +186,14 @@ for nf, freq_band_name in enumerate(freq_band_names):
     lol_file = op.join(res_path, "community_rada", "Z_List.lol")
     net_file = op.join(res_path, "prep_rada", "Z_List.net")
 
-    b_obj = BrainObj("white", translucent=False)
+    b_obj = BrainObj("B1", translucent=False)
     sc.add_to_subplot(
         b_obj, row=nf, use_this_cam=True, rotate='left',
-        title=("Module for {} band".format(freq_band_name)),
-        title_size=14, title_bold=True, title_color='white')
+        title=("Modules for {} band".format(freq_band_name)),
+        title_size=14, title_bold=True, title_color='black')
 
-    c_obj,s_obj = visu_graph_modules(lol_file=lol_file, net_file=net_file,
-                               coords_file=coords_file,
-                               labels_file=labels_file, inter_modules=False,
-                               z_offset=+50)
+    c_obj,s_obj = visu_graph_modules(
+        lol_file=lol_file, net_file=net_file, coords_file=coords_file, inter_modules=False, z_offset=+50)
     sc.add_to_subplot(c_obj, row=nf)
     sc.add_to_subplot(s_obj, row=nf)
 
