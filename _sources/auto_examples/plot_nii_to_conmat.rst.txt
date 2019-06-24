@@ -72,13 +72,10 @@ nipype the directory in which to store the outputs.
     # workflow directory within the `base_dir`
     conmat_analysis_name = 'conmat'
 
-    rwm_mask_file = op.join(data_path,"sub-test_mask-anatWM.nii")
-    rcsf_mask_file = op.join(data_path,"sub-test_mask-anatCSF.nii")
-
-    ROI_mask_file = op.join(data_path,"Atlas","indexed_mask-Atlas.nii")
-    ROI_coords_file = op.join(data_path,"Atlas","ROI_coords-Atlas.txt")
-    ROI_MNI_coords_file =op.join(data_path,"Atlas","ROI_MNI_coords-Atlas.txt")
-    ROI_labels_file = op.join(data_path,"Atlas","ROI_labels-Atlas.txt")
+    ROI_mask_file = op.join(data_path,"ROI_HCP","indexed_mask-ROI_HCP.nii")
+    ROI_coords_file = op.join(data_path,"ROI_HCP","ROI_coords-ROI_HCP.txt")
+    ROI_MNI_coords_file =op.join(data_path,"ROI_HCP","ROI_MNI_coords-ROI_HCP.txt")
+    ROI_labels_file = op.join(data_path,"ROI_HCP","ROI_labels-ROI_HCP.txt")
 
 
 
@@ -93,8 +90,8 @@ Then we create a node to pass input filenames to DataGrabber from nipype
 .. code-block:: python
 
 
-    subject_ids = ['test']
-    func_sessions = ['rs']
+    subject_ids = ['01']
+    func_sessions = ['rest']
     infosource = pe.Node(interface=IdentityInterface(
         fields=['subject_id','session']),
         name="infosource")
@@ -127,16 +124,19 @@ the values in the infosource node
 
     datasource = pe.Node(interface=nio.DataGrabber(
         infields=['subject_id','session'],
-        outfields= ['img_file']),
+        outfields= ['img_file','gm_anat_file','wm_anat_file','csf_anat_file']),
         name = 'datasource')
 
     datasource.inputs.base_directory = data_path
-    datasource.inputs.template = 'sub-%s_task-%s_bold.nii'
+    datasource.inputs.template = '%ssub-%s%s%s%s'
     datasource.inputs.template_args = dict(
-
-    img_file=[['subject_id','session']],
-
+    img_file=[["wr",'subject_id',"_task-",'session',"_bold.nii"]],
+    gm_anat_file=[["wc1",'subject_id',"",'',"_T1w.nii"]],
+    wm_anat_file=[["wc2",'subject_id',"",'',"_T1w.nii"]],
+    csf_anat_file=[["wc3",'subject_id',"",'',"_T1w.nii"]],
+    rp_file=[["rp_",'subject_id',"_task-",'session',"_bold.txt"]],
            )
+
     datasource.inputs.sort_filelist = True
 
     #0/0
@@ -167,24 +167,30 @@ the values in the infosource node
     ## The optimisation sequence
     #radatools_optim = data_graph['radatools_optim']
 
+    from graphpype.pipelines.nii_to_conmat import create_pipeline_nii_to_conmat # noqa
     from graphpype.pipelines.nii_to_conmat import create_pipeline_nii_to_conmat_seg_template # noqa
-
+    from graphpype.pipelines.nii_to_conmat import create_pipeline_nii_to_subj_ROI #noqa
 
     main_workflow = pe.Workflow(name= conmat_analysis_name)
     main_workflow.base_dir = data_path
 
     conf_interval_prob = 0.05
 
-        ###### time series and correlations
-    cor_wf = create_pipeline_nii_to_conmat_seg_template(main_path =
-    data_path, conf_interval_prob = conf_interval_prob)
+    ###### time series and correlations
+    cor_wf = create_pipeline_nii_to_conmat(main_path=data_path, conf_interval_prob=conf_interval_prob, resample=True, background_val=0.0)
 
-    main_workflow.connect(datasource,'img_file',
-    cor_wf,'inputnode.nii_4D_file')
-    #main_workflow.connect(datasource, 'rp_file', cor_wf,'inputnode.rp_file')
+    #cor_wf = create_pipeline_nii_to_conmat_seg_template(main_path =
+    #data_path, conf_interval_prob = conf_interval_prob)
 
-    cor_wf.inputs.inputnode.wm_anat_file = rwm_mask_file
-    cor_wf.inputs.inputnode.csf_anat_file = rcsf_mask_file
+    #cor_wf = create_pipeline_nii_to_subj_ROI(main_path =
+    #data_path, resample = True)
+
+
+    main_workflow.connect(datasource, 'img_file', cor_wf, 'inputnode.nii_4D_file')
+    main_workflow.connect(datasource, 'gm_anat_file', cor_wf, 'inputnode.gm_anat_file')
+    main_workflow.connect(datasource, 'wm_anat_file', cor_wf, 'inputnode.wm_anat_file')
+    main_workflow.connect(datasource, 'csf_anat_file', cor_wf, 'inputnode.csf_anat_file')
+    main_workflow.connect(datasource, 'rp_file', cor_wf,'inputnode.rp_file')
 
     cor_wf.inputs.inputnode.ROI_mask_file = ROI_mask_file
     cor_wf.inputs.inputnode.ROI_coords_file = ROI_coords_file
@@ -207,10 +213,7 @@ So, these two nodes taken together can grab data.
 
 
     main_workflow.connect(infosource, 'subject_id', datasource, 'subject_id')
-
-
     main_workflow.connect(infosource, 'session', datasource, 'session')
-
 
 
 
@@ -310,7 +313,7 @@ Finally, we are now ready to execute our workflow.
 
 
 
-**Total running time of the script:** ( 0 minutes  0.034 seconds)
+**Total running time of the script:** ( 0 minutes  0.068 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_nii_to_conmat.py:

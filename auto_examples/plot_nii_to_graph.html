@@ -137,20 +137,17 @@ needs to import neuropycon_data
 <p>Then, we create our workflow and specify the <cite>base_dir</cite> which tells
 nipype the directory in which to store the outputs.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># workflow directory within the `base_dir`</span>
-<span class="n">conmat_analysis_name</span> <span class="o">=</span> <span class="s1">&#39;nii_to_graph&#39;</span>
+<span class="n">conmat_analysis_name</span> <span class="o">=</span> <span class="s1">&#39;conmat&#39;</span>
 
-<span class="n">rwm_mask_file</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span><span class="s2">&quot;sub-test_mask-anatWM.nii&quot;</span><span class="p">)</span>
-<span class="n">rcsf_mask_file</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span><span class="s2">&quot;sub-test_mask-anatCSF.nii&quot;</span><span class="p">)</span>
-
-<span class="n">ROI_mask_file</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span><span class="s2">&quot;Atlas&quot;</span><span class="p">,</span><span class="s2">&quot;indexed_mask-Atlas.nii&quot;</span><span class="p">)</span>
-<span class="n">ROI_coords_file</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span><span class="s2">&quot;Atlas&quot;</span><span class="p">,</span><span class="s2">&quot;ROI_coords-Atlas.txt&quot;</span><span class="p">)</span>
-<span class="n">ROI_MNI_coords_file</span> <span class="o">=</span><span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span><span class="s2">&quot;Atlas&quot;</span><span class="p">,</span><span class="s2">&quot;ROI_MNI_coords-Atlas.txt&quot;</span><span class="p">)</span>
-<span class="n">ROI_labels_file</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span><span class="s2">&quot;Atlas&quot;</span><span class="p">,</span><span class="s2">&quot;ROI_labels-Atlas.txt&quot;</span><span class="p">)</span>
+<span class="n">ROI_mask_file</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span><span class="s2">&quot;ROI_HCP&quot;</span><span class="p">,</span><span class="s2">&quot;indexed_mask-ROI_HCP.nii&quot;</span><span class="p">)</span>
+<span class="n">ROI_coords_file</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span><span class="s2">&quot;ROI_HCP&quot;</span><span class="p">,</span><span class="s2">&quot;ROI_coords-ROI_HCP.txt&quot;</span><span class="p">)</span>
+<span class="n">ROI_MNI_coords_file</span> <span class="o">=</span><span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span><span class="s2">&quot;ROI_HCP&quot;</span><span class="p">,</span><span class="s2">&quot;ROI_MNI_coords-ROI_HCP.txt&quot;</span><span class="p">)</span>
+<span class="n">ROI_labels_file</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span><span class="s2">&quot;ROI_HCP&quot;</span><span class="p">,</span><span class="s2">&quot;ROI_labels-ROI_HCP.txt&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Then we create a node to pass input filenames to DataGrabber from nipype</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">subject_ids</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;test&#39;</span><span class="p">]</span>
-<span class="n">func_sessions</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;rs&#39;</span><span class="p">]</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">subject_ids</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;01&#39;</span><span class="p">]</span>
+<span class="n">func_sessions</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;rest&#39;</span><span class="p">]</span>
 <span class="n">infosource</span> <span class="o">=</span> <span class="n">pe</span><span class="o">.</span><span class="n">Node</span><span class="p">(</span><span class="n">interface</span><span class="o">=</span><span class="n">IdentityInterface</span><span class="p">(</span>
     <span class="n">fields</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;subject_id&#39;</span><span class="p">,</span><span class="s1">&#39;session&#39;</span><span class="p">]),</span>
     <span class="n">name</span><span class="o">=</span><span class="s2">&quot;infosource&quot;</span><span class="p">)</span>
@@ -172,51 +169,73 @@ the values in the infosource node</p>
 
 <span class="n">datasource</span> <span class="o">=</span> <span class="n">pe</span><span class="o">.</span><span class="n">Node</span><span class="p">(</span><span class="n">interface</span><span class="o">=</span><span class="n">nio</span><span class="o">.</span><span class="n">DataGrabber</span><span class="p">(</span>
     <span class="n">infields</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;subject_id&#39;</span><span class="p">,</span><span class="s1">&#39;session&#39;</span><span class="p">],</span>
-    <span class="n">outfields</span><span class="o">=</span> <span class="p">[</span><span class="s1">&#39;img_file&#39;</span><span class="p">]),</span>
+    <span class="n">outfields</span><span class="o">=</span> <span class="p">[</span><span class="s1">&#39;img_file&#39;</span><span class="p">,</span><span class="s1">&#39;gm_anat_file&#39;</span><span class="p">,</span><span class="s1">&#39;wm_anat_file&#39;</span><span class="p">,</span><span class="s1">&#39;csf_anat_file&#39;</span><span class="p">]),</span>
     <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;datasource&#39;</span><span class="p">)</span>
 
 <span class="n">datasource</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">base_directory</span> <span class="o">=</span> <span class="n">data_path</span>
-<span class="n">datasource</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">template</span> <span class="o">=</span> <span class="s1">&#39;sub-</span><span class="si">%s</span><span class="s1">_task-</span><span class="si">%s</span><span class="s1">_bold.nii&#39;</span>
+<span class="n">datasource</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">template</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">sub-</span><span class="si">%s%s%s%s</span><span class="s1">&#39;</span>
 <span class="n">datasource</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">template_args</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
-
-<span class="n">img_file</span><span class="o">=</span><span class="p">[[</span><span class="s1">&#39;subject_id&#39;</span><span class="p">,</span><span class="s1">&#39;session&#39;</span><span class="p">]],</span>
-
+<span class="n">img_file</span><span class="o">=</span><span class="p">[[</span><span class="s2">&quot;wr&quot;</span><span class="p">,</span><span class="s1">&#39;subject_id&#39;</span><span class="p">,</span><span class="s2">&quot;_task-&quot;</span><span class="p">,</span><span class="s1">&#39;session&#39;</span><span class="p">,</span><span class="s2">&quot;_bold.nii&quot;</span><span class="p">]],</span>
+<span class="n">gm_anat_file</span><span class="o">=</span><span class="p">[[</span><span class="s2">&quot;wc1&quot;</span><span class="p">,</span><span class="s1">&#39;subject_id&#39;</span><span class="p">,</span><span class="s2">&quot;&quot;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">,</span><span class="s2">&quot;_T1w.nii&quot;</span><span class="p">]],</span>
+<span class="n">wm_anat_file</span><span class="o">=</span><span class="p">[[</span><span class="s2">&quot;wc2&quot;</span><span class="p">,</span><span class="s1">&#39;subject_id&#39;</span><span class="p">,</span><span class="s2">&quot;&quot;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">,</span><span class="s2">&quot;_T1w.nii&quot;</span><span class="p">]],</span>
+<span class="n">csf_anat_file</span><span class="o">=</span><span class="p">[[</span><span class="s2">&quot;wc3&quot;</span><span class="p">,</span><span class="s1">&#39;subject_id&#39;</span><span class="p">,</span><span class="s2">&quot;&quot;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">,</span><span class="s2">&quot;_T1w.nii&quot;</span><span class="p">]],</span>
+<span class="n">rp_file</span><span class="o">=</span><span class="p">[[</span><span class="s2">&quot;rp_&quot;</span><span class="p">,</span><span class="s1">&#39;subject_id&#39;</span><span class="p">,</span><span class="s2">&quot;_task-&quot;</span><span class="p">,</span><span class="s1">&#39;session&#39;</span><span class="p">,</span><span class="s2">&quot;_bold.txt&quot;</span><span class="p">]],</span>
        <span class="p">)</span>
+
 <span class="n">datasource</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">sort_filelist</span> <span class="o">=</span> <span class="bp">True</span>
 
 <span class="c1">#0/0</span>
+</pre></div>
+</div>
+<p># This parameter corrdesponds to the percentage of highest connections retains
+# for the analyses. con_den = 1.0 means a fully connected graphs (all edges
+# are present)</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#import json  # noqa</span>
+<span class="c1">#import pprint  # noqa</span>
 
+<span class="c1">#data_graph = json.load(open(&quot;params_graph.json&quot;))</span>
+<span class="c1">#pprint.pprint({&#39;graph parameters&#39;: data_graph})</span>
+
+<span class="c1">## density of the threshold</span>
+<span class="c1">#con_den = data_graph[&#39;con_den&#39;]</span>
+
+<span class="c1">## The optimisation sequence</span>
+<span class="c1">#radatools_optim = data_graph[&#39;radatools_optim&#39;]</span>
+
+<span class="kn">from</span> <span class="nn">graphpype.pipelines.nii_to_conmat</span> <span class="kn">import</span> <span class="n">create_pipeline_nii_to_conmat</span> <span class="c1"># noqa</span>
 <span class="kn">from</span> <span class="nn">graphpype.pipelines.nii_to_conmat</span> <span class="kn">import</span> <span class="n">create_pipeline_nii_to_conmat_seg_template</span> <span class="c1"># noqa</span>
-
+<span class="kn">from</span> <span class="nn">graphpype.pipelines.nii_to_conmat</span> <span class="kn">import</span> <span class="n">create_pipeline_nii_to_subj_ROI</span> <span class="c1">#noqa</span>
 
 <span class="n">main_workflow</span> <span class="o">=</span> <span class="n">pe</span><span class="o">.</span><span class="n">Workflow</span><span class="p">(</span><span class="n">name</span><span class="o">=</span> <span class="n">conmat_analysis_name</span><span class="p">)</span>
 <span class="n">main_workflow</span><span class="o">.</span><span class="n">base_dir</span> <span class="o">=</span> <span class="n">data_path</span>
 
 <span class="n">conf_interval_prob</span> <span class="o">=</span> <span class="mf">0.05</span>
 
-    <span class="c1">###### time series and correlations</span>
-<span class="n">cor_workflow</span> <span class="o">=</span> <span class="n">create_pipeline_nii_to_conmat_seg_template</span><span class="p">(</span><span class="n">main_path</span> <span class="o">=</span>
-<span class="n">data_path</span><span class="p">,</span> <span class="n">conf_interval_prob</span> <span class="o">=</span> <span class="n">conf_interval_prob</span><span class="p">)</span>
+<span class="c1">###### time series and correlations</span>
+<span class="n">cor_wf</span> <span class="o">=</span> <span class="n">create_pipeline_nii_to_conmat</span><span class="p">(</span><span class="n">main_path</span><span class="o">=</span><span class="n">data_path</span><span class="p">,</span> <span class="n">conf_interval_prob</span><span class="o">=</span><span class="n">conf_interval_prob</span><span class="p">,</span> <span class="n">resample</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">background_val</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
 
-<span class="n">main_workflow</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">datasource</span><span class="p">,</span><span class="s1">&#39;img_file&#39;</span><span class="p">,</span>
-<span class="n">cor_workflow</span><span class="p">,</span><span class="s1">&#39;inputnode.nii_4D_file&#39;</span><span class="p">)</span>
-<span class="c1">#main_workflow.connect(datasource, &#39;rp_file&#39;, cor_workflow,&#39;inputnode.rp_file&#39;)</span>
+<span class="c1">#cor_wf = create_pipeline_nii_to_conmat_seg_template(main_path =</span>
+<span class="c1">#data_path, conf_interval_prob = conf_interval_prob)</span>
 
-<span class="n">cor_workflow</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">inputnode</span><span class="o">.</span><span class="n">wm_anat_file</span> <span class="o">=</span> <span class="n">rwm_mask_file</span>
-<span class="n">cor_workflow</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">inputnode</span><span class="o">.</span><span class="n">csf_anat_file</span> <span class="o">=</span> <span class="n">rcsf_mask_file</span>
+<span class="c1">#cor_wf = create_pipeline_nii_to_subj_ROI(main_path =</span>
+<span class="c1">#data_path, resample = True)</span>
 
-<span class="n">cor_workflow</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">inputnode</span><span class="o">.</span><span class="n">ROI_mask_file</span> <span class="o">=</span> <span class="n">ROI_mask_file</span>
-<span class="n">cor_workflow</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">inputnode</span><span class="o">.</span><span class="n">ROI_coords_file</span> <span class="o">=</span> <span class="n">ROI_coords_file</span>
-<span class="n">cor_workflow</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">inputnode</span><span class="o">.</span><span class="n">ROI_MNI_coords_file</span> <span class="o">=</span> <span class="n">ROI_MNI_coords_file</span>
-<span class="n">cor_workflow</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">inputnode</span><span class="o">.</span><span class="n">ROI_labels_file</span> <span class="o">=</span> <span class="n">ROI_labels_file</span>
+<span class="n">main_workflow</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">datasource</span><span class="p">,</span> <span class="s1">&#39;img_file&#39;</span><span class="p">,</span> <span class="n">cor_wf</span><span class="p">,</span> <span class="s1">&#39;inputnode.nii_4D_file&#39;</span><span class="p">)</span>
+<span class="n">main_workflow</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">datasource</span><span class="p">,</span> <span class="s1">&#39;gm_anat_file&#39;</span><span class="p">,</span> <span class="n">cor_wf</span><span class="p">,</span> <span class="s1">&#39;inputnode.gm_anat_file&#39;</span><span class="p">)</span>
+<span class="n">main_workflow</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">datasource</span><span class="p">,</span> <span class="s1">&#39;wm_anat_file&#39;</span><span class="p">,</span> <span class="n">cor_wf</span><span class="p">,</span> <span class="s1">&#39;inputnode.wm_anat_file&#39;</span><span class="p">)</span>
+<span class="n">main_workflow</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">datasource</span><span class="p">,</span> <span class="s1">&#39;csf_anat_file&#39;</span><span class="p">,</span> <span class="n">cor_wf</span><span class="p">,</span> <span class="s1">&#39;inputnode.csf_anat_file&#39;</span><span class="p">)</span>
+<span class="n">main_workflow</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">datasource</span><span class="p">,</span> <span class="s1">&#39;rp_file&#39;</span><span class="p">,</span> <span class="n">cor_wf</span><span class="p">,</span><span class="s1">&#39;inputnode.rp_file&#39;</span><span class="p">)</span>
+
+<span class="n">cor_wf</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">inputnode</span><span class="o">.</span><span class="n">ROI_mask_file</span> <span class="o">=</span> <span class="n">ROI_mask_file</span>
+<span class="n">cor_wf</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">inputnode</span><span class="o">.</span><span class="n">ROI_coords_file</span> <span class="o">=</span> <span class="n">ROI_coords_file</span>
+<span class="n">cor_wf</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">inputnode</span><span class="o">.</span><span class="n">ROI_MNI_coords_file</span> <span class="o">=</span> <span class="n">ROI_MNI_coords_file</span>
+<span class="n">cor_wf</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">inputnode</span><span class="o">.</span><span class="n">ROI_labels_file</span> <span class="o">=</span> <span class="n">ROI_labels_file</span>
 </pre></div>
 </div>
 <p>We then connect the nodes two at a time. We connect the output
 of the infosource node to the datasource node.
 So, these two nodes taken together can grab data.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">main_workflow</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">infosource</span><span class="p">,</span> <span class="s1">&#39;subject_id&#39;</span><span class="p">,</span> <span class="n">datasource</span><span class="p">,</span> <span class="s1">&#39;subject_id&#39;</span><span class="p">)</span>
-
-
 <span class="n">main_workflow</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">infosource</span><span class="p">,</span> <span class="s1">&#39;session&#39;</span><span class="p">,</span> <span class="n">datasource</span><span class="p">,</span> <span class="s1">&#39;session&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -240,7 +259,7 @@ So, these two nodes taken together can grab data.</p>
 <span class="n">graph_workflow</span> <span class="o">=</span> <span class="n">create_pipeline_conmat_to_graph_density</span><span class="p">(</span>
     <span class="n">data_path</span><span class="p">,</span> <span class="n">con_den</span><span class="o">=</span><span class="n">con_den</span><span class="p">,</span> <span class="n">optim_seq</span><span class="o">=</span><span class="n">radatools_optim</span><span class="p">)</span>
 
-<span class="n">main_workflow</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">cor_workflow</span><span class="p">,</span> <span class="s1">&#39;compute_conf_cor_mat.Z_conf_cor_mat_file&#39;</span><span class="p">,</span>
+<span class="n">main_workflow</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">cor_wf</span><span class="p">,</span> <span class="s1">&#39;compute_conf_cor_mat.Z_conf_cor_mat_file&#39;</span><span class="p">,</span>
                       <span class="n">graph_workflow</span><span class="p">,</span> <span class="s2">&quot;inputnode.conmat_file&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -261,6 +280,7 @@ main_workflow.write_graph(graph2use=’colored’)  # colored</p>
 <span class="c1">#plt.show()</span>
 </pre></div>
 </div>
+<p>Displaying connectivity Figures</p>
 <p>Finally, we are now ready to execute our workflow.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">main_workflow</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;execution&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;remove_unnecessary_outputs&#39;</span><span class="p">:</span> <span class="s1">&#39;false&#39;</span><span class="p">}</span>
 
@@ -271,99 +291,40 @@ main_workflow.write_graph(graph2use=’colored’)  # colored</p>
 </pre></div>
 </div>
 <p># plotting</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">graphpype.utils_visbrain</span> <span class="kn">import</span> <span class="n">visu_graph_modules</span>
 
-<span class="c1">#from visbrain.objects import BrainObj</span>
-
-<span class="n">f_vert</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span><span class="s1">&#39;Atlas&#39;</span><span class="p">,</span>
-   <span class="s1">&#39;Macaque.F99UA1.LEFT.FLAT.CartSTD.Std-MESH.clean.73730.coord&#39;</span><span class="p">)</span>
-<span class="n">f_face</span> <span class="o">=</span><span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span><span class="s1">&#39;Atlas&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;Macaque.F99UA1.LEFT.FLAT.CartSTD.Std-MESH.clean.73730.topo&#39;</span><span class="p">)</span>
-
-<span class="n">vert</span> <span class="o">=</span> <a href="http://docs.scipy.org/doc/numpy-1.9.1/reference/generated/numpy.html#numpy.genfromtxt" title="View documentation for numpy.genfromtxt"><span class="n">np</span><span class="o">.</span><span class="n">genfromtxt</span></a><span class="p">(</span><span class="n">f_vert</span><span class="p">,</span> <span class="n">skip_header</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">usecols</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
-<span class="n">faces</span> <span class="o">=</span> <a href="http://docs.scipy.org/doc/numpy-1.9.1/reference/generated/numpy.html#numpy.genfromtxt" title="View documentation for numpy.genfromtxt"><span class="n">np</span><span class="o">.</span><span class="n">genfromtxt</span></a><span class="p">(</span><span class="n">f_face</span><span class="p">,</span> <span class="n">skip_header</span><span class="o">=</span><span class="mi">11</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
-
-
-<span class="c1">#from graphpype.utils_visbrain import visu_graph_modules_roles</span>
-
-<span class="kn">from</span> <span class="nn">graphpype.utils_visbrain</span> <span class="kn">import</span> <span class="n">visu_graph_modules</span> <span class="c1"># noqa</span>
-
-<span class="n">res_path</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span><span class="n">conmat_analysis_name</span><span class="p">,</span>
-    <span class="s2">&quot;graph_den_pipe_den_0_1&quot;</span><span class="p">,</span><span class="s1">&#39;_session_rs_subject_id_test&#39;</span><span class="p">)</span>
-
-<span class="n">lol_file</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">res_path</span><span class="p">,</span><span class="s2">&quot;community_rada&quot;</span><span class="p">,</span><span class="s2">&quot;Z_List.lol&quot;</span><span class="p">)</span>
-
-<span class="k">print</span><span class="p">(</span><span class="n">lol_file</span><span class="p">)</span>
-
-<span class="n">net_file</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">res_path</span><span class="p">,</span><span class="s2">&quot;prep_rada&quot;</span><span class="p">,</span><span class="s2">&quot;Z_List.net&quot;</span><span class="p">)</span>
-<span class="c1">#roles_file = os.path.join(res_path,&quot;node_roles&quot;,&quot;node_roles.txt&quot;)</span>
+<span class="c1">#labels_file = op.join(data_path, &quot;label_names.txt&quot;)</span>
+<span class="c1">#coords_file = op.join(data_path, &quot;label_centroid.txt&quot;)</span>
 
 <span class="kn">from</span> <span class="nn">visbrain.objects</span> <span class="kn">import</span> <span class="n">SceneObj</span><span class="p">,</span> <span class="n">BrainObj</span> <span class="c1"># noqa</span>
 
-<span class="n">b_obj</span> <span class="o">=</span> <span class="n">BrainObj</span><span class="p">(</span><span class="s1">&#39;monkey&#39;</span><span class="p">,</span> <span class="n">vertices</span><span class="o">=</span><span class="n">vert</span><span class="p">,</span> <span class="n">faces</span><span class="o">=</span><span class="n">faces</span><span class="p">,</span> <span class="n">translucent</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+<span class="n">sc</span> <span class="o">=</span> <span class="n">SceneObj</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">500</span><span class="p">,</span> <span class="mi">500</span><span class="p">),</span> <span class="n">bgcolor</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
 
-<span class="n">sc</span> <span class="o">=</span> <span class="n">SceneObj</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="mi">1000</span><span class="p">),</span> <span class="n">bgcolor</span><span class="o">=</span><span class="p">(</span><span class="o">.</span><span class="mi">1</span><span class="p">,</span> <span class="o">.</span><span class="mi">1</span><span class="p">,</span> <span class="o">.</span><span class="mi">1</span><span class="p">))</span>
+<span class="n">res_path</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+    <span class="n">data_path</span><span class="p">,</span> <span class="n">conmat_analysis_name</span><span class="p">,</span>
+    <span class="s2">&quot;graph_den_pipe_den_&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">con_den</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="s2">&quot;_&quot;</span><span class="p">),</span>
+    <span class="s2">&quot;_session_rest_subject_id_01&quot;</span><span class="p">)</span>
 
-<span class="n">sc</span><span class="o">.</span><span class="n">add_to_subplot</span><span class="p">(</span>
-    <span class="n">b_obj</span><span class="p">,</span> <span class="n">row</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">use_this_cam</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">rotate</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">,</span>
-    <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Module&quot;</span><span class="p">,</span>
-    <span class="n">title_size</span><span class="o">=</span><span class="mi">14</span><span class="p">,</span> <span class="n">title_bold</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">title_color</span><span class="o">=</span><span class="s1">&#39;white&#39;</span><span class="p">)</span>
+<span class="n">lol_file</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">res_path</span><span class="p">,</span> <span class="s2">&quot;community_rada&quot;</span><span class="p">,</span> <span class="s2">&quot;Z_List.lol&quot;</span><span class="p">)</span>
+<span class="n">net_file</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">res_path</span><span class="p">,</span> <span class="s2">&quot;prep_rada&quot;</span><span class="p">,</span> <span class="s2">&quot;Z_List.net&quot;</span><span class="p">)</span>
+
+<span class="n">b_obj</span> <span class="o">=</span> <span class="n">BrainObj</span><span class="p">(</span><span class="s2">&quot;B1&quot;</span><span class="p">,</span> <span class="n">translucent</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">sc</span><span class="o">.</span><span class="n">add_to_subplot</span><span class="p">(</span><span class="n">b_obj</span><span class="p">,</span> <span class="n">row</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">use_this_cam</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">rotate</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">,</span>
+                    <span class="n">title</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;Modules&quot;</span><span class="p">),</span>
+                    <span class="n">title_size</span><span class="o">=</span><span class="mi">14</span><span class="p">,</span> <span class="n">title_bold</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">title_color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">)</span>
 
 <span class="n">c_obj</span><span class="p">,</span><span class="n">s_obj</span> <span class="o">=</span> <span class="n">visu_graph_modules</span><span class="p">(</span><span class="n">lol_file</span><span class="o">=</span><span class="n">lol_file</span><span class="p">,</span> <span class="n">net_file</span><span class="o">=</span><span class="n">net_file</span><span class="p">,</span>
                             <span class="n">coords_file</span><span class="o">=</span><span class="n">ROI_MNI_coords_file</span><span class="p">,</span>
-                            <span class="n">labels_file</span><span class="o">=</span><span class="n">ROI_labels_file</span><span class="p">,</span> <span class="n">inter_modules</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
-                            <span class="n">z_offset</span><span class="o">=+</span><span class="mi">50</span><span class="p">)</span>
+                            <span class="n">inter_modules</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
 
 <span class="n">sc</span><span class="o">.</span><span class="n">add_to_subplot</span><span class="p">(</span><span class="n">c_obj</span><span class="p">,</span> <span class="n">row</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 <span class="n">sc</span><span class="o">.</span><span class="n">add_to_subplot</span><span class="p">(</span><span class="n">s_obj</span><span class="p">,</span> <span class="n">row</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 
 <span class="n">sc</span><span class="o">.</span><span class="n">preview</span><span class="p">()</span>
-
-<span class="n">c_colval</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">:</span><span class="s2">&quot;lightblue&quot;</span><span class="p">,</span><span class="mi">1</span><span class="p">:</span><span class="s2">&quot;red&quot;</span><span class="p">,</span><span class="mi">2</span><span class="p">:</span><span class="s2">&quot;green&quot;</span><span class="p">,</span><span class="mi">3</span><span class="p">:</span><span class="s2">&quot;yellow&quot;</span><span class="p">,</span><span class="mi">4</span><span class="p">:</span><span class="s2">&quot;purple&quot;</span><span class="p">}</span>
-
-
-<span class="kn">from</span> <span class="nn">graphpype.utils_visbrain</span> <span class="kn">import</span> <span class="n">visu_graph_modules</span> <span class="c1"># noqa</span>
-
-<span class="c1">#labels_file = op.join(data_path, &quot;correct_channel_names.txt&quot;)</span>
-<span class="c1">#coords_file = op.join(data_path, &quot;MNI_coords.txt&quot;)</span>
-
-<span class="c1">#from visbrain.objects import SceneObj, BrainObj # noqa</span>
-
-<span class="c1">#sc = SceneObj(size=(1000, 1000), bgcolor=(.1, .1, .1))</span>
-
-<span class="c1">#for nf, freq_band_name in enumerate(freq_band_names):</span>
-
-    <span class="c1">#res_path = op.join(</span>
-        <span class="c1">#data_path, graph_analysis_name,</span>
-        <span class="c1">#&quot;graph_den_pipe_den_&quot;+str(con_den).replace(&quot;.&quot;, &quot;_&quot;),</span>
-        <span class="c1">#&quot;_freq_band_name_&quot;+freq_band_name)</span>
-
-    <span class="c1">#lol_file = op.join(res_path, &quot;community_rada&quot;, &quot;Z_List.lol&quot;)</span>
-    <span class="c1">#net_file = op.join(res_path, &quot;prep_rada&quot;, &quot;Z_List.net&quot;)</span>
-
-    <span class="c1">#b_obj = BrainObj(&quot;white&quot;, translucent=False)</span>
-    <span class="c1">#sc.add_to_subplot(</span>
-        <span class="c1">#b_obj, row=nf, use_this_cam=True, rotate=&#39;left&#39;,</span>
-        <span class="c1">#title=(&quot;Module for {} band&quot;.format(freq_band_name)),</span>
-        <span class="c1">#title_size=14, title_bold=True, title_color=&#39;white&#39;)</span>
-
-    <span class="c1">#c_obj,s_obj = visu_graph_modules(lol_file=lol_file, net_file=net_file,</span>
-                               <span class="c1">#coords_file=coords_file,</span>
-                               <span class="c1">#labels_file=labels_file, inter_modules=False,</span>
-                               <span class="c1">#z_offset=+50)</span>
-    <span class="c1">#sc.add_to_subplot(c_obj, row=nf)</span>
-    <span class="c1">#sc.add_to_subplot(s_obj, row=nf)</span>
-
-
-<span class="c1">#sc.preview()</span>
 </pre></div>
 </div>
 <img alt="../_images/sphx_glr_plot_nii_to_graph_001.png" class="sphx-glr-single-img" src="../_images/sphx_glr_plot_nii_to_graph_001.png" />
-<p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/INT/meunier.d/miniconda3/Packages/neuropycon_data/neuropycon_data/data/data_nii/nii_to_graph/graph_den_pipe_den_0_1/_session_rs_subject_id_test/community_rada/Z_List.lol
-</pre></div>
-</div>
-<p><strong>Total running time of the script:</strong> ( 0 minutes  2.655 seconds)</p>
+<p><strong>Total running time of the script:</strong> ( 0 minutes  0.592 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-nii-to-graph-py">
 <div class="sphx-glr-download docutils container">
 <a class="reference download internal" download="" href="../_downloads/97b36fc9fb5622c5a9b3f531e50659f1/plot_nii_to_graph.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_nii_to_graph.py</span></code></a></div>
@@ -385,7 +346,7 @@ main_workflow.write_graph(graph2use=’colored’)  # colored</p>
       
     </p>
     <p>
-        &copy; Copyright 2019, Neuropycon Developers. Last updated on 2019-06-18.<br/>
+        &copy; Copyright 2019, Neuropycon Developers. Last updated on 2019-06-24.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.2.<br/>
     </p>
   </div>

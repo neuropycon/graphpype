@@ -139,18 +139,15 @@ nipype the directory in which to store the outputs.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># workflow directory within the `base_dir`</span>
 <span class="n">conmat_analysis_name</span> <span class="o">=</span> <span class="s1">&#39;conmat&#39;</span>
 
-<span class="n">rwm_mask_file</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span><span class="s2">&quot;sub-test_mask-anatWM.nii&quot;</span><span class="p">)</span>
-<span class="n">rcsf_mask_file</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span><span class="s2">&quot;sub-test_mask-anatCSF.nii&quot;</span><span class="p">)</span>
-
-<span class="n">ROI_mask_file</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span><span class="s2">&quot;Atlas&quot;</span><span class="p">,</span><span class="s2">&quot;indexed_mask-Atlas.nii&quot;</span><span class="p">)</span>
-<span class="n">ROI_coords_file</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span><span class="s2">&quot;Atlas&quot;</span><span class="p">,</span><span class="s2">&quot;ROI_coords-Atlas.txt&quot;</span><span class="p">)</span>
-<span class="n">ROI_MNI_coords_file</span> <span class="o">=</span><span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span><span class="s2">&quot;Atlas&quot;</span><span class="p">,</span><span class="s2">&quot;ROI_MNI_coords-Atlas.txt&quot;</span><span class="p">)</span>
-<span class="n">ROI_labels_file</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span><span class="s2">&quot;Atlas&quot;</span><span class="p">,</span><span class="s2">&quot;ROI_labels-Atlas.txt&quot;</span><span class="p">)</span>
+<span class="n">ROI_mask_file</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span><span class="s2">&quot;ROI_HCP&quot;</span><span class="p">,</span><span class="s2">&quot;indexed_mask-ROI_HCP.nii&quot;</span><span class="p">)</span>
+<span class="n">ROI_coords_file</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span><span class="s2">&quot;ROI_HCP&quot;</span><span class="p">,</span><span class="s2">&quot;ROI_coords-ROI_HCP.txt&quot;</span><span class="p">)</span>
+<span class="n">ROI_MNI_coords_file</span> <span class="o">=</span><span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span><span class="s2">&quot;ROI_HCP&quot;</span><span class="p">,</span><span class="s2">&quot;ROI_MNI_coords-ROI_HCP.txt&quot;</span><span class="p">)</span>
+<span class="n">ROI_labels_file</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span><span class="s2">&quot;ROI_HCP&quot;</span><span class="p">,</span><span class="s2">&quot;ROI_labels-ROI_HCP.txt&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Then we create a node to pass input filenames to DataGrabber from nipype</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">subject_ids</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;test&#39;</span><span class="p">]</span>
-<span class="n">func_sessions</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;rs&#39;</span><span class="p">]</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">subject_ids</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;01&#39;</span><span class="p">]</span>
+<span class="n">func_sessions</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;rest&#39;</span><span class="p">]</span>
 <span class="n">infosource</span> <span class="o">=</span> <span class="n">pe</span><span class="o">.</span><span class="n">Node</span><span class="p">(</span><span class="n">interface</span><span class="o">=</span><span class="n">IdentityInterface</span><span class="p">(</span>
     <span class="n">fields</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;subject_id&#39;</span><span class="p">,</span><span class="s1">&#39;session&#39;</span><span class="p">]),</span>
     <span class="n">name</span><span class="o">=</span><span class="s2">&quot;infosource&quot;</span><span class="p">)</span>
@@ -172,16 +169,19 @@ the values in the infosource node</p>
 
 <span class="n">datasource</span> <span class="o">=</span> <span class="n">pe</span><span class="o">.</span><span class="n">Node</span><span class="p">(</span><span class="n">interface</span><span class="o">=</span><span class="n">nio</span><span class="o">.</span><span class="n">DataGrabber</span><span class="p">(</span>
     <span class="n">infields</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;subject_id&#39;</span><span class="p">,</span><span class="s1">&#39;session&#39;</span><span class="p">],</span>
-    <span class="n">outfields</span><span class="o">=</span> <span class="p">[</span><span class="s1">&#39;img_file&#39;</span><span class="p">]),</span>
+    <span class="n">outfields</span><span class="o">=</span> <span class="p">[</span><span class="s1">&#39;img_file&#39;</span><span class="p">,</span><span class="s1">&#39;gm_anat_file&#39;</span><span class="p">,</span><span class="s1">&#39;wm_anat_file&#39;</span><span class="p">,</span><span class="s1">&#39;csf_anat_file&#39;</span><span class="p">]),</span>
     <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;datasource&#39;</span><span class="p">)</span>
 
 <span class="n">datasource</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">base_directory</span> <span class="o">=</span> <span class="n">data_path</span>
-<span class="n">datasource</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">template</span> <span class="o">=</span> <span class="s1">&#39;sub-</span><span class="si">%s</span><span class="s1">_task-</span><span class="si">%s</span><span class="s1">_bold.nii&#39;</span>
+<span class="n">datasource</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">template</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">sub-</span><span class="si">%s%s%s%s</span><span class="s1">&#39;</span>
 <span class="n">datasource</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">template_args</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
-
-<span class="n">img_file</span><span class="o">=</span><span class="p">[[</span><span class="s1">&#39;subject_id&#39;</span><span class="p">,</span><span class="s1">&#39;session&#39;</span><span class="p">]],</span>
-
+<span class="n">img_file</span><span class="o">=</span><span class="p">[[</span><span class="s2">&quot;wr&quot;</span><span class="p">,</span><span class="s1">&#39;subject_id&#39;</span><span class="p">,</span><span class="s2">&quot;_task-&quot;</span><span class="p">,</span><span class="s1">&#39;session&#39;</span><span class="p">,</span><span class="s2">&quot;_bold.nii&quot;</span><span class="p">]],</span>
+<span class="n">gm_anat_file</span><span class="o">=</span><span class="p">[[</span><span class="s2">&quot;wc1&quot;</span><span class="p">,</span><span class="s1">&#39;subject_id&#39;</span><span class="p">,</span><span class="s2">&quot;&quot;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">,</span><span class="s2">&quot;_T1w.nii&quot;</span><span class="p">]],</span>
+<span class="n">wm_anat_file</span><span class="o">=</span><span class="p">[[</span><span class="s2">&quot;wc2&quot;</span><span class="p">,</span><span class="s1">&#39;subject_id&#39;</span><span class="p">,</span><span class="s2">&quot;&quot;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">,</span><span class="s2">&quot;_T1w.nii&quot;</span><span class="p">]],</span>
+<span class="n">csf_anat_file</span><span class="o">=</span><span class="p">[[</span><span class="s2">&quot;wc3&quot;</span><span class="p">,</span><span class="s1">&#39;subject_id&#39;</span><span class="p">,</span><span class="s2">&quot;&quot;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">,</span><span class="s2">&quot;_T1w.nii&quot;</span><span class="p">]],</span>
+<span class="n">rp_file</span><span class="o">=</span><span class="p">[[</span><span class="s2">&quot;rp_&quot;</span><span class="p">,</span><span class="s1">&#39;subject_id&#39;</span><span class="p">,</span><span class="s2">&quot;_task-&quot;</span><span class="p">,</span><span class="s1">&#39;session&#39;</span><span class="p">,</span><span class="s2">&quot;_bold.txt&quot;</span><span class="p">]],</span>
        <span class="p">)</span>
+
 <span class="n">datasource</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">sort_filelist</span> <span class="o">=</span> <span class="bp">True</span>
 
 <span class="c1">#0/0</span>
@@ -202,24 +202,30 @@ the values in the infosource node</p>
 <span class="c1">## The optimisation sequence</span>
 <span class="c1">#radatools_optim = data_graph[&#39;radatools_optim&#39;]</span>
 
+<span class="kn">from</span> <span class="nn">graphpype.pipelines.nii_to_conmat</span> <span class="kn">import</span> <span class="n">create_pipeline_nii_to_conmat</span> <span class="c1"># noqa</span>
 <span class="kn">from</span> <span class="nn">graphpype.pipelines.nii_to_conmat</span> <span class="kn">import</span> <span class="n">create_pipeline_nii_to_conmat_seg_template</span> <span class="c1"># noqa</span>
-
+<span class="kn">from</span> <span class="nn">graphpype.pipelines.nii_to_conmat</span> <span class="kn">import</span> <span class="n">create_pipeline_nii_to_subj_ROI</span> <span class="c1">#noqa</span>
 
 <span class="n">main_workflow</span> <span class="o">=</span> <span class="n">pe</span><span class="o">.</span><span class="n">Workflow</span><span class="p">(</span><span class="n">name</span><span class="o">=</span> <span class="n">conmat_analysis_name</span><span class="p">)</span>
 <span class="n">main_workflow</span><span class="o">.</span><span class="n">base_dir</span> <span class="o">=</span> <span class="n">data_path</span>
 
 <span class="n">conf_interval_prob</span> <span class="o">=</span> <span class="mf">0.05</span>
 
-    <span class="c1">###### time series and correlations</span>
-<span class="n">cor_wf</span> <span class="o">=</span> <span class="n">create_pipeline_nii_to_conmat_seg_template</span><span class="p">(</span><span class="n">main_path</span> <span class="o">=</span>
-<span class="n">data_path</span><span class="p">,</span> <span class="n">conf_interval_prob</span> <span class="o">=</span> <span class="n">conf_interval_prob</span><span class="p">)</span>
+<span class="c1">###### time series and correlations</span>
+<span class="n">cor_wf</span> <span class="o">=</span> <span class="n">create_pipeline_nii_to_conmat</span><span class="p">(</span><span class="n">main_path</span><span class="o">=</span><span class="n">data_path</span><span class="p">,</span> <span class="n">conf_interval_prob</span><span class="o">=</span><span class="n">conf_interval_prob</span><span class="p">,</span> <span class="n">resample</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">background_val</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
 
-<span class="n">main_workflow</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">datasource</span><span class="p">,</span><span class="s1">&#39;img_file&#39;</span><span class="p">,</span>
-<span class="n">cor_wf</span><span class="p">,</span><span class="s1">&#39;inputnode.nii_4D_file&#39;</span><span class="p">)</span>
-<span class="c1">#main_workflow.connect(datasource, &#39;rp_file&#39;, cor_wf,&#39;inputnode.rp_file&#39;)</span>
+<span class="c1">#cor_wf = create_pipeline_nii_to_conmat_seg_template(main_path =</span>
+<span class="c1">#data_path, conf_interval_prob = conf_interval_prob)</span>
 
-<span class="n">cor_wf</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">inputnode</span><span class="o">.</span><span class="n">wm_anat_file</span> <span class="o">=</span> <span class="n">rwm_mask_file</span>
-<span class="n">cor_wf</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">inputnode</span><span class="o">.</span><span class="n">csf_anat_file</span> <span class="o">=</span> <span class="n">rcsf_mask_file</span>
+<span class="c1">#cor_wf = create_pipeline_nii_to_subj_ROI(main_path =</span>
+<span class="c1">#data_path, resample = True)</span>
+
+
+<span class="n">main_workflow</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">datasource</span><span class="p">,</span> <span class="s1">&#39;img_file&#39;</span><span class="p">,</span> <span class="n">cor_wf</span><span class="p">,</span> <span class="s1">&#39;inputnode.nii_4D_file&#39;</span><span class="p">)</span>
+<span class="n">main_workflow</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">datasource</span><span class="p">,</span> <span class="s1">&#39;gm_anat_file&#39;</span><span class="p">,</span> <span class="n">cor_wf</span><span class="p">,</span> <span class="s1">&#39;inputnode.gm_anat_file&#39;</span><span class="p">)</span>
+<span class="n">main_workflow</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">datasource</span><span class="p">,</span> <span class="s1">&#39;wm_anat_file&#39;</span><span class="p">,</span> <span class="n">cor_wf</span><span class="p">,</span> <span class="s1">&#39;inputnode.wm_anat_file&#39;</span><span class="p">)</span>
+<span class="n">main_workflow</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">datasource</span><span class="p">,</span> <span class="s1">&#39;csf_anat_file&#39;</span><span class="p">,</span> <span class="n">cor_wf</span><span class="p">,</span> <span class="s1">&#39;inputnode.csf_anat_file&#39;</span><span class="p">)</span>
+<span class="n">main_workflow</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">datasource</span><span class="p">,</span> <span class="s1">&#39;rp_file&#39;</span><span class="p">,</span> <span class="n">cor_wf</span><span class="p">,</span><span class="s1">&#39;inputnode.rp_file&#39;</span><span class="p">)</span>
 
 <span class="n">cor_wf</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">inputnode</span><span class="o">.</span><span class="n">ROI_mask_file</span> <span class="o">=</span> <span class="n">ROI_mask_file</span>
 <span class="n">cor_wf</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">inputnode</span><span class="o">.</span><span class="n">ROI_coords_file</span> <span class="o">=</span> <span class="n">ROI_coords_file</span>
@@ -231,8 +237,6 @@ the values in the infosource node</p>
 of the infosource node to the datasource node.
 So, these two nodes taken together can grab data.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">main_workflow</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">infosource</span><span class="p">,</span> <span class="s1">&#39;subject_id&#39;</span><span class="p">,</span> <span class="n">datasource</span><span class="p">,</span> <span class="s1">&#39;subject_id&#39;</span><span class="p">)</span>
-
-
 <span class="n">main_workflow</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">infosource</span><span class="p">,</span> <span class="s1">&#39;session&#39;</span><span class="p">,</span> <span class="n">datasource</span><span class="p">,</span> <span class="s1">&#39;session&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -295,7 +299,7 @@ main_workflow.write_graph(graph2use=’colored’)  # colored</p>
 <span class="c1">#sc.preview()</span>
 </pre></div>
 </div>
-<p><strong>Total running time of the script:</strong> ( 0 minutes  0.034 seconds)</p>
+<p><strong>Total running time of the script:</strong> ( 0 minutes  0.068 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-nii-to-conmat-py">
 <div class="sphx-glr-download docutils container">
 <a class="reference download internal" download="" href="../_downloads/aa82987e224b546c9be12970d6283f97/plot_nii_to_conmat.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_nii_to_conmat.py</span></code></a></div>
@@ -317,7 +321,7 @@ main_workflow.write_graph(graph2use=’colored’)  # colored</p>
       
     </p>
     <p>
-        &copy; Copyright 2019, Neuropycon Developers. Last updated on 2019-06-18.<br/>
+        &copy; Copyright 2019, Neuropycon Developers. Last updated on 2019-06-24.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.2.<br/>
     </p>
   </div>
