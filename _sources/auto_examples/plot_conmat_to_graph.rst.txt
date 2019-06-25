@@ -174,7 +174,7 @@ are present)
 
  .. code-block:: none
 
-    {'graph parameters': {'con_den': 0.1, 'radatools_optim': 'WN tfrf 1'}}
+    {'graph parameters': {'con_den': 0.01, 'radatools_optim': 'WN tfrf 100'}}
 
 
 see http://deim.urv.cat/~sergio.gomez/download.php?f=radatools-5.0-README.txt
@@ -349,7 +349,7 @@ plotting
 
 
 
-**Total running time of the script:** ( 0 minutes  14.627 seconds)
+**Total running time of the script:** ( 0 minutes  14.270 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_conmat_to_graph.py:

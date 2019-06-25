@@ -248,7 +248,7 @@ So, these two nodes taken together can grab data.
 
  .. code-block:: none
 
-    {'graph parameters': {'con_den': 0.1, 'radatools_optim': 'WN tfrf 1'}}
+    {'graph parameters': {'con_den': 0.01, 'radatools_optim': 'WN tfrf 100'}}
 
 
 # To do so, we first write the workflow graph (optional)
@@ -341,7 +341,7 @@ Finally, we are now ready to execute our workflow.
 
 
 
-**Total running time of the script:** ( 0 minutes  5.734 seconds)
+**Total running time of the script:** ( 0 minutes  5.416 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_nii_to_graph.py:
