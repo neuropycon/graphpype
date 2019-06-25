@@ -54,7 +54,7 @@ Examples Gallery
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="The **input** data should be a symetrical connecivity matrix in **npy** format. ">
+    <div class="sphx-glr-thumbcontainer" tooltip="The **input** data should be a preprocessed, and in the same space (e.g. MNI space) as the temp...">
 
 .. only:: html
 

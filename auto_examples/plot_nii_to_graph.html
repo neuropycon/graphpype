@@ -4,7 +4,7 @@
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Compute Conmat from nii files properties from a given connectivity matrix &#8212; graphpype 0.1dev0 documentation</title>
+    <title>Compute connecivity matrices and graph properties from nii files &#8212; graphpype 0.1dev0 documentation</title>
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
@@ -67,7 +67,7 @@
   <ul class="dropdown-menu localtoc"
       role="menu"
       aria-labelledby="dLabelLocalToc"><ul>
-<li><a class="reference internal" href="#">Compute Conmat from nii files properties from a given connectivity matrix</a></li>
+<li><a class="reference internal" href="#">Compute connecivity matrices and graph properties from nii files</a></li>
 </ul>
 </ul>
 </li>
@@ -107,10 +107,12 @@
 <p class="first admonition-title">Note</p>
 <p class="last">Click <a class="reference internal" href="#sphx-glr-download-auto-examples-plot-nii-to-graph-py"><span class="std std-ref">here</span></a> to download the full example code</p>
 </div>
-<div class="sphx-glr-example-title section" id="compute-conmat-from-nii-files-properties-from-a-given-connectivity-matrix">
-<span id="nii-to-graph"></span><span id="sphx-glr-auto-examples-plot-nii-to-graph-py"></span><h1>Compute Conmat from nii files properties from a given connectivity matrix<a class="headerlink" href="#compute-conmat-from-nii-files-properties-from-a-given-connectivity-matrix" title="Permalink to this headline">¶</a></h1>
-<p>The conmat_to_graph pipeline performs graph analysis .</p>
-<p>The <strong>input</strong> data should be a symetrical connecivity matrix in <strong>npy</strong> format.</p>
+<div class="sphx-glr-example-title section" id="compute-connecivity-matrices-and-graph-properties-from-nii-files">
+<span id="nii-to-graph"></span><span id="sphx-glr-auto-examples-plot-nii-to-graph-py"></span><h1>Compute connecivity matrices and graph properties from nii files<a class="headerlink" href="#compute-connecivity-matrices-and-graph-properties-from-nii-files" title="Permalink to this headline">¶</a></h1>
+<p>The nii_to_graph pipeline performs graph analysis from functional MRI file
+in NIFTI format.</p>
+<p>The <strong>input</strong> data should be a preprocessed, and in the same space (e.g. MNI
+space) as the template used to define the nodes in the graph.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Authors: David Meunier &lt;david_meunier_79@hotmail.fr&gt;</span>
 
 <span class="c1"># License: BSD (3-clause)</span>
@@ -140,7 +142,7 @@ needs to import neuropycon_data
 <span class="kn">import</span> <span class="nn">os</span>
 
 <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="s2">&quot;wget --no-check-certificate  --content-disposition https://cloud.int.univ-amu.fr/index.php/s/xft5LeZqgRiPFDi/download&quot;</span><span class="p">)</span> <span class="c1">#noqa</span>
-<span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="s2">&quot;unzip data_nii.zip&quot;</span><span class="p">)</span>
+<span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="s2">&quot;unzip -o data_nii.zip&quot;</span><span class="p">)</span>
 
 <span class="n">data_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span><span class="s2">&quot;data_nii&quot;</span><span class="p">)</span>
 </pre></div>
@@ -331,7 +333,7 @@ main_workflow.write_graph(graph2use=’colored’)  # colored</p>
 </pre></div>
 </div>
 <img alt="../_images/sphx_glr_plot_nii_to_graph_001.png" class="sphx-glr-single-img" src="../_images/sphx_glr_plot_nii_to_graph_001.png" />
-<p><strong>Total running time of the script:</strong> ( 0 minutes  29.917 seconds)</p>
+<p><strong>Total running time of the script:</strong> ( 0 minutes  5.733 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-nii-to-graph-py">
 <div class="sphx-glr-download docutils container">
 <a class="reference download internal" download="" href="../_downloads/97b36fc9fb5622c5a9b3f531e50659f1/plot_nii_to_graph.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_nii_to_graph.py</span></code></a></div>

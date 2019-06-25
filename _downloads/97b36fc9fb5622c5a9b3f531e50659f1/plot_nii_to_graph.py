@@ -2,11 +2,13 @@
 .. _nii_to_graph:
 
 =========================================================
-Compute Conmat from nii files properties from a given connectivity matrix
+Compute connecivity matrices and graph properties from nii files
 =========================================================
-The conmat_to_graph pipeline performs graph analysis .
+The nii_to_graph pipeline performs graph analysis from functional MRI file
+in NIFTI format.
 
-The **input** data should be a symetrical connecivity matrix in **npy** format.
+The **input** data should be a preprocessed, and in the same space (e.g. MNI
+space) as the template used to define the nodes in the graph.
 """
 
 # Authors: David Meunier <david_meunier_79@hotmail.fr>
@@ -40,7 +42,7 @@ import pprint  # noqa
 import os
 
 os.system("wget --no-check-certificate  --content-disposition https://cloud.int.univ-amu.fr/index.php/s/xft5LeZqgRiPFDi/download") #noqa
-os.system("unzip data_nii.zip")
+os.system("unzip -o data_nii.zip")
 
 data_path = os.path.join(os.getcwd(),"data_nii")
 
