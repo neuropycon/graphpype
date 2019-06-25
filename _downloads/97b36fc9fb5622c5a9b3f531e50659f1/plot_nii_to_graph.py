@@ -19,19 +19,31 @@ import nipype.pipeline.engine as pe
 from nipype.interfaces.utility import IdentityInterface
 import nipype.interfaces.io as nio
 
+import json  # noqa
+import pprint  # noqa
+
 ###############################################################################
 # Check if data are available
 # needs to import neuropycon_data
 # 'pip install neuropycon_data' should do the job...
 
 
-try:
-    import neuropycon_data as nd
-except ImportError:
-    print("Warning, neuropycon_data not found")
-    exit()
+#try:
+    #import neuropycon_data as nd
+#except ImportError:
+    #print("Warning, neuropycon_data not found")
+    #exit()
 
-data_path = op.join(nd.__path__[0], "data", "data_nii")
+#data_path = op.join(nd.__path__[0], "data", "data_nii")
+
+
+import os
+
+os.system("wget --no-check-certificate  --content-disposition https://cloud.int.univ-amu.fr/index.php/s/xft5LeZqgRiPFDi/download") #noqa
+os.system("unzip data_nii.zip")
+
+data_path = os.path.join(os.getcwd(),"data_nii")
+
 
 ###############################################################################
 # Then, we create our workflow and specify the `base_dir` which tells
@@ -48,8 +60,13 @@ ROI_labels_file = op.join(data_path,"ROI_HCP","ROI_labels-ROI_HCP.txt")
 ###############################################################################
 # Then we create a node to pass input filenames to DataGrabber from nipype
 
-subject_ids = ['01']
-func_sessions = ['rest']
+data_nii = json.load(open("params_nii.json"))
+pprint.pprint({'graph parameters': data_nii})
+
+subject_ids = data_nii["subject_ids"]
+func_sessions = data_nii["func_sessions"]
+conf_interval_prob = data_nii["conf_interval_prob"]
+
 infosource = pe.Node(interface=IdentityInterface(
     fields=['subject_id','session']),
     name="infosource")
@@ -96,23 +113,12 @@ datasource.inputs.sort_filelist = True
 #import json  # noqa
 #import pprint  # noqa
 
-#data_graph = json.load(open("params_graph.json"))
-#pprint.pprint({'graph parameters': data_graph})
-
-## density of the threshold
-#con_den = data_graph['con_den']
-
-## The optimisation sequence
-#radatools_optim = data_graph['radatools_optim']
-
 from graphpype.pipelines.nii_to_conmat import create_pipeline_nii_to_conmat # noqa
 from graphpype.pipelines.nii_to_conmat import create_pipeline_nii_to_conmat_seg_template # noqa
 from graphpype.pipelines.nii_to_conmat import create_pipeline_nii_to_subj_ROI #noqa
 
 main_workflow = pe.Workflow(name= conmat_analysis_name)
 main_workflow.base_dir = data_path
-
-conf_interval_prob = 0.05
 
 ###### time series and correlations
 cor_wf = create_pipeline_nii_to_conmat(main_path=data_path, conf_interval_prob=conf_interval_prob, resample=True, background_val=0.0)
@@ -192,7 +198,7 @@ main_workflow.connect(cor_wf, 'compute_conf_cor_mat.Z_conf_cor_mat_file',
 # Finally, we are now ready to execute our workflow.
 main_workflow.config['execution'] = {'remove_unnecessary_outputs': 'false'}
 
-#main_workflow.run()
+main_workflow.run()
 
 # Run workflow locally on 2 CPUs
 #main_workflow.run(plugin='MultiProc', plugin_args={'n_procs': 2})
@@ -200,13 +206,7 @@ main_workflow.config['execution'] = {'remove_unnecessary_outputs': 'false'}
 ################################################################################
 ## plotting
 
-
-
 from graphpype.utils_visbrain import visu_graph_modules
-
-#labels_file = op.join(data_path, "label_names.txt")
-#coords_file = op.join(data_path, "label_centroid.txt")
-
 from visbrain.objects import SceneObj, BrainObj # noqa
 
 sc = SceneObj(size=(500, 500), bgcolor=(1,1,1))

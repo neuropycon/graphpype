@@ -120,18 +120,29 @@
 
 <span class="kn">from</span> <span class="nn">nipype.interfaces.utility</span> <span class="kn">import</span> <span class="n">IdentityInterface</span>
 <span class="kn">import</span> <span class="nn">nipype.interfaces.io</span> <span class="kn">as</span> <span class="nn">nio</span>
+
+<span class="kn">import</span> <span class="nn">json</span>  <span class="c1"># noqa</span>
+<span class="kn">import</span> <span class="nn">pprint</span>  <span class="c1"># noqa</span>
 </pre></div>
 </div>
 <p>Check if data are available
 needs to import neuropycon_data
 ‘pip install neuropycon_data’ should do the job…</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
-    <span class="kn">import</span> <span class="nn">neuropycon_data</span> <span class="kn">as</span> <span class="nn">nd</span>
-<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
-    <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Warning, neuropycon_data not found&quot;</span><span class="p">)</span>
-    <span class="nb">exit</span><span class="p">()</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#try:</span>
+    <span class="c1">#import neuropycon_data as nd</span>
+<span class="c1">#except ImportError:</span>
+    <span class="c1">#print(&quot;Warning, neuropycon_data not found&quot;)</span>
+    <span class="c1">#exit()</span>
 
-<span class="n">data_path</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">nd</span><span class="o">.</span><span class="n">__path__</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="s2">&quot;data_nii&quot;</span><span class="p">)</span>
+<span class="c1">#data_path = op.join(nd.__path__[0], &quot;data&quot;, &quot;data_nii&quot;)</span>
+
+
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="s2">&quot;wget --no-check-certificate  --content-disposition https://cloud.int.univ-amu.fr/index.php/s/xft5LeZqgRiPFDi/download&quot;</span><span class="p">)</span> <span class="c1">#noqa</span>
+<span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="s2">&quot;unzip data_nii.zip&quot;</span><span class="p">)</span>
+
+<span class="n">data_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span><span class="s2">&quot;data_nii&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Then, we create our workflow and specify the <cite>base_dir</cite> which tells
@@ -146,14 +157,25 @@ nipype the directory in which to store the outputs.</p>
 </pre></div>
 </div>
 <p>Then we create a node to pass input filenames to DataGrabber from nipype</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">subject_ids</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;01&#39;</span><span class="p">]</span>
-<span class="n">func_sessions</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;rest&#39;</span><span class="p">]</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">data_nii</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="s2">&quot;params_nii.json&quot;</span><span class="p">))</span>
+<span class="n">pprint</span><span class="o">.</span><span class="n">pprint</span><span class="p">({</span><span class="s1">&#39;graph parameters&#39;</span><span class="p">:</span> <span class="n">data_nii</span><span class="p">})</span>
+
+<span class="n">subject_ids</span> <span class="o">=</span> <span class="n">data_nii</span><span class="p">[</span><span class="s2">&quot;subject_ids&quot;</span><span class="p">]</span>
+<span class="n">func_sessions</span> <span class="o">=</span> <span class="n">data_nii</span><span class="p">[</span><span class="s2">&quot;func_sessions&quot;</span><span class="p">]</span>
+<span class="n">conf_interval_prob</span> <span class="o">=</span> <span class="n">data_nii</span><span class="p">[</span><span class="s2">&quot;conf_interval_prob&quot;</span><span class="p">]</span>
+
 <span class="n">infosource</span> <span class="o">=</span> <span class="n">pe</span><span class="o">.</span><span class="n">Node</span><span class="p">(</span><span class="n">interface</span><span class="o">=</span><span class="n">IdentityInterface</span><span class="p">(</span>
     <span class="n">fields</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;subject_id&#39;</span><span class="p">,</span><span class="s1">&#39;session&#39;</span><span class="p">]),</span>
     <span class="n">name</span><span class="o">=</span><span class="s2">&quot;infosource&quot;</span><span class="p">)</span>
 
 <span class="n">infosource</span><span class="o">.</span><span class="n">iterables</span> <span class="o">=</span> <span class="p">[(</span><span class="s1">&#39;subject_id&#39;</span><span class="p">,</span> <span class="n">subject_ids</span><span class="p">),</span>
     <span class="p">(</span><span class="s1">&#39;session&#39;</span><span class="p">,</span> <span class="n">func_sessions</span><span class="p">)]</span>
+</pre></div>
+</div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>{&#39;graph parameters&#39;: {&#39;conf_interval_prob&#39;: 0.05,
+                      &#39;func_sessions&#39;: [&#39;rest&#39;],
+                      &#39;subject_ids&#39;: [&#39;01&#39;]}}
 </pre></div>
 </div>
 <p>and a node to grab data. The template_args in this node iterate upon
@@ -193,23 +215,12 @@ the values in the infosource node</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#import json  # noqa</span>
 <span class="c1">#import pprint  # noqa</span>
 
-<span class="c1">#data_graph = json.load(open(&quot;params_graph.json&quot;))</span>
-<span class="c1">#pprint.pprint({&#39;graph parameters&#39;: data_graph})</span>
-
-<span class="c1">## density of the threshold</span>
-<span class="c1">#con_den = data_graph[&#39;con_den&#39;]</span>
-
-<span class="c1">## The optimisation sequence</span>
-<span class="c1">#radatools_optim = data_graph[&#39;radatools_optim&#39;]</span>
-
 <span class="kn">from</span> <span class="nn">graphpype.pipelines.nii_to_conmat</span> <span class="kn">import</span> <span class="n">create_pipeline_nii_to_conmat</span> <span class="c1"># noqa</span>
 <span class="kn">from</span> <span class="nn">graphpype.pipelines.nii_to_conmat</span> <span class="kn">import</span> <span class="n">create_pipeline_nii_to_conmat_seg_template</span> <span class="c1"># noqa</span>
 <span class="kn">from</span> <span class="nn">graphpype.pipelines.nii_to_conmat</span> <span class="kn">import</span> <span class="n">create_pipeline_nii_to_subj_ROI</span> <span class="c1">#noqa</span>
 
 <span class="n">main_workflow</span> <span class="o">=</span> <span class="n">pe</span><span class="o">.</span><span class="n">Workflow</span><span class="p">(</span><span class="n">name</span><span class="o">=</span> <span class="n">conmat_analysis_name</span><span class="p">)</span>
 <span class="n">main_workflow</span><span class="o">.</span><span class="n">base_dir</span> <span class="o">=</span> <span class="n">data_path</span>
-
-<span class="n">conf_interval_prob</span> <span class="o">=</span> <span class="mf">0.05</span>
 
 <span class="c1">###### time series and correlations</span>
 <span class="n">cor_wf</span> <span class="o">=</span> <span class="n">create_pipeline_nii_to_conmat</span><span class="p">(</span><span class="n">main_path</span><span class="o">=</span><span class="n">data_path</span><span class="p">,</span> <span class="n">conf_interval_prob</span><span class="o">=</span><span class="n">conf_interval_prob</span><span class="p">,</span> <span class="n">resample</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">background_val</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
@@ -284,7 +295,7 @@ main_workflow.write_graph(graph2use=’colored’)  # colored</p>
 <p>Finally, we are now ready to execute our workflow.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">main_workflow</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;execution&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;remove_unnecessary_outputs&#39;</span><span class="p">:</span> <span class="s1">&#39;false&#39;</span><span class="p">}</span>
 
-<span class="c1">#main_workflow.run()</span>
+<span class="n">main_workflow</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
 
 <span class="c1"># Run workflow locally on 2 CPUs</span>
 <span class="c1">#main_workflow.run(plugin=&#39;MultiProc&#39;, plugin_args={&#39;n_procs&#39;: 2})</span>
@@ -292,10 +303,6 @@ main_workflow.write_graph(graph2use=’colored’)  # colored</p>
 </div>
 <p># plotting</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">graphpype.utils_visbrain</span> <span class="kn">import</span> <span class="n">visu_graph_modules</span>
-
-<span class="c1">#labels_file = op.join(data_path, &quot;label_names.txt&quot;)</span>
-<span class="c1">#coords_file = op.join(data_path, &quot;label_centroid.txt&quot;)</span>
-
 <span class="kn">from</span> <span class="nn">visbrain.objects</span> <span class="kn">import</span> <span class="n">SceneObj</span><span class="p">,</span> <span class="n">BrainObj</span> <span class="c1"># noqa</span>
 
 <span class="n">sc</span> <span class="o">=</span> <span class="n">SceneObj</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">500</span><span class="p">,</span> <span class="mi">500</span><span class="p">),</span> <span class="n">bgcolor</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
@@ -324,7 +331,7 @@ main_workflow.write_graph(graph2use=’colored’)  # colored</p>
 </pre></div>
 </div>
 <img alt="../_images/sphx_glr_plot_nii_to_graph_001.png" class="sphx-glr-single-img" src="../_images/sphx_glr_plot_nii_to_graph_001.png" />
-<p><strong>Total running time of the script:</strong> ( 0 minutes  0.893 seconds)</p>
+<p><strong>Total running time of the script:</strong> ( 0 minutes  29.917 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-nii-to-graph-py">
 <div class="sphx-glr-download docutils container">
 <a class="reference download internal" download="" href="../_downloads/97b36fc9fb5622c5a9b3f531e50659f1/plot_nii_to_graph.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_nii_to_graph.py</span></code></a></div>
@@ -346,7 +353,7 @@ main_workflow.write_graph(graph2use=’colored’)  # colored</p>
       
     </p>
     <p>
-        &copy; Copyright 2019, Neuropycon Developers. Last updated on 2019-06-24.<br/>
+        &copy; Copyright 2019, Neuropycon Developers. Last updated on 2019-06-25.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.2.<br/>
     </p>
   </div>
