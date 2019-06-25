@@ -26,18 +26,6 @@ import pprint  # noqa
 
 ###############################################################################
 # Check if data are available
-# needs to import neuropycon_data
-# 'pip install neuropycon_data' should do the job...
-
-
-#try:
-    #import neuropycon_data as nd
-#except ImportError:
-    #print("Warning, neuropycon_data not found")
-    #exit()
-
-#data_path = op.join(nd.__path__[0], "data", "data_nii")
-
 
 import os
 
@@ -46,6 +34,12 @@ os.system("unzip -o data_nii.zip")
 
 data_path = os.path.join(os.getcwd(),"data_nii")
 
+assert os.path.exists(data_path), "Error, data_path is not available"
+
+ROI_mask_file = op.join(data_path,"ROI_HCP","indexed_mask-ROI_HCP.nii")
+ROI_coords_file = op.join(data_path,"ROI_HCP","ROI_coords-ROI_HCP.txt")
+ROI_MNI_coords_file =op.join(data_path,"ROI_HCP","ROI_MNI_coords-ROI_HCP.txt")
+ROI_labels_file = op.join(data_path,"ROI_HCP","ROI_labels-ROI_HCP.txt")
 
 ###############################################################################
 # Then, we create our workflow and specify the `base_dir` which tells
@@ -54,10 +48,12 @@ data_path = os.path.join(os.getcwd(),"data_nii")
 # workflow directory within the `base_dir`
 conmat_analysis_name = 'conmat'
 
-ROI_mask_file = op.join(data_path,"ROI_HCP","indexed_mask-ROI_HCP.nii")
-ROI_coords_file = op.join(data_path,"ROI_HCP","ROI_coords-ROI_HCP.txt")
-ROI_MNI_coords_file =op.join(data_path,"ROI_HCP","ROI_MNI_coords-ROI_HCP.txt")
-ROI_labels_file = op.join(data_path,"ROI_HCP","ROI_labels-ROI_HCP.txt")
+from graphpype.pipelines.nii_to_conmat import create_pipeline_nii_to_conmat # noqa
+from graphpype.pipelines.nii_to_conmat import create_pipeline_nii_to_conmat_seg_template # noqa
+from graphpype.pipelines.nii_to_conmat import create_pipeline_nii_to_subj_ROI #noqa
+
+main_workflow = pe.Workflow(name= conmat_analysis_name)
+main_workflow.base_dir = data_path
 
 ###############################################################################
 # Then we create a node to pass input filenames to DataGrabber from nipype
@@ -80,15 +76,6 @@ infosource.iterables = [('subject_id', subject_ids),
 # and a node to grab data. The template_args in this node iterate upon
 # the values in the infosource node
 
-# template_path = '*%s/conmat_0_coh.npy'
-# template_args = [['freq_band_name']
-# datasource = create_datagrabber(data_path, template_path, template_args)
-
-datasource = pe.Node(
-    interface=nio.DataGrabber(infields=['subject_id','session'],
-                              outfields=['img_file']),
-    name='datasource')
-
 datasource = pe.Node(interface=nio.DataGrabber(
     infields=['subject_id','session'],
     outfields= ['img_file','gm_anat_file','wm_anat_file','csf_anat_file']),
@@ -106,37 +93,24 @@ rp_file=[["rp_",'subject_id',"_task-",'session',"_bold.txt"]],
 
 datasource.inputs.sort_filelist = True
 
-#0/0
-################################################################################
-## This parameter corrdesponds to the percentage of highest connections retains
-## for the analyses. con_den = 1.0 means a fully connected graphs (all edges
-## are present)
+###############################################################################
 
-#import json  # noqa
-#import pprint  # noqa
+### reasample images, extract time series and compute correlations
+cor_wf = create_pipeline_nii_to_conmat(main_path=data_path,
+                                       conf_interval_prob=conf_interval_prob,
+                                       resample=True, background_val=0.0)
 
-from graphpype.pipelines.nii_to_conmat import create_pipeline_nii_to_conmat # noqa
-from graphpype.pipelines.nii_to_conmat import create_pipeline_nii_to_conmat_seg_template # noqa
-from graphpype.pipelines.nii_to_conmat import create_pipeline_nii_to_subj_ROI #noqa
-
-main_workflow = pe.Workflow(name= conmat_analysis_name)
-main_workflow.base_dir = data_path
-
-###### time series and correlations
-cor_wf = create_pipeline_nii_to_conmat(main_path=data_path, conf_interval_prob=conf_interval_prob, resample=True, background_val=0.0)
-
-#cor_wf = create_pipeline_nii_to_conmat_seg_template(main_path =
-#data_path, conf_interval_prob = conf_interval_prob)
-
-#cor_wf = create_pipeline_nii_to_subj_ROI(main_path =
-#data_path, resample = True)
-
+### link the datasource outputs to the pipeline inputs
 main_workflow.connect(datasource, 'img_file', cor_wf, 'inputnode.nii_4D_file')
-main_workflow.connect(datasource, 'gm_anat_file', cor_wf, 'inputnode.gm_anat_file')
-main_workflow.connect(datasource, 'wm_anat_file', cor_wf, 'inputnode.wm_anat_file')
-main_workflow.connect(datasource, 'csf_anat_file', cor_wf, 'inputnode.csf_anat_file')
-main_workflow.connect(datasource, 'rp_file', cor_wf,'inputnode.rp_file')
+main_workflow.connect(datasource, 'gm_anat_file', cor_wf,
+                      'inputnode.gm_anat_file')
+main_workflow.connect(datasource, 'wm_anat_file', cor_wf,
+                      'inputnode.wm_anat_file')
+main_workflow.connect(datasource, 'csf_anat_file', cor_wf,
+                      'inputnode.csf_anat_file')
+main_workflow.connect(datasource, 'rp_file', cor_wf, 'inputnode.rp_file')
 
+### extra arguments: the template used to define nodes
 cor_wf.inputs.inputnode.ROI_mask_file = ROI_mask_file
 cor_wf.inputs.inputnode.ROI_coords_file = ROI_coords_file
 cor_wf.inputs.inputnode.ROI_MNI_coords_file = ROI_MNI_coords_file

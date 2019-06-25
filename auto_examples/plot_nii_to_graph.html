@@ -127,24 +127,20 @@ space) as the template used to define the nodes in the graph.</p>
 <span class="kn">import</span> <span class="nn">pprint</span>  <span class="c1"># noqa</span>
 </pre></div>
 </div>
-<p>Check if data are available
-needs to import neuropycon_data
-‘pip install neuropycon_data’ should do the job…</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#try:</span>
-    <span class="c1">#import neuropycon_data as nd</span>
-<span class="c1">#except ImportError:</span>
-    <span class="c1">#print(&quot;Warning, neuropycon_data not found&quot;)</span>
-    <span class="c1">#exit()</span>
-
-<span class="c1">#data_path = op.join(nd.__path__[0], &quot;data&quot;, &quot;data_nii&quot;)</span>
-
-
-<span class="kn">import</span> <span class="nn">os</span>
+<p>Check if data are available</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
 
 <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="s2">&quot;wget --no-check-certificate  --content-disposition https://cloud.int.univ-amu.fr/index.php/s/xft5LeZqgRiPFDi/download&quot;</span><span class="p">)</span> <span class="c1">#noqa</span>
 <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="s2">&quot;unzip -o data_nii.zip&quot;</span><span class="p">)</span>
 
 <span class="n">data_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span><span class="s2">&quot;data_nii&quot;</span><span class="p">)</span>
+
+<span class="k">assert</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">data_path</span><span class="p">),</span> <span class="s2">&quot;Error, data_path is not available&quot;</span>
+
+<span class="n">ROI_mask_file</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span><span class="s2">&quot;ROI_HCP&quot;</span><span class="p">,</span><span class="s2">&quot;indexed_mask-ROI_HCP.nii&quot;</span><span class="p">)</span>
+<span class="n">ROI_coords_file</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span><span class="s2">&quot;ROI_HCP&quot;</span><span class="p">,</span><span class="s2">&quot;ROI_coords-ROI_HCP.txt&quot;</span><span class="p">)</span>
+<span class="n">ROI_MNI_coords_file</span> <span class="o">=</span><span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span><span class="s2">&quot;ROI_HCP&quot;</span><span class="p">,</span><span class="s2">&quot;ROI_MNI_coords-ROI_HCP.txt&quot;</span><span class="p">)</span>
+<span class="n">ROI_labels_file</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span><span class="s2">&quot;ROI_HCP&quot;</span><span class="p">,</span><span class="s2">&quot;ROI_labels-ROI_HCP.txt&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Then, we create our workflow and specify the <cite>base_dir</cite> which tells
@@ -152,10 +148,12 @@ nipype the directory in which to store the outputs.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># workflow directory within the `base_dir`</span>
 <span class="n">conmat_analysis_name</span> <span class="o">=</span> <span class="s1">&#39;conmat&#39;</span>
 
-<span class="n">ROI_mask_file</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span><span class="s2">&quot;ROI_HCP&quot;</span><span class="p">,</span><span class="s2">&quot;indexed_mask-ROI_HCP.nii&quot;</span><span class="p">)</span>
-<span class="n">ROI_coords_file</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span><span class="s2">&quot;ROI_HCP&quot;</span><span class="p">,</span><span class="s2">&quot;ROI_coords-ROI_HCP.txt&quot;</span><span class="p">)</span>
-<span class="n">ROI_MNI_coords_file</span> <span class="o">=</span><span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span><span class="s2">&quot;ROI_HCP&quot;</span><span class="p">,</span><span class="s2">&quot;ROI_MNI_coords-ROI_HCP.txt&quot;</span><span class="p">)</span>
-<span class="n">ROI_labels_file</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span><span class="s2">&quot;ROI_HCP&quot;</span><span class="p">,</span><span class="s2">&quot;ROI_labels-ROI_HCP.txt&quot;</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">graphpype.pipelines.nii_to_conmat</span> <span class="kn">import</span> <span class="n">create_pipeline_nii_to_conmat</span> <span class="c1"># noqa</span>
+<span class="kn">from</span> <span class="nn">graphpype.pipelines.nii_to_conmat</span> <span class="kn">import</span> <span class="n">create_pipeline_nii_to_conmat_seg_template</span> <span class="c1"># noqa</span>
+<span class="kn">from</span> <span class="nn">graphpype.pipelines.nii_to_conmat</span> <span class="kn">import</span> <span class="n">create_pipeline_nii_to_subj_ROI</span> <span class="c1">#noqa</span>
+
+<span class="n">main_workflow</span> <span class="o">=</span> <span class="n">pe</span><span class="o">.</span><span class="n">Workflow</span><span class="p">(</span><span class="n">name</span><span class="o">=</span> <span class="n">conmat_analysis_name</span><span class="p">)</span>
+<span class="n">main_workflow</span><span class="o">.</span><span class="n">base_dir</span> <span class="o">=</span> <span class="n">data_path</span>
 </pre></div>
 </div>
 <p>Then we create a node to pass input filenames to DataGrabber from nipype</p>
@@ -182,16 +180,7 @@ nipype the directory in which to store the outputs.</p>
 </div>
 <p>and a node to grab data. The template_args in this node iterate upon
 the values in the infosource node</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># template_path = &#39;*%s/conmat_0_coh.npy&#39;</span>
-<span class="c1"># template_args = [[&#39;freq_band_name&#39;]</span>
-<span class="c1"># datasource = create_datagrabber(data_path, template_path, template_args)</span>
-
-<span class="n">datasource</span> <span class="o">=</span> <span class="n">pe</span><span class="o">.</span><span class="n">Node</span><span class="p">(</span>
-    <span class="n">interface</span><span class="o">=</span><span class="n">nio</span><span class="o">.</span><span class="n">DataGrabber</span><span class="p">(</span><span class="n">infields</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;subject_id&#39;</span><span class="p">,</span><span class="s1">&#39;session&#39;</span><span class="p">],</span>
-                              <span class="n">outfields</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;img_file&#39;</span><span class="p">]),</span>
-    <span class="n">name</span><span class="o">=</span><span class="s1">&#39;datasource&#39;</span><span class="p">)</span>
-
-<span class="n">datasource</span> <span class="o">=</span> <span class="n">pe</span><span class="o">.</span><span class="n">Node</span><span class="p">(</span><span class="n">interface</span><span class="o">=</span><span class="n">nio</span><span class="o">.</span><span class="n">DataGrabber</span><span class="p">(</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">datasource</span> <span class="o">=</span> <span class="n">pe</span><span class="o">.</span><span class="n">Node</span><span class="p">(</span><span class="n">interface</span><span class="o">=</span><span class="n">nio</span><span class="o">.</span><span class="n">DataGrabber</span><span class="p">(</span>
     <span class="n">infields</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;subject_id&#39;</span><span class="p">,</span><span class="s1">&#39;session&#39;</span><span class="p">],</span>
     <span class="n">outfields</span><span class="o">=</span> <span class="p">[</span><span class="s1">&#39;img_file&#39;</span><span class="p">,</span><span class="s1">&#39;gm_anat_file&#39;</span><span class="p">,</span><span class="s1">&#39;wm_anat_file&#39;</span><span class="p">,</span><span class="s1">&#39;csf_anat_file&#39;</span><span class="p">]),</span>
     <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;datasource&#39;</span><span class="p">)</span>
@@ -207,38 +196,24 @@ the values in the infosource node</p>
        <span class="p">)</span>
 
 <span class="n">datasource</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">sort_filelist</span> <span class="o">=</span> <span class="bp">True</span>
-
-<span class="c1">#0/0</span>
 </pre></div>
 </div>
-<p># This parameter corrdesponds to the percentage of highest connections retains
-# for the analyses. con_den = 1.0 means a fully connected graphs (all edges
-# are present)</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#import json  # noqa</span>
-<span class="c1">#import pprint  # noqa</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">### reasample images, extract time series and compute correlations</span>
+<span class="n">cor_wf</span> <span class="o">=</span> <span class="n">create_pipeline_nii_to_conmat</span><span class="p">(</span><span class="n">main_path</span><span class="o">=</span><span class="n">data_path</span><span class="p">,</span>
+                                       <span class="n">conf_interval_prob</span><span class="o">=</span><span class="n">conf_interval_prob</span><span class="p">,</span>
+                                       <span class="n">resample</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">background_val</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
 
-<span class="kn">from</span> <span class="nn">graphpype.pipelines.nii_to_conmat</span> <span class="kn">import</span> <span class="n">create_pipeline_nii_to_conmat</span> <span class="c1"># noqa</span>
-<span class="kn">from</span> <span class="nn">graphpype.pipelines.nii_to_conmat</span> <span class="kn">import</span> <span class="n">create_pipeline_nii_to_conmat_seg_template</span> <span class="c1"># noqa</span>
-<span class="kn">from</span> <span class="nn">graphpype.pipelines.nii_to_conmat</span> <span class="kn">import</span> <span class="n">create_pipeline_nii_to_subj_ROI</span> <span class="c1">#noqa</span>
-
-<span class="n">main_workflow</span> <span class="o">=</span> <span class="n">pe</span><span class="o">.</span><span class="n">Workflow</span><span class="p">(</span><span class="n">name</span><span class="o">=</span> <span class="n">conmat_analysis_name</span><span class="p">)</span>
-<span class="n">main_workflow</span><span class="o">.</span><span class="n">base_dir</span> <span class="o">=</span> <span class="n">data_path</span>
-
-<span class="c1">###### time series and correlations</span>
-<span class="n">cor_wf</span> <span class="o">=</span> <span class="n">create_pipeline_nii_to_conmat</span><span class="p">(</span><span class="n">main_path</span><span class="o">=</span><span class="n">data_path</span><span class="p">,</span> <span class="n">conf_interval_prob</span><span class="o">=</span><span class="n">conf_interval_prob</span><span class="p">,</span> <span class="n">resample</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">background_val</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
-
-<span class="c1">#cor_wf = create_pipeline_nii_to_conmat_seg_template(main_path =</span>
-<span class="c1">#data_path, conf_interval_prob = conf_interval_prob)</span>
-
-<span class="c1">#cor_wf = create_pipeline_nii_to_subj_ROI(main_path =</span>
-<span class="c1">#data_path, resample = True)</span>
-
+<span class="c1">### link the datasource outputs to the pipeline inputs</span>
 <span class="n">main_workflow</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">datasource</span><span class="p">,</span> <span class="s1">&#39;img_file&#39;</span><span class="p">,</span> <span class="n">cor_wf</span><span class="p">,</span> <span class="s1">&#39;inputnode.nii_4D_file&#39;</span><span class="p">)</span>
-<span class="n">main_workflow</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">datasource</span><span class="p">,</span> <span class="s1">&#39;gm_anat_file&#39;</span><span class="p">,</span> <span class="n">cor_wf</span><span class="p">,</span> <span class="s1">&#39;inputnode.gm_anat_file&#39;</span><span class="p">)</span>
-<span class="n">main_workflow</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">datasource</span><span class="p">,</span> <span class="s1">&#39;wm_anat_file&#39;</span><span class="p">,</span> <span class="n">cor_wf</span><span class="p">,</span> <span class="s1">&#39;inputnode.wm_anat_file&#39;</span><span class="p">)</span>
-<span class="n">main_workflow</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">datasource</span><span class="p">,</span> <span class="s1">&#39;csf_anat_file&#39;</span><span class="p">,</span> <span class="n">cor_wf</span><span class="p">,</span> <span class="s1">&#39;inputnode.csf_anat_file&#39;</span><span class="p">)</span>
-<span class="n">main_workflow</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">datasource</span><span class="p">,</span> <span class="s1">&#39;rp_file&#39;</span><span class="p">,</span> <span class="n">cor_wf</span><span class="p">,</span><span class="s1">&#39;inputnode.rp_file&#39;</span><span class="p">)</span>
+<span class="n">main_workflow</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">datasource</span><span class="p">,</span> <span class="s1">&#39;gm_anat_file&#39;</span><span class="p">,</span> <span class="n">cor_wf</span><span class="p">,</span>
+                      <span class="s1">&#39;inputnode.gm_anat_file&#39;</span><span class="p">)</span>
+<span class="n">main_workflow</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">datasource</span><span class="p">,</span> <span class="s1">&#39;wm_anat_file&#39;</span><span class="p">,</span> <span class="n">cor_wf</span><span class="p">,</span>
+                      <span class="s1">&#39;inputnode.wm_anat_file&#39;</span><span class="p">)</span>
+<span class="n">main_workflow</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">datasource</span><span class="p">,</span> <span class="s1">&#39;csf_anat_file&#39;</span><span class="p">,</span> <span class="n">cor_wf</span><span class="p">,</span>
+                      <span class="s1">&#39;inputnode.csf_anat_file&#39;</span><span class="p">)</span>
+<span class="n">main_workflow</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">datasource</span><span class="p">,</span> <span class="s1">&#39;rp_file&#39;</span><span class="p">,</span> <span class="n">cor_wf</span><span class="p">,</span> <span class="s1">&#39;inputnode.rp_file&#39;</span><span class="p">)</span>
 
+<span class="c1">### extra arguments: the template used to define nodes</span>
 <span class="n">cor_wf</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">inputnode</span><span class="o">.</span><span class="n">ROI_mask_file</span> <span class="o">=</span> <span class="n">ROI_mask_file</span>
 <span class="n">cor_wf</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">inputnode</span><span class="o">.</span><span class="n">ROI_coords_file</span> <span class="o">=</span> <span class="n">ROI_coords_file</span>
 <span class="n">cor_wf</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">inputnode</span><span class="o">.</span><span class="n">ROI_MNI_coords_file</span> <span class="o">=</span> <span class="n">ROI_MNI_coords_file</span>
@@ -333,7 +308,7 @@ main_workflow.write_graph(graph2use=’colored’)  # colored</p>
 </pre></div>
 </div>
 <img alt="../_images/sphx_glr_plot_nii_to_graph_001.png" class="sphx-glr-single-img" src="../_images/sphx_glr_plot_nii_to_graph_001.png" />
-<p><strong>Total running time of the script:</strong> ( 0 minutes  5.733 seconds)</p>
+<p><strong>Total running time of the script:</strong> ( 0 minutes  5.734 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-nii-to-graph-py">
 <div class="sphx-glr-download docutils container">
 <a class="reference download internal" download="" href="../_downloads/97b36fc9fb5622c5a9b3f531e50659f1/plot_nii_to_graph.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_nii_to_graph.py</span></code></a></div>
