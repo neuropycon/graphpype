@@ -24,6 +24,7 @@ The **input** data should be a time series matrix in **npy** format.
 
     # Authors: David Meunier <david_meunier_79@hotmail.fr>
     # License: BSD (3-clause)
+    # sphinx_gallery_thumbnail_number = 2
     import os.path as op
     import nipype.pipeline.engine as pe
     import nipype.interfaces.io as nio
@@ -460,7 +461,7 @@ plotting modules and roles
 
 
 
-**Total running time of the script:** ( 0 minutes  31.139 seconds)
+**Total running time of the script:** ( 0 minutes  25.038 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_inv_ts_to_graph.py:
