@@ -116,6 +116,8 @@ space) as the template used to define the nodes in the graph.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Authors: David Meunier &lt;david_meunier_79@hotmail.fr&gt;</span>
 
 <span class="c1"># License: BSD (3-clause)</span>
+<span class="c1"># sphinx_gallery_thumbnail_number = 2</span>
+<span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">os.path</span> <span class="kn">as</span> <span class="nn">op</span>
 
 <span class="kn">import</span> <span class="nn">nipype.pipeline.engine</span> <span class="kn">as</span> <span class="nn">pe</span>
@@ -128,14 +130,9 @@ space) as the template used to define the nodes in the graph.</p>
 </pre></div>
 </div>
 <p>Check if data are available</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">graphpype.utils_tests</span> <span class="kn">import</span> <span class="n">load_test_data</span>
 
-<span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="s2">&quot;wget --no-check-certificate  --content-disposition https://cloud.int.univ-amu.fr/index.php/s/xft5LeZqgRiPFDi/download&quot;</span><span class="p">)</span> <span class="c1">#noqa</span>
-<span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="s2">&quot;unzip -o data_nii.zip&quot;</span><span class="p">)</span>
-
-<span class="n">data_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span><span class="s2">&quot;data_nii&quot;</span><span class="p">)</span>
-
-<span class="k">assert</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">data_path</span><span class="p">),</span> <span class="s2">&quot;Error, data_path is not available&quot;</span>
+<span class="n">data_path</span> <span class="o">=</span> <span class="n">load_test_data</span><span class="p">(</span><span class="s2">&quot;data_nii&quot;</span><span class="p">)</span>
 
 <span class="n">ROI_mask_file</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span><span class="s2">&quot;ROI_HCP&quot;</span><span class="p">,</span><span class="s2">&quot;indexed_mask-ROI_HCP.nii&quot;</span><span class="p">)</span>
 <span class="n">ROI_coords_file</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span><span class="s2">&quot;ROI_HCP&quot;</span><span class="p">,</span><span class="s2">&quot;ROI_coords-ROI_HCP.txt&quot;</span><span class="p">)</span>
@@ -148,9 +145,7 @@ nipype the directory in which to store the outputs.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># workflow directory within the `base_dir`</span>
 <span class="n">conmat_analysis_name</span> <span class="o">=</span> <span class="s1">&#39;conmat&#39;</span>
 
-<span class="kn">from</span> <span class="nn">graphpype.pipelines.nii_to_conmat</span> <span class="kn">import</span> <span class="n">create_pipeline_nii_to_conmat</span> <span class="c1"># noqa</span>
-<span class="kn">from</span> <span class="nn">graphpype.pipelines.nii_to_conmat</span> <span class="kn">import</span> <span class="n">create_pipeline_nii_to_conmat_seg_template</span> <span class="c1"># noqa</span>
-<span class="kn">from</span> <span class="nn">graphpype.pipelines.nii_to_conmat</span> <span class="kn">import</span> <span class="n">create_pipeline_nii_to_subj_ROI</span> <span class="c1">#noqa</span>
+<span class="kn">from</span> <span class="nn">graphpype.pipelines</span> <span class="kn">import</span> <span class="n">create_pipeline_nii_to_conmat</span> <span class="c1"># noqa</span>
 
 <span class="n">main_workflow</span> <span class="o">=</span> <span class="n">pe</span><span class="o">.</span><span class="n">Workflow</span><span class="p">(</span><span class="n">name</span><span class="o">=</span> <span class="n">conmat_analysis_name</span><span class="p">)</span>
 <span class="n">main_workflow</span><span class="o">.</span><span class="n">base_dir</span> <span class="o">=</span> <span class="n">data_path</span>
@@ -173,8 +168,10 @@ nipype the directory in which to store the outputs.</p>
 </pre></div>
 </div>
 <p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>{&#39;graph parameters&#39;: {&#39;conf_interval_prob&#39;: 0.05,
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>{&#39;graph parameters&#39;: {&#39;con_den&#39;: 0.01,
+                      &#39;conf_interval_prob&#39;: 0.05,
                       &#39;func_sessions&#39;: [&#39;rest&#39;],
+                      &#39;radatools_optim&#39;: &#39;WS tfrf 100&#39;,
                       &#39;subject_ids&#39;: [&#39;01&#39;]}}
 </pre></div>
 </div>
@@ -230,17 +227,11 @@ So, these two nodes taken together can grab data.</p>
 <p># This parameter corrdesponds to the percentage of highest connections retains
 # for the analyses. con_den = 1.0 means a fully connected graphs (all edges
 # are present)</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">json</span>  <span class="c1"># noqa</span>
-<span class="kn">import</span> <span class="nn">pprint</span>  <span class="c1"># noqa</span>
-
-<span class="n">data_graph</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="s2">&quot;params_graph.json&quot;</span><span class="p">))</span>
-<span class="n">pprint</span><span class="o">.</span><span class="n">pprint</span><span class="p">({</span><span class="s1">&#39;graph parameters&#39;</span><span class="p">:</span> <span class="n">data_graph</span><span class="p">})</span>
-
-<span class="c1"># density of the threshold</span>
-<span class="n">con_den</span> <span class="o">=</span> <span class="n">data_graph</span><span class="p">[</span><span class="s1">&#39;con_den&#39;</span><span class="p">]</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># density of the threshold</span>
+<span class="n">con_den</span> <span class="o">=</span> <span class="n">data_nii</span><span class="p">[</span><span class="s1">&#39;con_den&#39;</span><span class="p">]</span>
 
 <span class="c1"># The optimisation sequence</span>
-<span class="n">radatools_optim</span> <span class="o">=</span> <span class="n">data_graph</span><span class="p">[</span><span class="s1">&#39;radatools_optim&#39;</span><span class="p">]</span>
+<span class="n">radatools_optim</span> <span class="o">=</span> <span class="n">data_nii</span><span class="p">[</span><span class="s1">&#39;radatools_optim&#39;</span><span class="p">]</span>
 
 <span class="kn">from</span> <span class="nn">graphpype.pipelines.conmat_to_graph</span> <span class="kn">import</span> <span class="n">create_pipeline_conmat_to_graph_density</span> <span class="c1">## noqa</span>
 
@@ -251,23 +242,22 @@ So, these two nodes taken together can grab data.</p>
                       <span class="n">graph_workflow</span><span class="p">,</span> <span class="s2">&quot;inputnode.conmat_file&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>{&#39;graph parameters&#39;: {&#39;con_den&#39;: 0.01, &#39;radatools_optim&#39;: &#39;WN tfrf 100&#39;}}
+<p>To do so, we first write the workflow graph (optional)</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">main_workflow</span><span class="o">.</span><span class="n">write_graph</span><span class="p">(</span><span class="n">graph2use</span><span class="o">=</span><span class="s1">&#39;colored&#39;</span><span class="p">)</span>  <span class="c1"># colored</span>
 </pre></div>
 </div>
-<p># To do so, we first write the workflow graph (optional)
-main_workflow.write_graph(graph2use=’colored’)  # colored</p>
-<p># and visualize it. Take a moment to pause and notice how the connections
-# here correspond to how we connected the nodes.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#from scipy.misc import imread  # noqa</span>
-<span class="c1">#import matplotlib.pyplot as plt  # noqa</span>
-<span class="c1">#img = plt.imread(op.join(data_path, graph_analysis_name, &#39;graph.png&#39;))</span>
-<span class="c1">#plt.figure(figsize=(8, 8))</span>
-<span class="c1">#plt.imshow(img)</span>
-<span class="c1">#plt.axis(&#39;off&#39;)</span>
-<span class="c1">#plt.show()</span>
+<p>and visualize it. Take a moment to pause and notice how the connections
+here correspond to how we connected the nodes.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">scipy.misc</span> <span class="kn">import</span> <span class="n">imread</span>  <span class="c1"># noqa</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>  <span class="c1"># noqa</span>
+<span class="n">img</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="n">conmat_analysis_name</span><span class="p">,</span> <span class="s1">&#39;graph.png&#39;</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;off&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
+<img alt="../_images/sphx_glr_plot_nii_to_graph_001.png" class="sphx-glr-single-img" src="../_images/sphx_glr_plot_nii_to_graph_001.png" />
 <p>Displaying connectivity Figures</p>
 <p>Finally, we are now ready to execute our workflow.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">main_workflow</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;execution&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;remove_unnecessary_outputs&#39;</span><span class="p">:</span> <span class="s1">&#39;false&#39;</span><span class="p">}</span>
@@ -307,8 +297,8 @@ main_workflow.write_graph(graph2use=’colored’)  # colored</p>
 <span class="n">sc</span><span class="o">.</span><span class="n">preview</span><span class="p">()</span>
 </pre></div>
 </div>
-<img alt="../_images/sphx_glr_plot_nii_to_graph_001.png" class="sphx-glr-single-img" src="../_images/sphx_glr_plot_nii_to_graph_001.png" />
-<p><strong>Total running time of the script:</strong> ( 0 minutes  5.416 seconds)</p>
+<img alt="../_images/sphx_glr_plot_nii_to_graph_002.png" class="sphx-glr-single-img" src="../_images/sphx_glr_plot_nii_to_graph_002.png" />
+<p><strong>Total running time of the script:</strong> ( 0 minutes  1.067 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-nii-to-graph-py">
 <div class="sphx-glr-download docutils container">
 <a class="reference download internal" download="" href="../_downloads/97b36fc9fb5622c5a9b3f531e50659f1/plot_nii_to_graph.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_nii_to_graph.py</span></code></a></div>
@@ -330,7 +320,7 @@ main_workflow.write_graph(graph2use=’colored’)  # colored</p>
       
     </p>
     <p>
-        &copy; Copyright 2019, Neuropycon Developers. Last updated on 2019-06-25.<br/>
+        &copy; Copyright 2019, Neuropycon Developers. Last updated on 2019-06-27.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.2.<br/>
     </p>
   </div>

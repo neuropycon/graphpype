@@ -38,22 +38,14 @@ The **input** data should be a symetrical connecivity matrix in **npy** format.
 
 
 Check if data are available
-needs to import neuropycon_data
-'pip install neuropycon_data' should do the job...
 
 
 
 .. code-block:: python
 
+    from graphpype.utils_tests import load_test_data
 
-
-    try:
-        import neuropycon_data as nd
-    except ImportError:
-        print("Warning, neuropycon_data not found")
-        exit()
-
-    data_path = op.join(nd.__path__[0], "data", "data_con_meg")
+    data_path = load_test_data("data_con_meg")
 
 
 
@@ -174,7 +166,7 @@ are present)
 
  .. code-block:: none
 
-    {'graph parameters': {'con_den': 0.01, 'radatools_optim': 'WN tfrf 100'}}
+    {'graph parameters': {'con_den': 0.1, 'radatools_optim': 'WN tfrf 100'}}
 
 
 see http://deim.urv.cat/~sergio.gomez/download.php?f=radatools-5.0-README.txt
@@ -213,7 +205,7 @@ In particular, the two nodes are:
     # plot_connectivity_circle .html#mne.viz.plot_connectivity_circle"
     # target="_blank">spectral_connectivity function</a>
 
-    from graphpype.pipelines.conmat_to_graph import create_pipeline_conmat_to_graph_density # noqa
+    from graphpype.pipelines import create_pipeline_conmat_to_graph_density
 
     graph_workflow = create_pipeline_conmat_to_graph_density(
         data_path, con_den=con_den, optim_seq=radatools_optim)
@@ -349,7 +341,7 @@ plotting
 
 
 
-**Total running time of the script:** ( 0 minutes  14.270 seconds)
+**Total running time of the script:** ( 8 minutes  49.027 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_conmat_to_graph.py:

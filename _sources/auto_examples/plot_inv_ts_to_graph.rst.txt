@@ -38,20 +38,15 @@ The **input** data should be a time series matrix in **npy** format.
 
 
 Check if data are available
-needs to import neuropycon_data
-'pip install neuropycon_data' should do the job...
 
 
 
 .. code-block:: python
 
-    try:
-        import neuropycon_data as nd
-    except ImportError:
-        print("Warning, neuropycon_data not found")
-        exit()
 
-    data_path = op.join(nd.__path__[0], "data", "data_inv_ts")
+    from graphpype.utils_tests import load_test_data
+
+    data_path = load_test_data("data_inv_ts")
 
 
 
@@ -255,7 +250,7 @@ Two nodes of particular interest are :
 .. code-block:: python
 
 
-    from graphpype.pipelines.conmat_to_graph import create_pipeline_conmat_to_graph_density ## noqa
+    from graphpype.pipelines import create_pipeline_conmat_to_graph_density
 
     graph_workflow = create_pipeline_conmat_to_graph_density(
         data_path, con_den=con_den, optim_seq=radatools_optim)
@@ -465,7 +460,7 @@ plotting modules and roles
 
 
 
-**Total running time of the script:** ( 0 minutes  30.780 seconds)
+**Total running time of the script:** ( 0 minutes  31.139 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_inv_ts_to_graph.py:

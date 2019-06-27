@@ -14,6 +14,8 @@ space) as the template used to define the nodes in the graph.
 # Authors: David Meunier <david_meunier_79@hotmail.fr>
 
 # License: BSD (3-clause)
+# sphinx_gallery_thumbnail_number = 2
+import os
 import os.path as op
 
 import nipype.pipeline.engine as pe
@@ -27,14 +29,9 @@ import pprint  # noqa
 ###############################################################################
 # Check if data are available
 
-import os
+from graphpype.utils_tests import load_test_data
 
-os.system("wget --no-check-certificate  --content-disposition https://cloud.int.univ-amu.fr/index.php/s/xft5LeZqgRiPFDi/download") #noqa
-os.system("unzip -o data_nii.zip")
-
-data_path = os.path.join(os.getcwd(),"data_nii")
-
-assert os.path.exists(data_path), "Error, data_path is not available"
+data_path = load_test_data("data_nii")
 
 ROI_mask_file = op.join(data_path,"ROI_HCP","indexed_mask-ROI_HCP.nii")
 ROI_coords_file = op.join(data_path,"ROI_HCP","ROI_coords-ROI_HCP.txt")
@@ -48,9 +45,7 @@ ROI_labels_file = op.join(data_path,"ROI_HCP","ROI_labels-ROI_HCP.txt")
 # workflow directory within the `base_dir`
 conmat_analysis_name = 'conmat'
 
-from graphpype.pipelines.nii_to_conmat import create_pipeline_nii_to_conmat # noqa
-from graphpype.pipelines.nii_to_conmat import create_pipeline_nii_to_conmat_seg_template # noqa
-from graphpype.pipelines.nii_to_conmat import create_pipeline_nii_to_subj_ROI #noqa
+from graphpype.pipelines import create_pipeline_nii_to_conmat # noqa
 
 main_workflow = pe.Workflow(name= conmat_analysis_name)
 main_workflow.base_dir = data_path
@@ -130,17 +125,11 @@ main_workflow.connect(infosource, 'session', datasource, 'session')
 ## for the analyses. con_den = 1.0 means a fully connected graphs (all edges
 ## are present)
 
-import json  # noqa
-import pprint  # noqa
-
-data_graph = json.load(open("params_graph.json"))
-pprint.pprint({'graph parameters': data_graph})
-
 # density of the threshold
-con_den = data_graph['con_den']
+con_den = data_nii['con_den']
 
 # The optimisation sequence
-radatools_optim = data_graph['radatools_optim']
+radatools_optim = data_nii['radatools_optim']
 
 from graphpype.pipelines.conmat_to_graph import create_pipeline_conmat_to_graph_density ## noqa
 
@@ -150,21 +139,21 @@ graph_workflow = create_pipeline_conmat_to_graph_density(
 main_workflow.connect(cor_wf, 'compute_conf_cor_mat.Z_conf_cor_mat_file',
                       graph_workflow, "inputnode.conmat_file")
 
-################################################################################
-## To do so, we first write the workflow graph (optional)
-#main_workflow.write_graph(graph2use='colored')  # colored
+###############################################################################
+# To do so, we first write the workflow graph (optional)
+main_workflow.write_graph(graph2use='colored')  # colored
 
-################################################################################
-## and visualize it. Take a moment to pause and notice how the connections
-## here correspond to how we connected the nodes.
+###############################################################################
+# and visualize it. Take a moment to pause and notice how the connections
+# here correspond to how we connected the nodes.
 
-#from scipy.misc import imread  # noqa
-#import matplotlib.pyplot as plt  # noqa
-#img = plt.imread(op.join(data_path, graph_analysis_name, 'graph.png'))
-#plt.figure(figsize=(8, 8))
-#plt.imshow(img)
-#plt.axis('off')
-#plt.show()
+from scipy.misc import imread  # noqa
+import matplotlib.pyplot as plt  # noqa
+img = plt.imread(op.join(data_path, conmat_analysis_name, 'graph.png'))
+plt.figure(figsize=(8, 8))
+plt.imshow(img)
+plt.axis('off')
+plt.show()
 
 ###############################################################################
 # Displaying connectivity Figures

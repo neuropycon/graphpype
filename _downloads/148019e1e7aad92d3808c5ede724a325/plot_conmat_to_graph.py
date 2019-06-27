@@ -21,17 +21,9 @@ import nipype.interfaces.io as nio
 
 ###############################################################################
 # Check if data are available
-# needs to import neuropycon_data
-# 'pip install neuropycon_data' should do the job...
+from graphpype.utils_tests import load_test_data
 
-
-try:
-    import neuropycon_data as nd
-except ImportError:
-    print("Warning, neuropycon_data not found")
-    exit()
-
-data_path = op.join(nd.__path__[0], "data", "data_con_meg")
+data_path = load_test_data("data_con_meg")
 
 ###############################################################################
 # This will be what we will loop on
@@ -124,7 +116,7 @@ radatools_optim = data_graph['radatools_optim']
 # plot_connectivity_circle .html#mne.viz.plot_connectivity_circle"
 # target="_blank">spectral_connectivity function</a>
 
-from graphpype.pipelines.conmat_to_graph import create_pipeline_conmat_to_graph_density # noqa
+from graphpype.pipelines import create_pipeline_conmat_to_graph_density
 
 graph_workflow = create_pipeline_conmat_to_graph_density(
     data_path, con_den=con_den, optim_seq=radatools_optim)
