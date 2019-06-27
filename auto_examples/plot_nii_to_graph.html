@@ -233,7 +233,7 @@ So, these two nodes taken together can grab data.</p>
 <span class="c1"># The optimisation sequence</span>
 <span class="n">radatools_optim</span> <span class="o">=</span> <span class="n">data_nii</span><span class="p">[</span><span class="s1">&#39;radatools_optim&#39;</span><span class="p">]</span>
 
-<span class="kn">from</span> <span class="nn">graphpype.pipelines.conmat_to_graph</span> <span class="kn">import</span> <span class="n">create_pipeline_conmat_to_graph_density</span> <span class="c1">## noqa</span>
+<span class="kn">from</span> <span class="nn">graphpype.pipelines</span> <span class="kn">import</span> <span class="n">create_pipeline_conmat_to_graph_density</span> <span class="c1">## noqa</span>
 
 <span class="n">graph_workflow</span> <span class="o">=</span> <span class="n">create_pipeline_conmat_to_graph_density</span><span class="p">(</span>
     <span class="n">data_path</span><span class="p">,</span> <span class="n">con_den</span><span class="o">=</span><span class="n">con_den</span><span class="p">,</span> <span class="n">optim_seq</span><span class="o">=</span><span class="n">radatools_optim</span><span class="p">)</span>
@@ -298,7 +298,7 @@ here correspond to how we connected the nodes.</p>
 </pre></div>
 </div>
 <img alt="../_images/sphx_glr_plot_nii_to_graph_002.png" class="sphx-glr-single-img" src="../_images/sphx_glr_plot_nii_to_graph_002.png" />
-<p><strong>Total running time of the script:</strong> ( 0 minutes  1.067 seconds)</p>
+<p><strong>Total running time of the script:</strong> ( 0 minutes  1.287 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-nii-to-graph-py">
 <div class="sphx-glr-download docutils container">
 <a class="reference download internal" download="" href="../_downloads/97b36fc9fb5622c5a9b3f531e50659f1/plot_nii_to_graph.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_nii_to_graph.py</span></code></a></div>

@@ -221,7 +221,7 @@ So, these two nodes taken together can grab data.
     # The optimisation sequence
     radatools_optim = data_nii['radatools_optim']
 
-    from graphpype.pipelines.conmat_to_graph import create_pipeline_conmat_to_graph_density ## noqa
+    from graphpype.pipelines import create_pipeline_conmat_to_graph_density ## noqa
 
     graph_workflow = create_pipeline_conmat_to_graph_density(
         data_path, con_den=con_den, optim_seq=radatools_optim)
@@ -338,7 +338,7 @@ Finally, we are now ready to execute our workflow.
 
 
 
-**Total running time of the script:** ( 0 minutes  1.067 seconds)
+**Total running time of the script:** ( 0 minutes  1.287 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_nii_to_graph.py:

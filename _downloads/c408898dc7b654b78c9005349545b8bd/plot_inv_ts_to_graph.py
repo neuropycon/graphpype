@@ -86,7 +86,7 @@ datasource.inputs.sort_filelist = True
 ###############################################################################
 # We then use the pipeline used in the previous example :ref:`conmat_to_graph pipeline <conmat_to_graph>`
 
-from ephypype.pipelines.ts_to_conmat import create_pipeline_time_series_to_spectral_connectivity # noqa
+from ephypype.pipelines import create_pipeline_time_series_to_spectral_connectivity # noqa
 
 spectral_workflow = create_pipeline_time_series_to_spectral_connectivity(
     data_path, con_method=con_method,

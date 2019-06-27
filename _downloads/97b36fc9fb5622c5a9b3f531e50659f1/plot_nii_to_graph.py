@@ -131,7 +131,7 @@ con_den = data_nii['con_den']
 # The optimisation sequence
 radatools_optim = data_nii['radatools_optim']
 
-from graphpype.pipelines.conmat_to_graph import create_pipeline_conmat_to_graph_density ## noqa
+from graphpype.pipelines import create_pipeline_conmat_to_graph_density ## noqa
 
 graph_workflow = create_pipeline_conmat_to_graph_density(
     data_path, con_den=con_den, optim_seq=radatools_optim)
