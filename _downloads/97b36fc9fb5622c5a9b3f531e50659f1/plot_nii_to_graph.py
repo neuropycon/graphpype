@@ -10,11 +10,16 @@ in NIFTI format.
 The **input** data should be preprocessed (i.e. realigned, coregistered, and segmented), and normalized in the same space (e.g. MNI
 space) as the template used to define the nodes in the graph.
 
-The data used in this example are the anat and func from the sub-01 in the  OpenNeuro database ds000208_R1.0.0,  https://openneuro.org/datasets/ds000208/versions/00001, after preprocessing realized with Nipype pipeline create_preprocess_struct_to_mean_funct_4D_spm12, with parameters:
+The data used in this example are the anat and func from the sub-01 in the  `OpenNeuro database ds000208_R1.0.0 <https://openneuro.org/datasets/ds000208/versions/00001>`_, after preprocessing realized with Nipype pipeline `create_preprocess_struct_to_mean_funct_4D_spm12 <https://github.com/davidmeunier79/nipype/blob/master/nipype/workflows/fmri/spm/preprocess.py>`_, with parameters:
+
 * TR = 2.5,
-* slice_timing = False,
-* fast_segmenting = True,
-* fwhm = [7.5,7.5,8],
+
+* slice_timing = False
+
+* fast_segmenting = True
+
+* fwhm = [7.5,7.5,8]
+
 * nb_scans_to_remove = 0
 
 The template was generated from the HCP template called HCPMMP1_on_MNI152_ICBM2009a_nlin, by taking a mirror for the right hemisphere and compute a template with 360 ROIS
