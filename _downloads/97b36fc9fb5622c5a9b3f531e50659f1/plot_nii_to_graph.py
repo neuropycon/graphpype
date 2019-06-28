@@ -7,14 +7,25 @@ Compute connecivity matrices and graph properties from nii files
 The nii_to_graph pipeline performs graph analysis from functional MRI file
 in NIFTI format.
 
-The **input** data should be a preprocessed, and in the same space (e.g. MNI
+The **input** data should be preprocessed (i.e. realigned, coregistered, and segmented), and normalized in the same space (e.g. MNI
 space) as the template used to define the nodes in the graph.
+
+The data used in this example are the anat and func from the sub-01 in the  OpenNeuro database ds000208_R1.0.0,  https://openneuro.org/datasets/ds000208/versions/00001, after preprocessing realized with Nipype pipeline create_preprocess_struct_to_mean_funct_4D_spm12, with parameters:
+* TR = 2.5,
+* slice_timing = False,
+* fast_segmenting = True,
+* fwhm = [7.5,7.5,8],
+* nb_scans_to_remove = 0
+
+The template was generated from the HCP template called HCPMMP1_on_MNI152_ICBM2009a_nlin, by taking a mirror for the right hemisphere and compute a template with 360 ROIS
 """
 
 # Authors: David Meunier <david_meunier_79@hotmail.fr>
 
 # License: BSD (3-clause)
 # sphinx_gallery_thumbnail_number = 2
+
+
 import os
 import os.path as op
 
@@ -25,6 +36,9 @@ import nipype.interfaces.io as nio
 
 import json  # noqa
 import pprint  # noqa
+
+###############################################################################
+# Origin of the data
 
 ###############################################################################
 # Check if data are available

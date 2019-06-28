@@ -111,12 +111,21 @@
 <span id="nii-to-graph"></span><span id="sphx-glr-auto-examples-plot-nii-to-graph-py"></span><h1>Compute connecivity matrices and graph properties from nii files<a class="headerlink" href="#compute-connecivity-matrices-and-graph-properties-from-nii-files" title="Permalink to this headline">¶</a></h1>
 <p>The nii_to_graph pipeline performs graph analysis from functional MRI file
 in NIFTI format.</p>
-<p>The <strong>input</strong> data should be a preprocessed, and in the same space (e.g. MNI
+<p>The <strong>input</strong> data should be preprocessed (i.e. realigned, coregistered, and segmented), and normalized in the same space (e.g. MNI
 space) as the template used to define the nodes in the graph.</p>
+<p>The data used in this example are the anat and func from the sub-01 in the  OpenNeuro database ds000208_R1.0.0,  <a class="reference external" href="https://openneuro.org/datasets/ds000208/versions/00001">https://openneuro.org/datasets/ds000208/versions/00001</a>, after preprocessing realized with Nipype pipeline create_preprocess_struct_to_mean_funct_4D_spm12, with parameters:
+* TR = 2.5,
+* slice_timing = False,
+* fast_segmenting = True,
+* fwhm = [7.5,7.5,8],
+* nb_scans_to_remove = 0</p>
+<p>The template was generated from the HCP template called HCPMMP1_on_MNI152_ICBM2009a_nlin, by taking a mirror for the right hemisphere and compute a template with 360 ROIS</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Authors: David Meunier &lt;david_meunier_79@hotmail.fr&gt;</span>
 
 <span class="c1"># License: BSD (3-clause)</span>
 <span class="c1"># sphinx_gallery_thumbnail_number = 2</span>
+
+
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">os.path</span> <span class="kn">as</span> <span class="nn">op</span>
 
@@ -129,6 +138,7 @@ space) as the template used to define the nodes in the graph.</p>
 <span class="kn">import</span> <span class="nn">pprint</span>  <span class="c1"># noqa</span>
 </pre></div>
 </div>
+<p>Origin of the data</p>
 <p>Check if data are available</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">graphpype.utils_tests</span> <span class="kn">import</span> <span class="n">load_test_data</span>
 
@@ -298,7 +308,7 @@ here correspond to how we connected the nodes.</p>
 </pre></div>
 </div>
 <img alt="../_images/sphx_glr_plot_nii_to_graph_002.png" class="sphx-glr-single-img" src="../_images/sphx_glr_plot_nii_to_graph_002.png" />
-<p><strong>Total running time of the script:</strong> ( 0 minutes  1.287 seconds)</p>
+<p><strong>Total running time of the script:</strong> ( 0 minutes  1.029 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-nii-to-graph-py">
 <div class="sphx-glr-download docutils container">
 <a class="reference download internal" download="" href="../_downloads/97b36fc9fb5622c5a9b3f531e50659f1/plot_nii_to_graph.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_nii_to_graph.py</span></code></a></div>
@@ -320,7 +330,7 @@ here correspond to how we connected the nodes.</p>
       
     </p>
     <p>
-        &copy; Copyright 2019, Neuropycon Developers. Last updated on 2019-06-27.<br/>
+        &copy; Copyright 2019, Neuropycon Developers. Last updated on 2019-06-28.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.2.<br/>
     </p>
   </div>
