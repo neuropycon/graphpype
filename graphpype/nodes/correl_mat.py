@@ -178,7 +178,6 @@ class ExtractTS(BaseInterface):
         if isdefined(self.inputs.coord_rois_file):
 
             coord_rois = np.loadtxt(self.inputs.coord_rois_file)
-
             subj_coord_rois = coord_rois[keep_rois, :]
 
             # saving subject ROIs
@@ -398,6 +397,8 @@ class IntersectMask(BaseInterface):
         # if ROI coordinates
         if isdefined(coords_rois_file):
             coords_rois = np.loadtxt(coords_rois_file)
+            print(coords_rois.shape)
+            print(index_corres)
             filtered_coords_rois = coords_rois[index_corres, :]
             filtered_coords_rois_file = os.path.abspath(
                 "filtered_coords_rois.txt")
@@ -917,6 +918,9 @@ class RegressCovar(BaseInterface):
 
         else:
             mean_wm_ts = None
+
+        print(mean_wm_ts)
+        print(mean_wm_ts.shape)
 
         regs = (rp, mean_csf_ts, mean_wm_ts)
 

@@ -18,12 +18,13 @@ def return_data_img_from_roi_mask(roi_mask_file, data_vect):
 
     err_msg = "warning, ROI roi_mask not compatible with data_vect"
 
-    assert np.all(np.arange(data_vect.shape[0]) == unique_vals), err_msg
+    # assert np.all(np.arange(data_vect.shape[0]) == unique_vals), err_msg
+    assert data_vect.shape[0] == unique_vals.shape[0], err_msg
 
     data = np.zeros((roi_mask.shape), dtype=data_vect.dtype) - 1
 
-    for roi_index in unique_vals:
-        data[roi_mask_data == roi_index] = data_vect[roi_index]
+    for i, roi_index in enumerate(unique_vals):
+        data[roi_mask_data == roi_index] = data_vect[i]
 
     data_img = nib.Nifti1Image(data, roi_mask.affine, roi_mask.header)
     return data_img

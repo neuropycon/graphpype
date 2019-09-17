@@ -3,22 +3,16 @@ import numpy as np
 import nibabel as nib
 
 from graphpype.utils_img import (return_data_img_from_roi_mask)
+from graphpype.utils_tests import load_test_data
 
-try:
-    import neuropycon_data as nd
-
-except ImportError:
-    print("neuropycon_data not installed")
-
-data_path = os.path.join(nd.__path__[0], "data", "data_nii")
-indexed_mask_file = os.path.join(data_path, "Atlas", "indexed_mask-Atlas.nii")
+data_path = load_test_data("data_nii")
+indexed_mask_file = os.path.join(data_path, "ROI_HCP",
+                                 "indexed_mask-ROI_HCP.nii")
 
 
-def test_neuropycon_data():
-    """test if neuropycon_data is installed"""
-    assert os.path.exists(nd.__path__[0])
-    assert os.path.exists(os.path.join(nd.__path__[0], 'data'))
-    assert os.path.exists(os.path.join(nd.__path__[0], 'data', 'data_nii'))
+def test_data():
+    """test if test_data is accessible"""
+    assert os.path.exists(data_path)
     assert os.path.exists(indexed_mask_file)
 
 

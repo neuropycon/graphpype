@@ -11,26 +11,21 @@ from graphpype.utils_cor import (mean_select_mask_data,
                                  where_in_labels,
                                  return_corres_correl_mat_labels)
 
+from graphpype.utils_tests import load_test_data
 
-try:
-    import neuropycon_data as nd
-
-except ImportError:
-    print("neuropycon_data not installed")
-
-
-data_path = os.path.join(nd.__path__[0], "data", "data_nii")
-img_file = os.path.join(data_path, "sub-test_task-rs_bold.nii")
-mask_file = os.path.join(data_path, "sub-test_mask-anatGM.nii")
-indexed_mask_file = os.path.join(data_path, "Atlas", "indexed_mask-Atlas.nii")
+data_path = load_test_data("data_nii")
+img_file = os.path.join(data_path, "wrsub-01_task-rest_bold.nii")
+mask_file = os.path.join(data_path, "rwc1sub-01_T1w.nii")
+indexed_mask_file = os.path.join(data_path, "ROI_HCP",
+                                 "indexed_mask-ROI_HCP.nii")
 
 
-def test_neuropycon_data():
-    """test if neuropycon_data is installed"""
-    assert os.path.exists(nd.__path__[0])
-    assert os.path.exists(os.path.join(nd.__path__[0], 'data'))
-    assert os.path.exists(os.path.join(nd.__path__[0], 'data', 'data_nii'))
+def test_data():
+    """test if test_data is accessible"""
+    assert os.path.exists(data_path)
     assert os.path.exists(img_file)
+    assert os.path.exists(mask_file)
+    assert os.path.exists(indexed_mask_file)
 
 
 # test selecting signal from ROIs
@@ -51,7 +46,7 @@ def test_mean_select_indexed_mask_data():
     data_img = nib.load(img_file).get_data()
     data_indexed_mask = nib.load(indexed_mask_file).get_data()
     mean_masked_ts, keep_rois = mean_select_indexed_mask_data(
-        data_img, data_indexed_mask)
+        data_img, data_indexed_mask, background_val=0.0)
 
     assert mean_masked_ts.shape[1] == data_img.shape[3]
     assert keep_rois.shape[0] == len(np.unique(data_indexed_mask))-1

@@ -12,6 +12,7 @@ The **input** data should be a time series matrix in **npy** format.
 """
 # Authors: David Meunier <david_meunier_79@hotmail.fr>
 # License: BSD (3-clause)
+# sphinx_gallery_thumbnail_number = 2
 import os.path as op
 import nipype.pipeline.engine as pe
 import nipype.interfaces.io as nio
@@ -21,15 +22,10 @@ from ephypype.nodes import get_frequency_band
 
 ###############################################################################
 # Check if data are available
-# needs to import neuropycon_data
-# 'pip install neuropycon_data' should do the job...
-try:
-    import neuropycon_data as nd
-except ImportError:
-    print("Warning, neuropycon_data not found")
-    exit()
 
-data_path = op.join(nd.__path__[0], "data", "data_inv_ts")
+from graphpype.utils_tests import load_test_data
+
+data_path = load_test_data("data_inv_ts")
 
 ###############################################################################
 # First, we create our workflow and specify the `base_dir` which tells
@@ -90,7 +86,7 @@ datasource.inputs.sort_filelist = True
 ###############################################################################
 # We then use the pipeline used in the previous example :ref:`conmat_to_graph pipeline <conmat_to_graph>`
 
-from ephypype.pipelines.ts_to_conmat import create_pipeline_time_series_to_spectral_connectivity # noqa
+from ephypype.pipelines import create_pipeline_time_series_to_spectral_connectivity # noqa
 
 spectral_workflow = create_pipeline_time_series_to_spectral_connectivity(
     data_path, con_method=con_method,
@@ -138,7 +134,7 @@ radatools_optim = data_graph['radatools_optim']
 #
 # * :class:`graphpype.interfaces.radatools.rada.NetPropRada` computes most of the classical graph-based metrics (Small-World, Efficiency, Assortativity, etc.)
 
-from graphpype.pipelines.conmat_to_graph import create_pipeline_conmat_to_graph_density ## noqa
+from graphpype.pipelines import create_pipeline_conmat_to_graph_density
 
 graph_workflow = create_pipeline_conmat_to_graph_density(
     data_path, con_den=con_den, optim_seq=radatools_optim)
