@@ -76,7 +76,8 @@ datasource.inputs.sort_filelist = True
 import json  # noqa
 import pprint  # noqa
 
-data_graph = json.load(open("params_graph.json"))
+data_graph = json.load(open(op.join(op.dirname("__file__"),
+                                  "params_graph.json")))
 pprint.pprint({'graph parameters': data_graph})
 
 # density of the threshold
@@ -167,27 +168,30 @@ coords_file = op.join(data_path, "MNI_coords.txt")
 
 from visbrain.objects import SceneObj, BrainObj # noqa
 
-sc = SceneObj(size=(1000, 1000), bgcolor=(1, 1, 1))
+sc = SceneObj(size=(1500, 1500), bgcolor=(1, 1, 1))
 
-for nf, freq_band_name in enumerate(freq_band_names):
+views = ['left','top']
 
-    res_path = op.join(
-        data_path, graph_analysis_name,
-        "graph_den_pipe_den_"+str(con_den).replace(".", "_"),
-        "_freq_band_name_"+freq_band_name)
+for i_v,view in enumerate(views):
+    for nf, freq_band_name in enumerate(freq_band_names):
 
-    lol_file = op.join(res_path, "community_rada", "Z_List.lol")
-    net_file = op.join(res_path, "prep_rada", "Z_List.net")
+        res_path = op.join(
+            data_path, graph_analysis_name,
+            "graph_den_pipe_den_"+str(con_den).replace(".", "_"),
+            "_freq_band_name_"+freq_band_name)
 
-    b_obj = BrainObj("B1", translucent=True)
-    sc.add_to_subplot(
-        b_obj, row=nf, use_this_cam=True, rotate='left',
-        title=("Modules for {} band".format(freq_band_name)),
-        title_size=14, title_bold=True, title_color='black')
+        lol_file = op.join(res_path, "community_rada", "Z_List.lol")
+        net_file = op.join(res_path, "prep_rada", "Z_List.net")
 
-    c_obj,s_obj = visu_graph_modules(
-        lol_file=lol_file, net_file=net_file, coords_file=coords_file, inter_modules=False, z_offset=+50)
-    sc.add_to_subplot(c_obj, row=nf)
-    sc.add_to_subplot(s_obj, row=nf)
+        b_obj = BrainObj("B1", translucent=True)
+        sc.add_to_subplot(
+            b_obj, row=nf, col = i_v, use_this_cam=True, rotate=view,
+            title=("Modules for {} band".format(freq_band_name)),
+            title_size=14, title_bold=True, title_color='black')
+
+        c_obj,s_obj = visu_graph_modules(
+            lol_file=lol_file, net_file=net_file, coords_file=coords_file, inter_modules=False, z_offset=+50)
+        sc.add_to_subplot(c_obj, col = i_v, row=nf)
+        sc.add_to_subplot(s_obj, col = i_v, row=nf)
 
 sc.preview()

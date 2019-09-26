@@ -72,7 +72,7 @@ main_workflow.base_dir = data_path
 ###############################################################################
 # Then we create a node to pass input filenames to DataGrabber from nipype
 
-data_nii = json.load(open("params_nii.json"))
+data_nii = json.load(open(op.join(op.dirname("__file__"),"params_nii.json")))
 pprint.pprint({'graph parameters': data_nii})
 
 subject_ids = data_nii["subject_ids"]
@@ -193,7 +193,7 @@ main_workflow.run()
 from graphpype.utils_visbrain import visu_graph_modules
 from visbrain.objects import SceneObj, BrainObj # noqa
 
-sc = SceneObj(size=(500, 500), bgcolor=(1,1,1))
+sc = SceneObj(size=(1000, 500), bgcolor=(1,1,1))
 
 res_path = op.join(
     data_path, conmat_analysis_name,
@@ -203,16 +203,20 @@ res_path = op.join(
 lol_file = op.join(res_path, "community_rada", "Z_List.lol")
 net_file = op.join(res_path, "prep_rada", "Z_List.net")
 
-b_obj = BrainObj("B1", translucent=True)
-sc.add_to_subplot(b_obj, row=0, use_this_cam=True, rotate='left',
-                    title=("Modules"),
-                    title_size=14, title_bold=True, title_color='black')
+views = ["left",'top']
 
-c_obj,s_obj = visu_graph_modules(lol_file=lol_file, net_file=net_file,
-                            coords_file=ROI_MNI_coords_file,
-                            inter_modules=False)
+for i_v,view in enumerate(views):
 
-sc.add_to_subplot(c_obj, row=0)
-sc.add_to_subplot(s_obj, row=0)
+    b_obj = BrainObj("B1", translucent=True)
+    sc.add_to_subplot(b_obj, row=0, col = i_v, use_this_cam=True, rotate=view,
+                        title=("Modules"),
+                        title_size=14, title_bold=True, title_color='black')
+
+    c_obj,s_obj = visu_graph_modules(lol_file=lol_file, net_file=net_file,
+                                coords_file=ROI_MNI_coords_file,
+                                inter_modules=False)
+
+    sc.add_to_subplot(c_obj, row=0, col = i_v)
+    sc.add_to_subplot(s_obj, row=0, col = i_v)
 
 sc.preview()

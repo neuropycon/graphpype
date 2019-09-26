@@ -130,6 +130,10 @@ requires both graphpype AND ephypype to be installed.</p>
 <span class="n">data_path</span> <span class="o">=</span> <span class="n">load_test_data</span><span class="p">(</span><span class="s2">&quot;data_inv_ts&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>data_dirpath /home/INT/meunier.d/miniconda3/Packages/graphpype/graphpype/../data already exists
+</pre></div>
+</div>
 <p>First, we create our workflow and specify the <cite>base_dir</cite> which tells
 nipype the directory in which to store the outputs.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># workflow directory within the `base_dir`</span>
@@ -144,7 +148,8 @@ from a json as a dictionnary</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">json</span>  <span class="c1"># noqa</span>
 <span class="kn">import</span> <span class="nn">pprint</span>  <span class="c1"># noqa</span>
 
-<span class="n">data_con</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="s2">&quot;params_connectivity.json&quot;</span><span class="p">))</span>
+<span class="n">data_con</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="s2">&quot;__file__&quot;</span><span class="p">),</span>
+                                  <span class="s2">&quot;params_connectivity.json&quot;</span><span class="p">)))</span>
 <span class="n">pprint</span><span class="o">.</span><span class="n">pprint</span><span class="p">({</span><span class="s1">&#39;connectivity parameters&#39;</span><span class="p">:</span> <span class="n">data_con</span><span class="p">})</span>
 
 <span class="n">freq_band_names</span> <span class="o">=</span> <span class="n">data_con</span><span class="p">[</span><span class="s1">&#39;freq_band_names&#39;</span><span class="p">]</span>
@@ -204,7 +209,8 @@ the values in the infosource node</p>
 </div>
 <p>We now use a json file for describing the graph parameters, loaded
 from a json as a dictionnary</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">data_graph</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="s2">&quot;params_graph.json&quot;</span><span class="p">))</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">data_graph</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="s2">&quot;__file__&quot;</span><span class="p">),</span>
+                                  <span class="s2">&quot;params_graph.json&quot;</span><span class="p">)))</span>
 <span class="n">pprint</span><span class="o">.</span><span class="n">pprint</span><span class="p">({</span><span class="s1">&#39;graph parameters&#39;</span><span class="p">:</span> <span class="n">data_graph</span><span class="p">})</span>
 
 <span class="c1"># density of the threshold. This parameter corrdesponds to the percentage of</span>
@@ -378,7 +384,7 @@ main_workflow.run(plugin=’MultiProc’, plugin_args={‘n_procs’: 2})</p>
 </pre></div>
 </div>
 <img alt="../_images/sphx_glr_plot_inv_ts_to_graph_003.png" class="sphx-glr-single-img" src="../_images/sphx_glr_plot_inv_ts_to_graph_003.png" />
-<p><strong>Total running time of the script:</strong> ( 0 minutes  7.075 seconds)</p>
+<p><strong>Total running time of the script:</strong> ( 0 minutes  5.389 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-inv-ts-to-graph-py">
 <div class="sphx-glr-download docutils container">
 <a class="reference download internal" download="" href="../_downloads/c408898dc7b654b78c9005349545b8bd/plot_inv_ts_to_graph.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_inv_ts_to_graph.py</span></code></a></div>

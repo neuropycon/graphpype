@@ -44,7 +44,8 @@ main_workflow.base_dir = data_path
 import json  # noqa
 import pprint  # noqa
 
-data_con = json.load(open("params_connectivity.json"))
+data_con = json.load(open(op.join(op.dirname("__file__"),
+                                  "params_connectivity.json")))
 pprint.pprint({'connectivity parameters': data_con})
 
 freq_band_names = data_con['freq_band_names']
@@ -97,7 +98,8 @@ spectral_workflow = create_pipeline_time_series_to_spectral_connectivity(
 # We now use a json file for describing the graph parameters, loaded
 # from a json as a dictionnary
 
-data_graph = json.load(open("params_graph.json"))
+data_graph = json.load(open(op.join(op.dirname("__file__"),
+                                  "params_graph.json")))
 pprint.pprint({'graph parameters': data_graph})
 
 # density of the threshold. This parameter corrdesponds to the percentage of
