@@ -92,7 +92,7 @@ def visu_graph_signif(indexed_mat_file, coords_file, labels_file,
 
 
 c_colval_modules = {0: "red", 1: "orange", 2: "blue", 3: "green", 4: "yellow",
-                    5: "darksalmon", 6: "brown"}
+                    5: "darksalmon", 6: "brown", 7: "black"}
 
 
 def visu_graph_modules(net_file, lol_file, coords_file, labels_file=0,
@@ -146,7 +146,7 @@ def visu_graph_modules(net_file, lol_file, coords_file, labels_file=0,
         if i in c_colval.keys():
             colors_nodes.append(c_colval[i])
         else:
-            colors_nodes.append("grey")
+            colors_nodes.append("black")
 
     if labels_file:
         corres_labels = np_labels[node_corres]
@@ -186,14 +186,17 @@ def visu_graph_modules_roles(net_file, lol_file, roles_file, coords_file,
     # net file
     node_corres, sparse_matrix = read_Pajek_corres_nodes_and_sparse_matrix(
         net_file)
+    corres_coords = coords[node_corres, :]
 
     corres_coords = coords[node_corres, :]
 
     # lol file
     community_vect = read_lol_file(lol_file)
 
-    """Create the connectivity object :"""
+    max_col = np.array([val for val in c_colval.keys()]).max()
+    community_vect[community_vect > max_col] = max_col
 
+    """Create the connectivity object :"""
     c_connect = np.array(compute_modular_matrix(
         sparse_matrix, community_vect), dtype='float64')
 
@@ -214,25 +217,25 @@ def visu_graph_modules_roles(net_file, lol_file, roles_file, coords_file,
 
     # prov_hubs
     prov_hubs = (
-        node_roles[node_corres, 0] == 2) & (node_roles[node_corres, 1] == 1)
+        node_roles[:, 0] == 2) & (node_roles[:, 1] == 1)
     coords_prov_hubs = corres_coords[prov_hubs]
     colors_prov_hubs = [c_colval[i] for i in community_vect[prov_hubs]]
 
     # prov_no_hubs
     prov_no_hubs = (
-        node_roles[node_corres, 0] == 1) & (node_roles[node_corres, 1] == 1)
+        node_roles[:, 0] == 1) & (node_roles[:, 1] == 1)
     coords_prov_no_hubs = corres_coords[prov_no_hubs]
     colors_prov_no_hubs = [c_colval[i] for i in community_vect[prov_no_hubs]]
 
     # connec_hubs
     connec_hubs = (
-        node_roles[node_corres, 0] == 2) & (node_roles[node_corres, 1] == 2)
+        node_roles[:, 0] == 2) & (node_roles[:, 1] == 2)
     coords_connec_hubs = corres_coords[connec_hubs]
     colors_connec_hubs = [c_colval[i] for i in community_vect[connec_hubs]]
 
     # connec_no_hubs
     connec_no_hubs = (
-        node_roles[node_corres, 0] == 1) & (node_roles[node_corres, 1] == 2)
+        node_roles[:, 0] == 1) & (node_roles[:, 1] == 2)
     coords_connec_no_hubs = corres_coords[connec_no_hubs]
     colors_connec_no_hubs = [
         c_colval[i] for i in community_vect[connec_no_hubs]]
