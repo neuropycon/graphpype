@@ -23,13 +23,15 @@ The data used in this example are the anat and func from the sub-01 in the  `Ope
 * nb_scans_to_remove = 0
 
 The template was generated from the HCP template called HCPMMP1_on_MNI152_ICBM2009a_nlin, by taking a mirror for the right hemisphere and compute a template with 360 ROIS
+
+The **input** data should be a preprocessed, and in the same space (e.g. MNI
+space) as the template used to define the nodes in the graph.
 """
 
 # Authors: David Meunier <david_meunier_79@hotmail.fr>
 
 # License: BSD (3-clause)
 # sphinx_gallery_thumbnail_number = 2
-
 
 import os
 import os.path as op
@@ -43,9 +45,7 @@ import json  # noqa
 import pprint  # noqa
 
 ###############################################################################
-# Origin of the data
 
-###############################################################################
 # Check if data are available
 
 from graphpype.utils_tests import load_test_data
@@ -99,9 +99,9 @@ datasource.inputs.base_directory = data_path
 datasource.inputs.template = '%ssub-%s%s%s%s'
 datasource.inputs.template_args = dict(
 img_file=[["wr",'subject_id',"_task-",'session',"_bold.nii"]],
-gm_anat_file=[["wc1",'subject_id',"",'',"_T1w.nii"]],
-wm_anat_file=[["wc2",'subject_id',"",'',"_T1w.nii"]],
-csf_anat_file=[["wc3",'subject_id',"",'',"_T1w.nii"]],
+gm_anat_file=[["rwc1",'subject_id',"",'',"_T1w.nii"]],
+wm_anat_file=[["rwc2",'subject_id',"",'',"_T1w.nii"]],
+csf_anat_file=[["rwc3",'subject_id',"",'',"_T1w.nii"]],
 rp_file=[["rp_",'subject_id',"_task-",'session',"_bold.txt"]],
        )
 

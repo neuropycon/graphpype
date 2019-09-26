@@ -182,11 +182,12 @@ plt.show()
 
 main_workflow.config['execution'] = {'remove_unnecessary_outputs': 'false'}
 
-##############################################################################
+###############################################################################
 # Run workflow locally on 2 CPUs in parrallel
 #main_workflow.run(plugin='MultiProc', plugin_args={'n_procs': 2})
 
-#############################################################################
+
+###############################################################################
 # plotting modules
 
 from graphpype.utils_visbrain import visu_graph_modules # noqa
@@ -216,6 +217,7 @@ for i_v,view in enumerate(views):
                           title=("Modules for {} band".format(freq_band_name)),
                           title_size=14, title_bold=True, title_color='black')
 
+
         c_obj,s_obj = visu_graph_modules(lol_file=lol_file, net_file=net_file,
                                 coords_file=coords_file,
                                 inter_modules=False)
@@ -224,8 +226,6 @@ for i_v,view in enumerate(views):
         sc.add_to_subplot(s_obj, row=nf, col = i_v)
 
 sc.preview()
-
-
 
 ################################################################################
 # plotting modules and roles
@@ -242,7 +242,6 @@ sc = SceneObj(size=(1000, 1000), bgcolor=(1,1,1))
 views = ["left",'top']
 
 for i_v,view in enumerate(views):
-
     for nf, freq_band_name in enumerate(freq_band_names):
         res_path = op.join(
             data_path, graph_analysis_name,
