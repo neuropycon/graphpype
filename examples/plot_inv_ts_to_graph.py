@@ -44,7 +44,8 @@ main_workflow.base_dir = data_path
 import json  # noqa
 import pprint  # noqa
 
-data_con = json.load(open("params_connectivity.json"))
+data_con = json.load(open(op.join(op.dirname("__file__"),
+                                  "params_connectivity.json")))
 pprint.pprint({'connectivity parameters': data_con})
 
 freq_band_names = data_con['freq_band_names']
@@ -97,7 +98,8 @@ spectral_workflow = create_pipeline_time_series_to_spectral_connectivity(
 # We now use a json file for describing the graph parameters, loaded
 # from a json as a dictionnary
 
-data_graph = json.load(open("params_graph.json"))
+data_graph = json.load(open(op.join(op.dirname("__file__"),
+                                  "params_graph.json")))
 pprint.pprint({'graph parameters': data_graph})
 
 # density of the threshold. This parameter corrdesponds to the percentage of
@@ -182,11 +184,12 @@ plt.show()
 
 main_workflow.config['execution'] = {'remove_unnecessary_outputs': 'false'}
 
-##############################################################################
+###############################################################################
 # Run workflow locally on 2 CPUs in parrallel
-main_workflow.run(plugin='MultiProc', plugin_args={'n_procs': 2})
+#main_workflow.run(plugin='MultiProc', plugin_args={'n_procs': 2})
 
-##############################################################################
+
+###############################################################################
 # plotting modules
 
 from graphpype.utils_visbrain import visu_graph_modules # noqa
@@ -196,28 +199,33 @@ coords_file = op.join(data_path, "label_centroid.txt")
 
 from visbrain.objects import SceneObj, BrainObj # noqa
 
-sc = SceneObj(size=(500, 1000), bgcolor=(1,1,1))
+sc = SceneObj(size=(1000, 1000), bgcolor=(1,1,1))
 
-for nf, freq_band_name in enumerate(freq_band_names):
-    res_path = op.join(
-        data_path, graph_analysis_name,
-        "graph_den_pipe_den_"+str(con_den).replace(".", "_"),
-        "_freq_band_name_"+freq_band_name+"_subject_id_sub-0003")
+views = ["left",'top']
 
-    lol_file = op.join(res_path, "community_rada", "Z_List.lol")
-    net_file = op.join(res_path, "prep_rada", "Z_List.net")
+for i_v,view in enumerate(views):
+    for nf, freq_band_name in enumerate(freq_band_names):
+        res_path = op.join(
+            data_path, graph_analysis_name,
+            "graph_den_pipe_den_"+str(con_den).replace(".", "_"),
+            "_freq_band_name_"+freq_band_name+"_subject_id_sub-0003")
 
-    b_obj = BrainObj("B1", translucent=True)
-    sc.add_to_subplot(b_obj, row=nf, use_this_cam=True, rotate='left',
-                      title=("Modules for {} band".format(freq_band_name)),
-                      title_size=14, title_bold=True, title_color='black')
+        lol_file = op.join(res_path, "community_rada", "Z_List.lol")
+        net_file = op.join(res_path, "prep_rada", "Z_List.net")
 
-    c_obj,s_obj = visu_graph_modules(lol_file=lol_file, net_file=net_file,
-                               coords_file=coords_file,
-                               inter_modules=False)
+        b_obj = BrainObj("B1", translucent=True)
+        sc.add_to_subplot(b_obj, row=nf, col = i_v, use_this_cam=True,
+                          rotate=view,
+                          title=("Modules for {} band".format(freq_band_name)),
+                          title_size=14, title_bold=True, title_color='black')
 
-    sc.add_to_subplot(c_obj, row=nf)
-    sc.add_to_subplot(s_obj, row=nf)
+
+        c_obj,s_obj = visu_graph_modules(lol_file=lol_file, net_file=net_file,
+                                coords_file=coords_file,
+                                inter_modules=False)
+
+        sc.add_to_subplot(c_obj, row=nf, col = i_v)
+        sc.add_to_subplot(s_obj, row=nf, col = i_v)
 
 sc.preview()
 
@@ -231,9 +239,13 @@ coords_file = op.join(data_path, "label_centroid.txt")
 
 from visbrain.objects import SceneObj, BrainObj # noqa
 
-sc = SceneObj(size=(500, 1000), bgcolor=(1,1,1))
+sc = SceneObj(size=(1000, 1000), bgcolor=(1,1,1))
+
+views = ["left",'top']
+
 
 for nf, freq_band_name in enumerate(freq_band_names):
+
     res_path = op.join(
         data_path, graph_analysis_name,
         "graph_den_pipe_den_"+str(con_den).replace(".", "_"),
@@ -243,19 +255,21 @@ for nf, freq_band_name in enumerate(freq_band_names):
     net_file = op.join(res_path, "prep_rada", "Z_List.net")
     roles_file = op.join(res_path, "node_roles", "node_roles.txt")
 
-    b_obj = BrainObj('B1', translucent=True)
-    sc.add_to_subplot(b_obj, row=nf, use_this_cam=True, rotate='left',
-                      title=("Modules and node roles for {} band".format(freq_band_name)),
-                      title_size=14, title_bold=True, title_color='black')
+    for i_v,view in enumerate(views):
+        b_obj = BrainObj('B1', translucent=True)
 
-    c_obj,list_sources = visu_graph_modules_roles(
-        lol_file=lol_file, net_file=net_file, roles_file=roles_file,
-        coords_file=coords_file, inter_modules=True, default_size=10,
-        hub_to_non_hub=3)
+        sc.add_to_subplot(b_obj, row=nf, col = i_v, use_this_cam=True, rotate=view,
+                        title=("Modules and node roles for {} band".format(freq_band_name)),
+                        title_size=14, title_bold=True, title_color='black')
 
-    sc.add_to_subplot(c_obj, row=nf)
+        c_obj,list_sources = visu_graph_modules_roles(
+            lol_file=lol_file, net_file=net_file, roles_file=roles_file,
+            coords_file=coords_file, inter_modules=True, default_size=10,
+            hub_to_non_hub=3)
 
-    for source in list_sources:
-        sc.add_to_subplot(source, row=nf)
+        sc.add_to_subplot(c_obj, row=nf, col = i_v)
+
+        for source in list_sources:
+            sc.add_to_subplot(source, row=nf, col = i_v)
 
 sc.preview()

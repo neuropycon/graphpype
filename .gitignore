@@ -5,6 +5,8 @@
 crash*
 *.egg-info/*
 
+# examples data
+data/*
 # Sphinx documentation
 doc/_build/
 doc/auto_examples/

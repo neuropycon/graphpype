@@ -7,6 +7,23 @@ Compute connecivity matrices and graph properties from nii files
 The nii_to_graph pipeline performs graph analysis from functional MRI file
 in NIFTI format.
 
+The **input** data should be preprocessed (i.e. realigned, coregistered, and segmented), and normalized in the same space (e.g. MNI
+space) as the template used to define the nodes in the graph.
+
+The data used in this example are the anat and func from the sub-01 in the  `OpenNeuro database ds000208_R1.0.0 <https://openneuro.org/datasets/ds000208/versions/00001>`_, after preprocessing realized with Nipype pipeline `create_preprocess_struct_to_mean_funct_4D_spm12 <https://github.com/davidmeunier79/nipype/blob/master/nipype/workflows/fmri/spm/preprocess.py>`_, with parameters:
+
+* TR = 2.5,
+
+* slice_timing = False
+
+* fast_segmenting = True
+
+* fwhm = [7.5,7.5,8]
+
+* nb_scans_to_remove = 0
+
+The template was generated from the HCP template called HCPMMP1_on_MNI152_ICBM2009a_nlin, by taking a mirror for the right hemisphere and compute a template with 360 ROIS
+
 The **input** data should be a preprocessed, and in the same space (e.g. MNI
 space) as the template used to define the nodes in the graph.
 """
@@ -15,6 +32,7 @@ space) as the template used to define the nodes in the graph.
 
 # License: BSD (3-clause)
 # sphinx_gallery_thumbnail_number = 2
+
 import os
 import os.path as op
 
@@ -27,6 +45,7 @@ import json  # noqa
 import pprint  # noqa
 
 ###############################################################################
+
 # Check if data are available
 
 from graphpype.utils_tests import load_test_data
@@ -53,7 +72,7 @@ main_workflow.base_dir = data_path
 ###############################################################################
 # Then we create a node to pass input filenames to DataGrabber from nipype
 
-data_nii = json.load(open("params_nii.json"))
+data_nii = json.load(open(op.join(op.dirname("__file__"),"params_nii.json")))
 pprint.pprint({'graph parameters': data_nii})
 
 subject_ids = data_nii["subject_ids"]
@@ -80,9 +99,9 @@ datasource.inputs.base_directory = data_path
 datasource.inputs.template = '%ssub-%s%s%s%s'
 datasource.inputs.template_args = dict(
 img_file=[["wr",'subject_id',"_task-",'session',"_bold.nii"]],
-gm_anat_file=[["wc1",'subject_id',"",'',"_T1w.nii"]],
-wm_anat_file=[["wc2",'subject_id',"",'',"_T1w.nii"]],
-csf_anat_file=[["wc3",'subject_id',"",'',"_T1w.nii"]],
+gm_anat_file=[["rwc1",'subject_id',"",'',"_T1w.nii"]],
+wm_anat_file=[["rwc2",'subject_id',"",'',"_T1w.nii"]],
+csf_anat_file=[["rwc3",'subject_id',"",'',"_T1w.nii"]],
 rp_file=[["rp_",'subject_id',"_task-",'session',"_bold.txt"]],
        )
 
@@ -171,10 +190,10 @@ main_workflow.run()
 ################################################################################
 ## plotting
 
-from graphpype.utils_visbrain import visu_graph_modules
+from graphpype.utils_visbrain import visu_graph_modules, visu_graph_modules_roles
 from visbrain.objects import SceneObj, BrainObj # noqa
 
-sc = SceneObj(size=(500, 500), bgcolor=(1,1,1))
+sc = SceneObj(size=(1000, 1000), bgcolor=(1,1,1))
 
 res_path = op.join(
     data_path, conmat_analysis_name,
@@ -183,17 +202,39 @@ res_path = op.join(
 
 lol_file = op.join(res_path, "community_rada", "Z_List.lol")
 net_file = op.join(res_path, "prep_rada", "Z_List.net")
+roles_file = op.join(res_path, "node_roles", "node_roles.txt")
 
-b_obj = BrainObj("B1", translucent=True)
-sc.add_to_subplot(b_obj, row=0, use_this_cam=True, rotate='left',
-                    title=("Modules"),
+views = ["left",'top']
+
+for i_v,view in enumerate(views):
+
+    b_obj = BrainObj("B1", translucent=True)
+    sc.add_to_subplot(b_obj, row=0, col = i_v, use_this_cam=True, rotate=view,
+                        title=("Modules"),
+                        title_size=14, title_bold=True, title_color='black')
+
+    c_obj,s_obj = visu_graph_modules(lol_file=lol_file, net_file=net_file,
+                                coords_file=ROI_MNI_coords_file,
+                                inter_modules=False)
+
+    sc.add_to_subplot(c_obj, row=0, col = i_v)
+    sc.add_to_subplot(s_obj, row=0, col = i_v)
+
+    b_obj = BrainObj('B1', translucent=True)
+    sc.add_to_subplot(b_obj, row=1, col = i_v, use_this_cam=True, rotate=view,
+                    title=("Modules and node roles"),
                     title_size=14, title_bold=True, title_color='black')
 
-c_obj,s_obj = visu_graph_modules(lol_file=lol_file, net_file=net_file,
-                            coords_file=ROI_MNI_coords_file,
-                            inter_modules=False)
+    c_obj,list_sources = visu_graph_modules_roles(
+        lol_file=lol_file, net_file=net_file, roles_file=roles_file,
+        coords_file=ROI_MNI_coords_file, inter_modules=True, default_size=10,
+        hub_to_non_hub=3)
 
-sc.add_to_subplot(c_obj, row=0)
-sc.add_to_subplot(s_obj, row=0)
+    sc.add_to_subplot(c_obj, row=1, col = i_v)
+
+    for source in list_sources:
+        sc.add_to_subplot(source, row=1, col = i_v)
+
+
 
 sc.preview()
