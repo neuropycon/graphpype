@@ -13,16 +13,16 @@ def test_gets():
     two_elem_int_list = [1, 2]
     two_elem_int_tuple = (1, 2)
 
-    with pytest.raises(ValueError, message="Expecting ValueError"):
+    with pytest.raises(ValueError):
         get_first(1)
 
-    with pytest.raises(ValueError, message="Expecting ValueError"):
+    with pytest.raises(ValueError):
         get_first([])
 
     assert get_first(two_elem_int_list) == 1
     assert get_first(two_elem_int_tuple) == 1
 
-    with pytest.raises(ValueError, message="Expecting ValueError"):
+    with pytest.raises(ValueError):
         get_second([1])
 
     assert get_second(two_elem_int_list) == 2
@@ -31,10 +31,10 @@ def test_gets():
 
 def test_shows():
     """test show_length and show_files """
-    with pytest.raises(ValueError, message="Expecting ValueError"):
+    with pytest.raises(ValueError):
         show_length(1)
 
-    with pytest.raises(ValueError, message="Expecting ValueError"):
+    with pytest.raises(ValueError):
         show_files(1)
 
 
@@ -67,7 +67,7 @@ def test_checks():
     assert check_dimensions(index_OK, mat_3D_zeros.shape)
     assert check_dimensions(wrong_index, mat_3D_zeros.shape) is False
 
-    with pytest.raises(AssertionError, message="Expecting AssertionError"):
+    with pytest.raises(AssertionError):
         check_np_shapes(mat_3D_zeros, mat_3D_ones)
 
     assert check_np_shapes(mat_3D_zeros.shape, mat_3D_ones.shape)

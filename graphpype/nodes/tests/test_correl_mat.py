@@ -5,19 +5,26 @@ from graphpype.nodes.correl_mat import (ExtractTS, IntersectMask,
                                         ComputeConfCorMat)
 from graphpype.utils import _make_tmp_dir
 
-try:
-    import neuropycon_data as nd
 
-except ImportError:
-    print("neuropycon_data not installed")
-    exit()
+from graphpype.utils_tests import load_test_data
 
-data_path = os.path.join(nd.__path__[0], "data", "data_nii")
-img_file = os.path.join(data_path, "sub-test_task-rs_bold.nii")
-gm_mask_file = os.path.join(data_path, "sub-test_mask-anatGM.nii")
-wm_mask_file = os.path.join(data_path, "sub-test_mask-anatWM.nii")
-csf_mask_file = os.path.join(data_path, "sub-test_mask-anatCSF.nii")
-indexed_mask_file = os.path.join(data_path, "Atlas", "indexed_mask-Atlas.nii")
+data_path = load_test_data("data_nii")
+img_file = os.path.join(data_path, "wrsub-01_task-rest_bold.nii")
+gm_mask_file = os.path.join(data_path, "rwc1sub-01_T1w.nii")
+wm_mask_file = os.path.join(data_path, "rwc2sub-01_T1w.nii")
+csf_mask_file = os.path.join(data_path, "rwc3sub-01_T1w.nii")
+indexed_mask_file = os.path.join(data_path, "ROI_HCP",
+                                 "indexed_mask-ROI_HCP.nii")
+
+
+def test_neuropycon_data():
+    """test if neuropycon_data is installed"""
+    assert os.path.exists(data_path)
+    assert os.path.exists(img_file)
+    assert os.path.exists(gm_mask_file)
+    assert os.path.exists(wm_mask_file)
+    assert os.path.exists(csf_mask_file)
+    assert os.path.exists(indexed_mask_file)
 
 
 def test_extract_ts():
@@ -53,7 +60,8 @@ def test_extract_mean_ts():
 
     extract_mean_ts = ExtractMeanTS()
     extract_mean_ts.inputs.file_4D = img_file
-    extract_mean_ts.inputs.mask_file = wm_mask_file
+    extract_mean_ts.inputs.filter_mask_file = wm_mask_file
+    extract_mean_ts.inputs.filter_thr = 0.9
     extract_mean_ts.inputs.suffix = "wm"
 
     val = extract_mean_ts.run().outputs
@@ -69,13 +77,15 @@ def test_regress_covar():
 
     extract_mean_wm_ts = ExtractMeanTS()
     extract_mean_wm_ts.inputs.file_4D = img_file
-    extract_mean_wm_ts.inputs.mask_file = wm_mask_file
+    extract_mean_wm_ts.inputs.filter_thr = 0.9
+    extract_mean_wm_ts.inputs.filter_mask_file = csf_mask_file
     extract_mean_wm_ts.inputs.suffix = "wm"
     mean_wm_ts_file = extract_mean_wm_ts.run().outputs.mean_masked_ts_file
 
     extract_mean_csf_ts = ExtractMeanTS()
     extract_mean_csf_ts.inputs.file_4D = img_file
-    extract_mean_csf_ts.inputs.mask_file = csf_mask_file
+    extract_mean_csf_ts.inputs.filter_thr = 0.9
+    extract_mean_csf_ts.inputs.filter_mask_file = csf_mask_file
     extract_mean_csf_ts.inputs.suffix = "csf"
     mean_csf_ts_file = extract_mean_csf_ts.run().outputs.mean_masked_ts_file
 
@@ -105,13 +115,15 @@ def test_compute_conf_cor_mat():
 
     extract_mean_wm_ts = ExtractMeanTS()
     extract_mean_wm_ts.inputs.file_4D = img_file
-    extract_mean_wm_ts.inputs.mask_file = wm_mask_file
+    extract_mean_wm_ts.inputs.filter_thr = 0.9
+    extract_mean_wm_ts.inputs.filter_mask_file = csf_mask_file
     extract_mean_wm_ts.inputs.suffix = "wm"
     mean_wm_ts_file = extract_mean_wm_ts.run().outputs.mean_masked_ts_file
 
     extract_mean_csf_ts = ExtractMeanTS()
     extract_mean_csf_ts.inputs.file_4D = img_file
-    extract_mean_csf_ts.inputs.mask_file = csf_mask_file
+    extract_mean_csf_ts.inputs.filter_thr = 0.9
+    extract_mean_csf_ts.inputs.filter_mask_file = csf_mask_file
     extract_mean_csf_ts.inputs.suffix = "csf"
     mean_csf_ts_file = extract_mean_csf_ts.run().outputs.mean_masked_ts_file
 

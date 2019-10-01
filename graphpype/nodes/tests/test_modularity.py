@@ -3,20 +3,26 @@ from graphpype.nodes.modularity import (ComputeNetList,
                                         ComputeNodeRoles, ComputeModuleMatProp)
 from graphpype.utils import _make_tmp_dir
 
-try:
-    import neuropycon_data as nd
+from graphpype.utils_tests import load_test_data
 
-except ImportError:
-    print("neuropycon_data not installed")
-    exit()
+data_path = load_test_data("data_con")
 
-data_path = os.path.join(nd.__path__[0], "data", "data_con")
 conmat_file = os.path.join(data_path, "Z_cor_mat_resid_ts.npy")
 coords_file = os.path.join(data_path, "ROI_MNI_coords-Atlas.txt")
 
 Z_list_file = os.path.join(data_path, "data_graph", "Z_List.txt")
 Pajek_net_file = os.path.join(data_path, "data_graph", "Z_List.net")
 lol_file = os.path.join(data_path, "data_graph", "Z_List.lol")
+
+
+def test_neuropycon_data():
+    """test if test_data is accessible"""
+    assert os.path.exists(data_path)
+    assert os.path.exists(conmat_file)
+    assert os.path.exists(coords_file)
+    assert os.path.exists(Z_list_file)
+    assert os.path.exists(Pajek_net_file)
+    assert os.path.exists(lol_file)
 
 
 def test_compute_net_list():
