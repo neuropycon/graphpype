@@ -12,6 +12,7 @@ The **input** data should be a symetrical connecivity matrix in **npy** format.
 # Authors: David Meunier <david_meunier_79@hotmail.fr>
 
 # License: BSD (3-clause)
+# sphinx_gallery_thumbnail_number = 2
 import os.path as op
 
 import nipype.pipeline.engine as pe
@@ -21,17 +22,9 @@ import nipype.interfaces.io as nio
 
 ###############################################################################
 # Check if data are available
-# needs to import neuropycon_data
-# 'pip install neuropycon_data' should do the job...
+from graphpype.utils_tests import load_test_data
 
-
-try:
-    import neuropycon_data as nd
-except ImportError:
-    print("Warning, neuropycon_data not found")
-    exit()
-
-data_path = op.join(nd.__path__[0], "data", "data_con_meg")
+data_path = load_test_data("data_con_meg")
 
 ###############################################################################
 # This will be what we will loop on
@@ -83,7 +76,8 @@ datasource.inputs.sort_filelist = True
 import json  # noqa
 import pprint  # noqa
 
-data_graph = json.load(open("params_graph.json"))
+data_graph = json.load(open(op.join(op.dirname("__file__"),
+                                  "params_graph.json")))
 pprint.pprint({'graph parameters': data_graph})
 
 # density of the threshold
@@ -124,7 +118,7 @@ radatools_optim = data_graph['radatools_optim']
 # plot_connectivity_circle .html#mne.viz.plot_connectivity_circle"
 # target="_blank">spectral_connectivity function</a>
 
-from graphpype.pipelines.conmat_to_graph import create_pipeline_conmat_to_graph_density # noqa
+from graphpype.pipelines import create_pipeline_conmat_to_graph_density
 
 graph_workflow = create_pipeline_conmat_to_graph_density(
     data_path, con_den=con_den, optim_seq=radatools_optim)
@@ -174,7 +168,9 @@ coords_file = op.join(data_path, "MNI_coords.txt")
 
 from visbrain.objects import SceneObj, BrainObj # noqa
 
-sc = SceneObj(size=(1000, 1000), bgcolor=(.1, .1, .1))
+sc = SceneObj(size=(1500, 1500), bgcolor=(1, 1, 1))
+
+views = ['left','top']
 
 for nf, freq_band_name in enumerate(freq_band_names):
 
@@ -186,18 +182,18 @@ for nf, freq_band_name in enumerate(freq_band_names):
     lol_file = op.join(res_path, "community_rada", "Z_List.lol")
     net_file = op.join(res_path, "prep_rada", "Z_List.net")
 
-    b_obj = BrainObj("white", translucent=False)
-    sc.add_to_subplot(
-        b_obj, row=nf, use_this_cam=True, rotate='left',
-        title=("Module for {} band".format(freq_band_name)),
-        title_size=14, title_bold=True, title_color='white')
+    for i_v,view in enumerate(views):
 
-    c_obj,s_obj = visu_graph_modules(lol_file=lol_file, net_file=net_file,
-                               coords_file=coords_file,
-                               labels_file=labels_file, inter_modules=False,
-                               z_offset=+50)
-    sc.add_to_subplot(c_obj, row=nf)
-    sc.add_to_subplot(s_obj, row=nf)
+        b_obj = BrainObj("B1", translucent=True)
 
+        sc.add_to_subplot(
+            b_obj, row=nf, col = i_v, use_this_cam=True, rotate=view,
+            title=("Modules for {} band".format(freq_band_name)),
+            title_size=14, title_bold=True, title_color='black')
+
+        c_obj,s_obj = visu_graph_modules(
+            lol_file=lol_file, net_file=net_file, coords_file=coords_file, inter_modules=False, z_offset=+50)
+        sc.add_to_subplot(c_obj, col = i_v, row=nf)
+        sc.add_to_subplot(s_obj, col = i_v, row=nf)
 
 sc.preview()

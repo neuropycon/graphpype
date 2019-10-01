@@ -603,7 +603,9 @@ def segment_mask_in_ROI(
                 raw_indexed_mask_rois_data[raw_indexed_mask_rois_data ==
                                            index_ROI] = 0
 
-        print(np.unique(raw_indexed_mask_rois_data))
+        assert len(np.unique(raw_indexed_mask_rois_data)) > 1,\
+            "Error, all ROIs were discarded {}".format(
+            np.unique(raw_indexed_mask_rois_data))
 
         # reordering indexes
         indexed_mask_data = np.zeros(

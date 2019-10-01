@@ -8,18 +8,23 @@ from graphpype.utils_net import (return_net_list,
                                  export_Louvain_net_from_list)
 
 
-try:
-    import neuropycon_data as nd
+from graphpype.utils_tests import load_test_data
 
-except ImportError:
-    print("Error, could not find neuropycon_data")
-
-
-data_path = os.path.join(nd.__path__[0], "data", "data_con")
+data_path = load_test_data("data_con")
 conmat_file = os.path.join(data_path, "Z_cor_mat_resid_ts.npy")
 coords_file = os.path.join(data_path, "ROI_MNI_coords-Atlas.txt")
 Z_list_file = os.path.join(data_path, "data_graph", "Z_List.txt")
 Pajek_net_file = os.path.join(data_path, "data_graph", "Z_List.net")
+
+
+def test_data():
+    """test if test_data is accessible"""
+    assert os.path.exists(data_path)
+    assert os.path.exists(conmat_file)
+    assert os.path.exists(coords_file)
+    assert os.path.exists(Z_list_file)
+    assert os.path.exists(Pajek_net_file)
+
 
 tmp_dir = "/tmp/test_graphpype"
 if os.path.exists(tmp_dir):

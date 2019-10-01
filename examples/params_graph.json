@@ -1,4 +1,4 @@
 {
-    "con_den": 0.1,
-    "radatools_optim": "WN tfrf 1"
+    "con_den": 0.05,
+    "radatools_optim": "WN tfrf 100"
 }
