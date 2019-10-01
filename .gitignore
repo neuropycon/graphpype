@@ -11,3 +11,7 @@ data/*
 doc/_build/
 doc/auto_examples/
 doc/generated/
+
+# build
+build/
+dist/
