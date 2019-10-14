@@ -11,7 +11,7 @@ from nipype.interfaces.niftyreg.regutils import RegResample
 
 from graphpype.nodes.correl_mat import (
     IntersectMask, ExtractTS, ExtractMeanTS, RegressCovar, FindSPMRegressor,
-    ComputeConfCorMat)
+    ComputeConfCorMat, SplitTS)
 
 from graphpype.utils import show_files
 
@@ -170,7 +170,6 @@ def create_pipeline_nii_to_conmat_seg_template(
     pipeline.connect(inputnode, 'rp_file', regress_covar, 'rp_file')
 
     # compute correlations
-
     compute_conf_cor_mat = pe.Node(
         interface=ComputeConfCorMat(), name='compute_conf_cor_mat')
     compute_conf_cor_mat.inputs.conf_interval_prob = conf_interval_prob
@@ -286,7 +285,7 @@ def create_pipeline_nii_to_conmat(
         main_path, filter_gm_threshold=0.9, pipeline_name="nii_to_conmat",
         conf_interval_prob=0.05, background_val=-1.0, plot=True,
         reslice=False, resample=False, min_BOLD_intensity=50,
-        percent_signal=0.5):
+        percent_signal=0.5, split=False, win_length=None, offset=None):
     """
     Description:
 
@@ -465,15 +464,46 @@ def create_pipeline_nii_to_conmat(
     pipeline.connect(compute_csf_ts, 'mean_masked_ts_file',
                      regress_covar, 'mean_csf_ts_file')
 
-    # compute correlations
-    compute_conf_cor_mat = pe.Node(interface=ComputeConfCorMat(
-        plot_mat=plot), name='compute_conf_cor_mat')
-    compute_conf_cor_mat.inputs.conf_interval_prob = conf_interval_prob
+    if split:
+        assert win_length is not None, \
+            "If split is True, win_length should have a value"
+        if offset is None:
+            print("*** offset is not set, default is win_length/2 = {} \
+                   time points".format(win_length/2))
+            offset = win_length/2
 
-    pipeline.connect(regress_covar, 'resid_ts_file',
-                     compute_conf_cor_mat, 'ts_file')
-    pipeline.connect(extract_mean_ROI_ts, 'subj_label_rois_file',
-                     compute_conf_cor_mat, 'labels_file')
+        # split_ts
+        split_ts = pe.Node(interface=SplitTS(), name="split_ts")
+
+        split_ts.inputs.win_length = win_length
+        split_ts.inputs.offset = offset
+
+        pipeline.connect(regress_covar, 'resid_ts_file',
+                         split_ts, 'ts_file')
+
+        # compute correlations
+        compute_conf_cor_mat = pe.MapNode(
+            interface=ComputeConfCorMat(plot_mat=plot),
+            name='compute_conf_cor_mat', iterfield=['ts_file'])
+
+        compute_conf_cor_mat.inputs.conf_interval_prob = conf_interval_prob
+
+        pipeline.connect(split_ts, 'splitted_ts_files',
+                         compute_conf_cor_mat, 'ts_file')
+        pipeline.connect(extract_mean_ROI_ts, 'subj_label_rois_file',
+                         compute_conf_cor_mat, 'labels_file')
+
+    else:
+
+        # compute correlations
+        compute_conf_cor_mat = pe.Node(interface=ComputeConfCorMat(
+            plot_mat=plot), name='compute_conf_cor_mat')
+        compute_conf_cor_mat.inputs.conf_interval_prob = conf_interval_prob
+
+        pipeline.connect(regress_covar, 'resid_ts_file',
+                         compute_conf_cor_mat, 'ts_file')
+        pipeline.connect(extract_mean_ROI_ts, 'subj_label_rois_file',
+                         compute_conf_cor_mat, 'labels_file')
 
     return pipeline
 
