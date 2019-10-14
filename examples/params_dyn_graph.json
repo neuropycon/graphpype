@@ -1,0 +1,9 @@
+{
+    "win_length": 30,
+    "offset": 15,
+    "subject_ids": ["01"],
+    "func_sessions": ["rest"],
+    "conf_interval_prob": 0.05,
+    "con_den": 0.01,
+    "radatools_optim": "WS tfrf 100"
+}

@@ -2,6 +2,7 @@ import os
 from graphpype.nodes.correl_mat import (ExtractTS, IntersectMask,
                                         ExtractMeanTS,
                                         RegressCovar,
+                                        SplitTS,
                                         ComputeConfCorMat)
 from graphpype.utils import _make_tmp_dir
 
@@ -107,6 +108,49 @@ def test_regress_covar():
     os.remove(masked_ts_file)
     os.remove(mean_csf_ts_file)
     os.remove(mean_wm_ts_file)
+
+
+def test_split_ts():
+    """ test SplitTS"""
+    _make_tmp_dir()
+
+    extract_mean_wm_ts = ExtractMeanTS()
+    extract_mean_wm_ts.inputs.file_4D = img_file
+    extract_mean_wm_ts.inputs.filter_thr = 0.9
+    extract_mean_wm_ts.inputs.filter_mask_file = csf_mask_file
+    extract_mean_wm_ts.inputs.suffix = "wm"
+    mean_wm_ts_file = extract_mean_wm_ts.run().outputs.mean_masked_ts_file
+
+    extract_mean_csf_ts = ExtractMeanTS()
+    extract_mean_csf_ts.inputs.file_4D = img_file
+    extract_mean_csf_ts.inputs.filter_thr = 0.9
+    extract_mean_csf_ts.inputs.filter_mask_file = csf_mask_file
+    extract_mean_csf_ts.inputs.suffix = "csf"
+    mean_csf_ts_file = extract_mean_csf_ts.run().outputs.mean_masked_ts_file
+
+    extra_ts = ExtractTS()
+    extra_ts.inputs.indexed_rois_file = indexed_mask_file
+    extra_ts.inputs.file_4D = img_file
+    masked_ts_file = extra_ts.run().outputs.mean_masked_ts_file
+
+    regress_covar = RegressCovar()
+    regress_covar.inputs.masked_ts_file = masked_ts_file
+    regress_covar.inputs.mean_wm_ts_file = mean_wm_ts_file
+    regress_covar.inputs.mean_csf_ts_file = mean_csf_ts_file
+    resid_ts_file = regress_covar.run().outputs.resid_ts_file
+
+    split_ts = SplitTS()
+    split_ts.inputs.ts_file = resid_ts_file
+    split_ts.inputs.win_length = 10
+    split_ts.inputs.offset = 5
+
+    splitted_ts_files = split_ts.run().outputs.splitted_ts_files
+    assert len(splitted_ts_files) != 0
+    assert os.path.exists(splitted_ts_files[0])
+
+    for splitted_ts_file in splitted_ts_files:
+
+        os.remove(splitted_ts_file)
 
 
 def test_compute_conf_cor_mat():

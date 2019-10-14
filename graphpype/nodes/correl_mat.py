@@ -816,6 +816,124 @@ class SeparateTS(BaseInterface):
         return outputs
 
 
+# SplitTS
+class SplitTSInputSpec(BaseInterfaceInputSpec):
+
+    ts_file = File(
+        exists=True, desc='npy file containing ts to be splitted',
+        mandatory=True)
+
+    win_length = traits.Int(
+        exists=True,
+        desc='length of the temporal window in time points (integer)',
+        mandatory=True)
+
+    offset = traits.Int(
+        exists=True,
+        desc='offset between time windows in time points (integer)',
+        mandatory=True)
+
+
+class SplitTSOutputSpec(TraitedSpec):
+
+    splitted_ts_files = traits.List(
+        File(exists=True), desc="ts files after split")
+
+
+class SplitTS(BaseInterface):
+
+    """
+    Description:
+
+    Split a time series  from a npy file into several time series npy files,
+    based on win_length and offset values
+
+    Inputs:
+
+        ts_file
+            type =File,
+            exists=True,
+            desc='npy file containing ts to be splitted',
+            mandatory=True
+
+        win_length
+            type = Int,
+            exists=True,
+            desc = 'length of the temporal window in time points (integer)',
+            mandatory = True
+
+        offset:
+            type = Int,
+            exists=True,
+            desc = 'offset between time windows in time points (integer)',
+            mandatory = True)
+
+
+    Outputs:
+
+        splitted_ts_files
+            type = List of Files, exists=True, desc="ts files after separation"
+
+    Comments:
+        Used for dynamical graph analysis
+    """
+
+    input_spec = SplitTSInputSpec
+    output_spec = SplitTSOutputSpec
+
+    def _run_interface(self, runtime):
+
+        ts_file = self.inputs.ts_file
+        win_length = self.inputs.win_length
+        offset = self.inputs.offset
+
+        path, fname_ts, ext = split_f(ts_file)
+
+        # loading ts shape = (trigs, electrods, time points)
+        ts = np.load(ts_file)
+
+        print(ts.shape)
+
+        assert len(ts.shape) == 2, "Error, ts should be two dim"
+        assert ts.shape[0] > win_length, "Error, win_length longer than ts"
+        assert offset < win_length,\
+            "Error, offset {} longer than win_length {}".format(
+                offset < win_length)
+
+        ts_length = ts.shape[1]
+
+        min_len, max_len = 0, win_length
+
+        count = 0
+
+        splitted_ts_files = []
+
+        while max_len <= ts_length:
+            print("Split {} : ".format(count), min_len, max_len,
+                  ts[:, min_len:max_len].shape)
+
+            split_ts_file = os.path.abspath("{}_split_{}.npy".format(
+                fname_ts, str(count)))
+
+            np.save(split_ts_file, ts[:, min_len:max_len])
+
+            splitted_ts_files.append(split_ts_file)
+            min_len += offset
+            max_len += offset
+            count += 1
+
+        print(len(splitted_ts_files))
+
+        self.splitted_ts_files = splitted_ts_files
+
+        return runtime
+
+    def _list_outputs(self):
+        outputs = self._outputs().get()
+        outputs["splitted_ts_files"] = self.splitted_ts_files
+        return outputs
+
+
 # RegressCovar
 class RegressCovarInputSpec(BaseInterfaceInputSpec):
     masked_ts_file = File(
@@ -919,12 +1037,10 @@ class RegressCovar(BaseInterface):
         else:
             mean_wm_ts = None
 
-        print(mean_wm_ts)
-        print(mean_wm_ts.shape)
-
         regs = (rp, mean_csf_ts, mean_wm_ts)
 
         if all([a is None for a in regs]):
+            print("No regressor was given, no regression is performed")
             resid_data_matrix = data_mask_matrix
 
         else:
@@ -1402,7 +1518,7 @@ class ComputeConfCorMat(BaseInterface):
             weight_vect = np.ones(shape=(data_matrix.shape[0]))
 
         if method == "Pearson":
-            print("Transposing data")
+            print("Computing Pearson correlation")
             cor_mat, Z_cor_mat, conf_cor_mat, Z_conf_cor_mat = \
                 return_conf_cor_mat(data_matrix, weight_vect,
                                     conf_interval_prob)
@@ -1431,7 +1547,7 @@ class ComputeConfCorMat(BaseInterface):
             np.save(Z_conf_cor_mat_file, Z_conf_cor_mat)
 
         elif method == "Spearman":
-
+            print("Computing Spearman correlation")
             rho_mat, pval_mat = scipy.stats.spearmanr(data_matrix)
 
         if plot_mat:
