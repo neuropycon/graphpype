@@ -50,9 +50,7 @@ class StatsPairBinomialOutputSpec(TraitedSpec):
 
 
 class StatsPairBinomial(BaseInterface):
-    """
-    StatsPairBinomialInputSpec
-    """
+    """      """
     input_spec = StatsPairBinomialInputSpec
     output_spec = StatsPairBinomialOutputSpec
 
@@ -252,10 +250,8 @@ class PrepareCormatOutputSpec(TraitedSpec):
 class PrepareCormat(BaseInterface):
 
     """
-    Description:
-
-        Average correlation matrices, within a common reference
-        (based on labels, or coordinates)
+    Average correlation matrices, within a common reference
+    (based on labels, or coordinates)
 
     Inputs:
 
@@ -452,8 +448,6 @@ class SwapListsOutputSpec(TraitedSpec):
 class SwapLists(BaseInterface):
 
     """
-    Description:
-
     Exchange lists of files in a random fashion (based on seed value)
     Typically, cor_mat, coords -> 2, or Z_list, node_corres and labels -> 3
 
@@ -630,8 +624,6 @@ class ShuffleMatrixOutputSpec(TraitedSpec):
 class ShuffleMatrix(BaseInterface):
 
     """
-    Description:
-
     Compute randomisation of matrix, keeping the same distribution
 
     If seed = -1, no shuffling is done (keep original values)

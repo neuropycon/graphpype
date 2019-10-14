@@ -14,8 +14,6 @@ def create_pipeline_conmat_to_graph_density(
         main_path, pipeline_name="graph_den_pipe", con_den=1.0, multi=False,
         mod=True, plot=False, optim_seq="WS trfr 100", compute_ndi=False):
     """
-    Description:
-
     Pipeline from connectivity matrices to graph analysis
 
     Threshold is density based
@@ -142,8 +140,6 @@ def create_pipeline_conmat_to_graph_threshold(
         main_path, pipeline_name="graph_thr_pipe", con_thr=1.0, multi=False,
         mod=True, plot=True, optim_seq="WS trfr 100", compute_ndi=False):
     """
-    Description:
-
     Pipeline from connectivity matrices to graph analysis
 
     Threshold is value based (con_thr)
@@ -271,8 +267,6 @@ def create_pipeline_net_list_to_graph(
         main_path, pipeline_name="graph_net_pipe", multi=False, mod=True,
         plot=False, optim_seq="WS trfr 100", compute_ndi=False):
     """
-    Description:
-
     Pipeline from net_List (txt file) to graph analysis
 
     Inputs (inputnode):
