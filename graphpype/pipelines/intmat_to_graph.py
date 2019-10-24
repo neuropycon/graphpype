@@ -15,9 +15,6 @@ def create_pipeline_intmat_to_graph_threshold(
         main_path, analysis_name="int_graph_thr_pipe", threshold=50,
         mod=False, plot=False, radatools_optim=""):
     """
-
-    Description:
-
     Pipeline from integer matrices (normally coclassification matrices)
     to graph analysis
 

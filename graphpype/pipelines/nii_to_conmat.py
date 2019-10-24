@@ -20,8 +20,6 @@ def create_pipeline_nii_to_conmat_simple(
         main_path, pipeline_name="nii_to_conmat", conf_interval_prob=0.05,
         background_val=-1.0, plot=True):
     """
-    Description:
-
     Pipeline from nifti 4D (after preprocessing) to connectivity matrices,
     no segmentation in tissues given, but coords for wm and csf are available
     and regressed. coords / labels o indexed mask are also available
@@ -93,8 +91,6 @@ def create_pipeline_nii_to_conmat_simple(
 def create_pipeline_nii_to_conmat_seg_template(
         main_path, pipeline_name="nii_to_conmat", conf_interval_prob=0.05):
     """
-    Description:
-
     Pipeline from nifti 4D (after preprocessing) to connectivity matrices
 
     Inputs (inputnode):
@@ -188,8 +184,6 @@ def create_pipeline_nii_to_subj_ROI(
         background_val=-1.0, plot=True, reslice=False, resample=False,
         min_BOLD_intensity=50, percent_signal=0.5):
     """
-    Description:
-
     Pipeline from nifti 4D (after preprocessing) to connectivity matrices
     Use Grey matter for having a mask for each subject
 
@@ -288,8 +282,6 @@ def create_pipeline_nii_to_conmat(
         reslice=False, resample=False, min_BOLD_intensity=50,
         percent_signal=0.5):
     """
-    Description:
-
     Pipeline from nifti 4D (after preprocessing) to connectivity matrices
 
     Inputs (inputnode):
@@ -483,8 +475,6 @@ def create_pipeline_nii_to_weighted_conmat(
         concatenated_runs=True, conf_interval_prob=0.05, mult_regnames=True,
         spm_reg=True):
     """
-    Description:
-
     Pipeline from resid_ts_file (after preprocessing) to weighted connectivity
     matrices
     Involves a regressor file as wiehgt for computing weighted correlations
