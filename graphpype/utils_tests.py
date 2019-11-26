@@ -11,6 +11,8 @@ def load_test_data(name):
     data_dir = {"data_nii": "RCjt2KioMBmHRxj",
                 "data_nii_mask": "BsjCfxSrXXGEaRD",
                 "data_con": "8mofHzzWAiTZCw8",
+                "data_nii_HCP": "sEPCRnQbs3RFFmw",
+                "data_nii_min": "ypWHfE2kocQ7zq6",
                 # "data_gather": "AfYgQZ87zTGJDx9",
                 "data_con_meg": "Z4iebjw8maLt3Sd",
                 "data_inv_ts": "KWTNYXesE2isZYa"}

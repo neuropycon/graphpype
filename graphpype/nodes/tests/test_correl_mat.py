@@ -14,8 +14,9 @@ img_file = os.path.join(data_path, "wrsub-01_task-rest_bold.nii")
 gm_mask_file = os.path.join(data_path, "rwc1sub-01_T1w.nii")
 wm_mask_file = os.path.join(data_path, "rwc2sub-01_T1w.nii")
 csf_mask_file = os.path.join(data_path, "rwc3sub-01_T1w.nii")
-indexed_mask_file = os.path.join(data_path, "ROI_HCP",
-                                 "indexed_mask-ROI_HCP.nii")
+
+data_path_HCP = load_test_data("data_nii_HCP")
+indexed_mask_file = os.path.join(data_path_HCP, "indexed_mask-ROI_HCP.nii")
 
 
 def test_neuropycon_data():
@@ -25,6 +26,8 @@ def test_neuropycon_data():
     assert os.path.exists(gm_mask_file)
     assert os.path.exists(wm_mask_file)
     assert os.path.exists(csf_mask_file)
+
+    assert os.path.exists(data_path_HCP)
     assert os.path.exists(indexed_mask_file)
 
 

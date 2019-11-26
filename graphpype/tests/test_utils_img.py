@@ -5,10 +5,8 @@ import os
 # from graphpype.utils_img import (return_data_img_from_roi_mask)
 from graphpype.utils_tests import load_test_data
 
-# data_path = load_test_data("data_nii")
-data_path = load_test_data("data_nii_mask")
-# indexed_mask_file = os.path.join(data_path, "ROI_HCP",
-#                                  "indexed_mask-ROI_HCP.nii")
+data_path = load_test_data("data_nii_HCP")
+indexed_mask_file = os.path.join(data_path, "indexed_mask-ROI_HCP.nii")
 
 
 def test_data():
