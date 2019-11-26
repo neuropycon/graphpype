@@ -5,7 +5,7 @@ import shutil
 
 from graphpype.utils_tests import load_test_data
 
-data_path = load_test_data("data_nii")
+data_path = load_test_data("data_nii_mask")
 mask_file = os.path.join(data_path, "rwc1sub-01_T1w.nii")
 
 

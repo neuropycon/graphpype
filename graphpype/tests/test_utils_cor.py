@@ -13,11 +13,13 @@ from graphpype.utils_cor import (mean_select_mask_data,
 
 from graphpype.utils_tests import load_test_data
 
-data_path = load_test_data("data_nii")
+data_path = load_test_data("data_nii_min")
+
 img_file = os.path.join(data_path, "wrsub-01_task-rest_bold.nii")
 mask_file = os.path.join(data_path, "rwc1sub-01_T1w.nii")
-indexed_mask_file = os.path.join(data_path, "ROI_HCP",
-                                 "indexed_mask-ROI_HCP.nii")
+
+data_path_HCP = load_test_data("data_nii_HCP")
+indexed_mask_file = os.path.join(data_path_HCP, "indexed_mask-ROI_HCP.nii")
 
 
 def test_data():
@@ -25,6 +27,8 @@ def test_data():
     assert os.path.exists(data_path)
     assert os.path.exists(img_file)
     assert os.path.exists(mask_file)
+
+    assert os.path.exists(data_path_HCP)
     assert os.path.exists(indexed_mask_file)
 
 

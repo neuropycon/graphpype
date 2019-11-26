@@ -109,10 +109,10 @@ def compute_rada_df(iter_path, df, radatools_version="3.2", mapflow=[],
             if os.path.exists(modularity_file):
 
                 mod_val = get_modularity_value_from_lol_file(modularity_file)
-
                 df['Modularity'].append(mod_val)
 
             else:
+                print("Missing modularity file {}".format(modularity_file))
                 df['Modularity'].append(np.nan)
 
             # info_global
@@ -152,8 +152,10 @@ def compute_rada_df(iter_path, df, radatools_version="3.2", mapflow=[],
                 df['Global_efficiency'].append(str(np.nan))
 
 
-def compute_nodes_rada_df(local_dir, gm_coords, coords_file, labels_file,
-                          radatools_version="3.2"):
+def compute_nodes_rada_df(
+        local_dir, gm_coords, coords_file, labels_file,
+        radatools_version="3.2", mapflow=[], mapflow_name=""):
+
     """node properties df"""
     if radatools_version == "3.2":
         net_prop_dir = "net_prop"
@@ -171,104 +173,230 @@ def compute_nodes_rada_df(local_dir, gm_coords, coords_file, labels_file,
 
     list_df = []
 
-    Pajek_file = os.path.join(local_dir, "prep_rada", "Z_List.net")
+    if len(mapflow) == 0:
 
-    if os.path.exists(coords_file) and os.path.exists(Pajek_file) and \
-            os.path.exists(labels_file):
+        Pajek_file = os.path.join(local_dir, "prep_rada", "Z_List.net")
 
-        # labels
-        labels = np.array([line.strip()
-                           for line in open(labels_file)], dtype=str)
+        if os.path.exists(coords_file) and os.path.exists(Pajek_file) and \
+                os.path.exists(labels_file):
 
-        # MNI coordinates
-        coords = np.array(np.loadtxt(coords_file), dtype=int)
+            # labels
+            labels = np.array([line.strip() for line in open(labels_file)],
+                              dtype=str)
 
-        # nodes in the connected graph
-        node_corres = read_Pajek_corres_nodes(Pajek_file)
+            # MNI coordinates
+            coords = np.array(np.loadtxt(coords_file), dtype=int)
 
-        # node_coords
-        node_coords = coords[node_corres, :]
-        node_labels = labels[node_corres].reshape(-1, 1)
+            # nodes in the connected graph
+            node_corres = read_Pajek_corres_nodes(Pajek_file)
 
-        # where_in_gm_mask
-        where_in_gm_mask = where_in_coords(node_coords, gm_coords)
+            # node_coords
+            node_coords = coords[node_corres, :]
+            node_labels = labels[node_corres].reshape(-1, 1)
 
-        where_in_gm_mask = where_in_gm_mask.reshape(
-            where_in_gm_mask.shape[0], 1)
+            # where_in_gm_mask
+            where_in_gm_mask = where_in_coords(node_coords, gm_coords)
 
-        # print where_in_gm_mask
-        print(where_in_gm_mask.shape)
+            where_in_gm_mask = where_in_gm_mask.reshape(
+                where_in_gm_mask.shape[0], 1)
 
-        list_df.append(pd.DataFrame(
-            np.concatenate((where_in_gm_mask, node_labels, node_coords),
-                           axis=1),
-            columns=['Where_in_GM_mask', 'labels', 'MNI_x', 'MNI_y', 'MNI_z']))
+            # print where_in_gm_mask
+            print(where_in_gm_mask.shape)
+
+            list_df.append(pd.DataFrame(
+                np.concatenate((where_in_gm_mask, node_labels, node_coords),
+                               axis=1),
+                columns=['Where_in_GM_mask', 'labels', 'MNI_x', 'MNI_y',
+                         'MNI_z']))
+        else:
+            if not os.path.exists(coords_file):
+                print("Missing {}".format(coords_file))
+
+            if not os.path.exists(Pajek_file):
+                print("Missing {}".format(Pajek_file))
+
+            if not os.path.exists(labels_file):
+                print("Missing {}".format(labels_file))
+
+        info_nodes_file = os.path.join(
+            local_dir, net_prop_dir, "Z_List-info_nodes.txt")
+
+        print(info_nodes_file)
+
+        if os.path.exists(info_nodes_file):
+
+            # loading info_nodes
+            df_node_info = pd.read_table(info_nodes_file)
+            list_df.append(df_node_info)
+
+        # modules /community_vect
+        partition_file = os.path.join(local_dir, "community_rada",
+                                      "Z_List.lol")
+
+        if os.path.exists(partition_file):
+
+            # loading partition_file
+            community_vect = read_lol_file(partition_file)
+            list_df.append(pd.DataFrame(community_vect, columns=['Module']))
+
+        # node roles
+        roles_file = os.path.join(local_dir, "node_roles", "node_roles.txt")
+
+        part_coeff_file = os.path.join(
+            local_dir, "node_roles", "all_participation_coeff.txt")
+
+        Z_com_degree_file = os.path.join(
+            local_dir, "node_roles", "all_Z_com_degree.txt")
+
+        if os.path.exists(roles_file) and os.path.exists(part_coeff_file) and \
+                os.path.exists(Z_com_degree_file):
+
+            # loding node roles
+            node_roles = np.array(np.loadtxt(roles_file), dtype=int)
+
+            part_coeff = np.loadtxt(part_coeff_file)
+            part_coeff = part_coeff.reshape(part_coeff.shape[0], 1)
+
+            Z_com_degree = np.loadtxt(Z_com_degree_file)
+            Z_com_degree = Z_com_degree.reshape(Z_com_degree.shape[0], 1)
+
+            list_df.append(pd.DataFrame(
+                np.concatenate((node_roles, part_coeff, Z_com_degree), axis=1),
+                columns=['Role_quality', 'Role_quantity',
+                         'Participation_coefficient', 'Z_community_degree']))
+        # ndi values
+        ndi_values_file = os.path.join(
+            local_dir, "node_roles", "ndi_values.txt")
+
+        if os.path.exists(ndi_values_file):
+
+            # loding node roles
+            ndi_values = np.array(np.loadtxt(ndi_values_file))
+            list_df.append(pd.DataFrame(ndi_values,
+                                        columns=['Node_Dissociation_Index']))
+
     else:
-        if not os.path.exists(coords_file):
-            print("Missing {}".format(coords_file))
 
-        if not os.path.exists(Pajek_file):
-            print("Missing {}".format(Pajek_file))
+        # Multiple files (mapflow)
+        for i, cond in enumerate(mapflow):
 
-        if not os.path.exists(labels_file):
-            print("Missing {}".format(labels_file))
+            list_strip_df = []
 
-    info_nodes_file = os.path.join(
-        local_dir, net_prop_dir, "Z_List-info_nodes.txt")
+            Pajek_file = os.path.join(local_dir, "prep_rada", "mapflow",
+                                      "_prep_rada"+str(i), "Z_List.net")
 
-    print(info_nodes_file)
+            if os.path.exists(coords_file) and os.path.exists(Pajek_file) and \
+                    os.path.exists(labels_file):
 
-    if os.path.exists(info_nodes_file):
+                # labels
+                labels = np.array([line.strip() for line in open(labels_file)],
+                                  dtype=str)
 
-        # loading info_nodes
-        df_node_info = pd.read_table(info_nodes_file)
-        list_df.append(df_node_info)
+                # MNI coordinates
+                coords = np.array(np.loadtxt(coords_file), dtype=int)
 
-    # modules /community_vect
-    partition_file = os.path.join(local_dir, "community_rada", "Z_List.lol")
+                # nodes in the connected graph
+                node_corres = read_Pajek_corres_nodes(Pajek_file)
 
-    if os.path.exists(partition_file):
+                # node_coords
+                node_coords = coords[node_corres, :]
+                node_labels = labels[node_corres].reshape(-1, 1)
 
-        # loading partition_file
-        community_vect = read_lol_file(partition_file)
-        list_df.append(pd.DataFrame(community_vect, columns=['Module']))
+                # where_in_gm_mask
+                where_in_gm_mask = where_in_coords(node_coords, gm_coords)
 
-    # node roles
-    roles_file = os.path.join(local_dir, "node_roles", "node_roles.txt")
+                where_in_gm_mask = where_in_gm_mask.reshape(
+                    where_in_gm_mask.shape[0], 1)
 
-    part_coeff_file = os.path.join(
-        local_dir, "node_roles", "all_participation_coeff.txt")
+                # print where_in_gm_mask
+                print(where_in_gm_mask.shape)
 
-    Z_com_degree_file = os.path.join(
-        local_dir, "node_roles", "all_Z_com_degree.txt")
+                list_strip_df.append(pd.DataFrame(
+                    np.concatenate((where_in_gm_mask, node_labels,
+                                    node_coords),
+                                   axis=1),
+                    columns=['Where_in_GM_mask', 'labels', 'MNI_x', 'MNI_y',
+                             'MNI_z']))
+            else:
+                if not os.path.exists(coords_file):
+                    print("Missing {}".format(coords_file))
 
-    if os.path.exists(roles_file) and os.path.exists(part_coeff_file) and \
-            os.path.exists(Z_com_degree_file):
+                if not os.path.exists(Pajek_file):
+                    print("Missing {}".format(Pajek_file))
 
-        # loding node roles
-        node_roles = np.array(np.loadtxt(roles_file), dtype=int)
+                if not os.path.exists(labels_file):
+                    print("Missing {}".format(labels_file))
 
-        part_coeff = np.loadtxt(part_coeff_file)
-        part_coeff = part_coeff.reshape(part_coeff.shape[0], 1)
+            info_nodes_file = os.path.join(
+                local_dir, net_prop_dir, "Z_List-info_nodes.txt")
 
-        Z_com_degree = np.loadtxt(Z_com_degree_file)
-        Z_com_degree = Z_com_degree.reshape(Z_com_degree.shape[0], 1)
+            print(info_nodes_file)
 
-        list_df.append(pd.DataFrame(
-            np.concatenate((node_roles, part_coeff, Z_com_degree), axis=1),
-            columns=['Role_quality', 'Role_quantity',
-                     'Participation_coefficient', 'Z_community_degree']))
-    # ndi values
-    ndi_values_file = os.path.join(
-        local_dir, "node_roles", "ndi_values.txt")
+            if os.path.exists(info_nodes_file):
 
-    if os.path.exists(ndi_values_file):
+                # loading info_nodes
+                df_node_info = pd.read_table(info_nodes_file)
+                list_strip_df.append(df_node_info)
 
-        # loding node roles
-        ndi_values = np.array(np.loadtxt(ndi_values_file))
-        list_df.append(pd.DataFrame(ndi_values,
-                                    columns=['Node_Dissociation_Index']))
+            # modules /community_vect
+            partition_file = os.path.join(
+                local_dir, "community_rada", "mapflow",
+                "_community_rada"+str(i), "Z_List.lol")
 
+            if os.path.exists(partition_file):
+
+                # loading partition_file
+                community_vect = read_lol_file(partition_file)
+                list_strip_df.append(pd.DataFrame(community_vect,
+                                                  columns=['Module']))
+
+            # node roles
+            roles_file = os.path.join(local_dir, "node_roles", "mapflow",
+                                      "_node_roles"+str(i), "node_roles.txt")
+
+            part_coeff_file = os.path.join(
+                local_dir, "node_roles", "mapflow", "_node_roles"+str(i),
+                "all_participation_coeff.txt")
+
+            Z_com_degree_file = os.path.join(
+                local_dir, "node_roles", "mapflow", "_node_roles"+str(i),
+                "all_Z_com_degree.txt")
+
+            if os.path.exists(roles_file) and os.path.exists(part_coeff_file) \
+                    and os.path.exists(Z_com_degree_file):
+
+                node_roles = np.array(np.loadtxt(roles_file), dtype=int)
+
+                part_coeff = np.loadtxt(part_coeff_file)
+                part_coeff = part_coeff.reshape(part_coeff.shape[0], 1)
+
+                Z_com_degree = np.loadtxt(Z_com_degree_file)
+                Z_com_degree = Z_com_degree.reshape(Z_com_degree.shape[0], 1)
+
+                list_strip_df.append(pd.DataFrame(
+                    np.concatenate((node_roles, part_coeff, Z_com_degree),
+                                   axis=1),
+                    columns=['Role_quality', 'Role_quantity',
+                             'Participation_coefficient',
+                             'Z_community_degree']))
+            # ndi values
+            ndi_values_file = os.path.join(
+                local_dir, "node_roles", "mapflow", "_node_roles"+str(i),
+                "ndi_values.txt")
+
+            if os.path.exists(ndi_values_file):
+
+                ndi_values = np.array(np.loadtxt(ndi_values_file))
+                list_strip_df.append(pd.DataFrame(
+                    ndi_values, columns=['Node_Dissociation_Index']))
+
+            # Converting list_strip_df to df, and adding it to list_df
+            if len(list_strip_df):
+                nb_nodes = len(list_strip_df[0].index)
+                list_strip_df.append(pd.DataFrame([i]*nb_nodes,
+                                     columns=[mapflow_name]))
+                strip_df = pd.concat(list_strip_df, axis=1)
+                list_df.append(strip_df)
     return list_df
 
 
