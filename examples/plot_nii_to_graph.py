@@ -52,10 +52,12 @@ from graphpype.utils_tests import load_test_data
 
 data_path = load_test_data("data_nii")
 
-ROI_mask_file = op.join(data_path,"ROI_HCP","indexed_mask-ROI_HCP.nii")
-ROI_coords_file = op.join(data_path,"ROI_HCP","ROI_coords-ROI_HCP.txt")
-ROI_MNI_coords_file =op.join(data_path,"ROI_HCP","ROI_MNI_coords-ROI_HCP.txt")
-ROI_labels_file = op.join(data_path,"ROI_HCP","ROI_labels-ROI_HCP.txt")
+data_path_mask = load_test_data("data_nii_HCP")
+
+ROI_mask_file = op.join(data_path_mask, "indexed_mask-ROI_HCP.nii")
+ROI_coords_file = op.join(data_path_mask, "ROI_coords-ROI_HCP.txt")
+ROI_MNI_coords_file =op.join(data_path_mask, "ROI_MNI_coords-ROI_HCP.txt")
+ROI_labels_file = op.join(data_path_mask, "ROI_labels-ROI_HCP.txt")
 
 ###############################################################################
 # Then, we create our workflow and specify the `base_dir` which tells

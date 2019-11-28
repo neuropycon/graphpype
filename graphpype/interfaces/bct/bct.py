@@ -26,6 +26,10 @@ class KCoreOutputSpec(TraitedSpec):
         exists=True,
         desc="coreness vector file")
 
+    distrib_k_file = File(
+        exists=True,
+        desc="distrib_k vector file")
+
 
 class KCore(BaseInterface):
     """
@@ -50,6 +54,11 @@ class KCore(BaseInterface):
             exists=True,
             desc="coreness vector file"
 
+
+        distrib_k_file =
+            type = File
+            exists=True,
+            desc="distrib_k vector file"
     """
     input_spec = KCoreInputSpec
     output_spec = KCoreOutputSpec
@@ -63,18 +72,18 @@ class KCore(BaseInterface):
 
         # running bctpy
         if is_directed:
-            coreness = kcoreness_centrality_bd(np_mat)
+            coreness, distrib_k = kcoreness_centrality_bd(np_mat)
         else:
-            coreness = kcoreness_centrality_bu(np_mat)
-
+            coreness, distrib_k = kcoreness_centrality_bu(np_mat)
         print(coreness)
 
-        self.coreness_file = os.path.abspath("coreness.npy")
-        np.save(self.coreness_file, coreness)
+        np.save(os.path.abspath("coreness.npy"), coreness)
+        np.save(os.path.abspath("distrib_k.npy"), distrib_k)
 
         return runtime
 
     def _list_outputs(self):
         outputs = self._outputs().get()
-        outputs["coreness_file"] = self.coreness_file
+        outputs["coreness_file"] = os.path.abspath("coreness.npy")
+        outputs["distrib_k_file"] = os.path.abspath("distrib_k.npy")
         return outputs

@@ -31,12 +31,16 @@ class ComputeNetListInputSpec(BaseInterfaceInputSpec):
     export_Louvain = traits.Bool(
         False, desc="whether to export data as Louvain Traag as well",
         usedefault=True)
+    export_np_bin = traits.Bool(
+        True, desc="whether to export bin matrix as numpy",
+        usedefault=True)
 
 
 class ComputeNetListOutputSpec(TraitedSpec):
 
     net_List_file = File(exists=True, desc="net list for radatools")
     net_Louvain_file = File(desc="net list for Louvain")
+    np_bin_mat_file = File(desc="numpy file in binary format")
 
 
 class ComputeNetList(BaseInterface):
@@ -115,6 +119,14 @@ class ComputeNetList(BaseInterface):
             net_Louvain_file = os.path.abspath('Z_Louvain.txt')
             export_Louvain_net_from_list(net_Louvain_file, Z_list, coords)
 
+        if self.inputs.export_np_bin:
+
+            bin_mat = np.zeros(shape=Z_cor_mat.shape, dtype="int")
+            bin_mat[Z_list[:, 0]-1, Z_list[:, 1]-1] = 1
+
+            np_bin_mat_file = os.path.abspath("bin_mat.npy")
+            np.save(np_bin_mat_file, bin_mat)
+
         return runtime
 
     def _list_outputs(self):
@@ -126,6 +138,10 @@ class ComputeNetList(BaseInterface):
         if self.inputs.export_Louvain:
 
             outputs["net_Louvain_file"] = os.path.abspath("Z_Louvain.txt")
+
+        if self.inputs.export_np_bin:
+
+            outputs["np_bin_mat_file"] = os.path.abspath("bin_mat.npy")
 
         return outputs
 

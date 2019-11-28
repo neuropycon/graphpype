@@ -7,9 +7,12 @@ from visbrain.objects import SourceObj, ConnectObj
 from graphpype.utils_net import read_Pajek_corres_nodes_and_sparse_matrix
 from graphpype.utils_mod import read_lol_file, compute_modular_matrix
 
+from nipype.utils.filemanip import split_filename as split_f
 
-def visu_graph(net_file, coords_file, labels_file, modality_type="fMRI",
-               s_textcolor="black", c_colval={1: "orange"}):
+
+def visu_graph(net_file, coords_file, labels_file, node_size_file=0,
+               modality_type="fMRI", s_textcolor="black",
+               c_colval={1: "orange"}):
     # coords
     coords = np.loadtxt(coords_file)
     if modality_type == "MEG":
@@ -21,26 +24,115 @@ def visu_graph(net_file, coords_file, labels_file, modality_type="fMRI",
     npLabels = np.array(labels)
 
     # net file
-    node_corres, sparse_matrix = read_Pajek_corres_nodes_and_sparse_matrix(
-        net_file)
+    path, base, ext = split_f(net_file)
 
-    c_connect = np.array(sparse_matrix.todense())
-    c_connect[c_connect != 0] = 1
+    print(ext)
 
-    corres_coords = coords[node_corres, :]
-    newLabels = npLabels[node_corres]
+    if ext == ".net":
+        node_corres, sparse_matrix = read_Pajek_corres_nodes_and_sparse_matrix(
+            net_file)
+
+        c_connect = np.array(sparse_matrix.todense())
+        c_connect[c_connect != 0] = 1
+
+        corres_coords = coords[node_corres, :]
+        newLabels = npLabels[node_corres]
+
+    elif ext == ".npy":
+
+        c_connect = np.transpose(np.load(net_file))
+        print(c_connect)
+
+        c_connect_mask = np.ma.masked_array(c_connect, mask=True)
+        c_connect_mask.mask[c_connect == 1] = False
+        print(c_connect_mask)
+
+        corres_coords = coords
+        newLabels = npLabels
+        print(c_connect.shape, corres_coords.shape, newLabels.shape)
+
+    if node_size_file:
+        node_size = np.load(node_size_file)
+
+        assert node_size.shape[0] == corres_coords.shape[0], \
+            "Uncompatible size {} for node_size vect {}".format(
+                node_size.shape[0], corres_coords.shape[0])
+    else:
+        node_size = np.ones((corres_coords.shape[0]))
+
+    print(node_size)
 
     # new to visbrain 0.3.7
     s_obj = SourceObj('SourceObj1', corres_coords, text=newLabels,
-                      text_color="white", color='crimson', alpha=.5,
-                      edge_width=2., radius_min=2., radius_max=10.)
+                      data=node_size, text_color=s_textcolor, color='crimson',
+                      alpha=.5, edge_width=2., radius_min=1., radius_max=20.)
 
     """Create the connectivity object :"""
-    c_obj = ConnectObj('ConnectObj1', corres_coords, c_connect,
-                       color_by='strength', custom_colors=c_colval)
-    # ,antialias=True
-    vb = Brain(source_obj=s_obj, connect_obj=c_obj)
-    return vb
+    c_obj = ConnectObj(name='ConnectObj1', nodes=corres_coords,
+                       edges=c_connect_mask, color_by='count')
+
+    return c_obj, s_obj
+
+
+def visu_graph_kcore(net_file, coords_file, labels_file, node_size_file,
+                     modality_type="fMRI", s_textcolor="black",
+                     c_colval={1: "orange"}):
+    # coords
+    coords = np.loadtxt(coords_file)
+    if modality_type == "MEG":
+        coords = 1000*coords
+        coords = np.swapaxes(coords, 0, 1)
+
+    # labels
+    npLabels = np.array([line.strip() for line in open(labels_file)])
+
+    # net file
+    c_connect = np.transpose(np.load(net_file))
+    c_connect_mask = np.ma.masked_array(c_connect, mask=True)
+    c_connect_mask.mask[c_connect == 1] = False
+    node_size = np.load(node_size_file)
+
+    assert node_size.shape[0] == coords.shape[0], \
+        "Uncompatible size {} for node_size vect {}".format(
+            node_size.shape[0], coords.shape[0])
+
+    # kcore
+    in_kcore = node_size == np.max(node_size)
+
+    kcore_mat = c_connect[in_kcore, :][:, in_kcore]
+
+    kcore_mat_mask = np.ma.masked_array(kcore_mat, mask=True)
+    kcore_mat_mask.mask[kcore_mat == 1] = False
+
+    kcore_coords = coords[in_kcore, :]
+    kcore_node_size = node_size[in_kcore]
+    kcore_labels = npLabels[in_kcore]
+
+    # new to visbrain 0.3.7
+    s_obj = SourceObj('SourceObj1', coords, text=npLabels,
+                      data=node_size, text_color=s_textcolor, color='blue',
+                      alpha=.5, edge_width=2., radius_min=1., radius_max=1.)
+
+    """Create the connectivity object :"""
+    c_obj = ConnectObj(name='ConnectObj1', nodes=coords,
+                       custom_colors={None: 'blue'}, edges=c_connect_mask,
+                       color_by='count')
+
+    # Kcore graph
+    s_obj2 = SourceObj('SourceKcore', kcore_coords, text=kcore_labels,
+                       data=kcore_node_size, text_color=s_textcolor,
+                       color='crimson', alpha=.5, edge_width=2.,
+                       radius_min=20., radius_max=20.)
+
+    """Create the connectivity object :"""
+    if kcore_mat_mask.shape[0] != 1:
+        c_obj2 = ConnectObj(name='ConnectKcore', nodes=kcore_coords,
+                            custom_colors={None: 'crimson'},
+                            edges=kcore_mat_mask, color_by='count')
+    else:
+        c_obj2 = 0
+
+    return c_obj, s_obj, c_obj2, s_obj2
 
 
 c_colval_signif = {4: "darkred", 3: "red", 2: "orange", 1: "yellow", -1:

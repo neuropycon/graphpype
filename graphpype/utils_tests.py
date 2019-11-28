@@ -29,7 +29,7 @@ def load_test_data(name):
     try:
         os.makedirs(data_dirpath)
     except OSError:
-        print("data_dirpath {} already exists".format(data_dirpath))
+        pass
 
     data_path = op.join(data_dirpath, name)
     data_zip = op.join(data_dirpath, "{}.zip".format(name))

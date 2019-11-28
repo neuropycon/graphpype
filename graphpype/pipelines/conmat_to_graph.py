@@ -5,6 +5,8 @@ import nipype.pipeline.engine as pe
 
 import nipype.interfaces.utility as niu
 
+
+from graphpype.interfaces.bct import KCore
 from graphpype.interfaces.radatools.rada import PrepRada, NetPropRada, CommRada
 from graphpype.nodes.modularity import (ComputeNetList, ComputeNodeRoles,
                                         ComputeModuleMatProp)
@@ -367,6 +369,50 @@ def create_pipeline_net_list_to_graph(
 
         pipeline.connect(prep_rada, 'Pajek_net_file',
                          net_prop, 'Pajek_net_file')
+
+    return pipeline
+
+
+def create_pipeline_bct_graph(
+        main_path, pipeline_name="graph_bct_pipe", con_den=1.0):
+    """
+    Description:
+
+    Pipeline for computing module based graph properties
+
+    Threshold is density based
+
+    Inputs (inputnode):
+
+        * conmat_files
+
+    """
+    # TODO plot=True is kept for sake of clarity but is now unused
+    pipeline = pe.Workflow(name=pipeline_name)
+    pipeline.base_dir = main_path
+
+    # input node
+    inputnode = pe.Node(niu.IdentityInterface(
+        fields=['conmat_file']),
+        name='inputnode')
+
+    # compute binary version
+    bin_mat = pe.Node(interface=ComputeNetList(export_np_bin=True,
+                                               density=con_den),
+                      name="bin_mat")
+
+    pipeline.connect(inputnode, 'conmat_file',
+                     bin_mat, 'Z_cor_mat_file')
+
+    # compute K core
+    k_core = pe.Node(
+        interface=KCore(),
+        name="k_core")
+
+    k_core.inputs.is_directed = False
+
+    pipeline.connect(bin_mat, 'np_bin_mat_file',
+                     k_core, 'np_mat_file')
 
     return pipeline
 

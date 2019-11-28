@@ -383,8 +383,8 @@ class IntersectMask(BaseInterface):
 
         nib.save(nib.Nifti1Image(
             reorder_indexed_rois_data,
-            indexed_rois_img.get_affine(),
-            indexed_rois_img.get_header()),
+            indexed_rois_img.affine,
+            indexed_rois_img.header),
             os.path.abspath("reorder_filtered_indexed_rois.nii"))
 
         # index_corres
