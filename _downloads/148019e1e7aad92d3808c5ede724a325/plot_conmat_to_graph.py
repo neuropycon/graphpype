@@ -143,7 +143,6 @@ main_workflow.write_graph(graph2use='colored')  # colored
 # and visualize it. Take a moment to pause and notice how the connections
 # here correspond to how we connected the nodes.
 
-from scipy.misc import imread  # noqa
 import matplotlib.pyplot as plt  # noqa
 img = plt.imread(op.join(data_path, graph_analysis_name, 'graph.png'))
 plt.figure(figsize=(8, 8))
@@ -172,18 +171,20 @@ sc = SceneObj(size=(1500, 1500), bgcolor=(1, 1, 1))
 
 views = ['left','top']
 
-for i_v,view in enumerate(views):
-    for nf, freq_band_name in enumerate(freq_band_names):
+for nf, freq_band_name in enumerate(freq_band_names):
 
-        res_path = op.join(
-            data_path, graph_analysis_name,
-            "graph_den_pipe_den_"+str(con_den).replace(".", "_"),
-            "_freq_band_name_"+freq_band_name)
+    res_path = op.join(
+        data_path, graph_analysis_name,
+        "graph_den_pipe_den_"+str(con_den).replace(".", "_"),
+        "_freq_band_name_"+freq_band_name)
 
-        lol_file = op.join(res_path, "community_rada", "Z_List.lol")
-        net_file = op.join(res_path, "prep_rada", "Z_List.net")
+    lol_file = op.join(res_path, "community_rada", "Z_List.lol")
+    net_file = op.join(res_path, "prep_rada", "Z_List.net")
+
+    for i_v,view in enumerate(views):
 
         b_obj = BrainObj("B1", translucent=True)
+
         sc.add_to_subplot(
             b_obj, row=nf, col = i_v, use_this_cam=True, rotate=view,
             title=("Modules for {} band".format(freq_band_name)),

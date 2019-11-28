@@ -196,9 +196,9 @@ the values in the infosource node</p>
 </pre></div>
 </div>
 <p>We then use the pipeline used in the previous example <a class="reference internal" href="plot_conmat_to_graph.html#conmat-to-graph"><span class="std std-ref">conmat_to_graph pipeline</span></a></p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ephypype.pipelines</span> <span class="kn">import</span> <span class="n">create_pipeline_time_series_to_spectral_connectivity</span> <span class="c1"># noqa</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ephypype.pipelines</span> <span class="kn">import</span> <a href="http://neuropycon.github.io/ephypype/generated/ephypype.pipelines.create_pipeline_time_series_to_spectral_connectivity.html#ephypype.pipelines.create_pipeline_time_series_to_spectral_connectivity" title="View documentation for ephypype.pipelines.create_pipeline_time_series_to_spectral_connectivity"><span class="n">create_pipeline_time_series_to_spectral_connectivity</span></a> <span class="c1"># noqa</span>
 
-<span class="n">spectral_workflow</span> <span class="o">=</span> <span class="n">create_pipeline_time_series_to_spectral_connectivity</span><span class="p">(</span>
+<span class="n">spectral_workflow</span> <span class="o">=</span> <a href="http://neuropycon.github.io/ephypype/generated/ephypype.pipelines.create_pipeline_time_series_to_spectral_connectivity.html#ephypype.pipelines.create_pipeline_time_series_to_spectral_connectivity" title="View documentation for ephypype.pipelines.create_pipeline_time_series_to_spectral_connectivity"><span class="n">create_pipeline_time_series_to_spectral_connectivity</span></a><span class="p">(</span>
     <span class="n">data_path</span><span class="p">,</span> <span class="n">con_method</span><span class="o">=</span><span class="n">con_method</span><span class="p">,</span>
     <span class="n">epoch_window_length</span><span class="o">=</span><span class="n">epoch_window_length</span><span class="p">)</span>
 </pre></div>
@@ -286,8 +286,7 @@ So, these two nodes taken together can grab data.</p>
 </div>
 <p>and visualize it. Take a moment to pause and notice how the connections
 correspond to how we connected the nodes.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">scipy.misc</span> <span class="kn">import</span> <span class="n">imread</span>  <span class="c1"># noqa</span>
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>  <span class="c1"># noqa</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>  <span class="c1"># noqa</span>
 <span class="n">img</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="n">graph_analysis_name</span><span class="p">,</span> <span class="s1">&#39;graph.png&#39;</span><span class="p">))</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>
@@ -354,18 +353,21 @@ main_workflow.run(plugin=’MultiProc’, plugin_args={‘n_procs’: 2})</p>
 
 <span class="n">views</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;left&quot;</span><span class="p">,</span><span class="s1">&#39;top&#39;</span><span class="p">]</span>
 
-<span class="k">for</span> <span class="n">i_v</span><span class="p">,</span><span class="n">view</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">views</span><span class="p">):</span>
-    <span class="k">for</span> <span class="n">nf</span><span class="p">,</span> <span class="n">freq_band_name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">freq_band_names</span><span class="p">):</span>
-        <span class="n">res_path</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-            <span class="n">data_path</span><span class="p">,</span> <span class="n">graph_analysis_name</span><span class="p">,</span>
-            <span class="s2">&quot;graph_den_pipe_den_&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">con_den</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="s2">&quot;_&quot;</span><span class="p">),</span>
-            <span class="s2">&quot;_freq_band_name_&quot;</span><span class="o">+</span><span class="n">freq_band_name</span><span class="o">+</span><span class="s2">&quot;_subject_id_sub-0003&quot;</span><span class="p">)</span>
 
-        <span class="n">lol_file</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">res_path</span><span class="p">,</span> <span class="s2">&quot;community_rada&quot;</span><span class="p">,</span> <span class="s2">&quot;Z_List.lol&quot;</span><span class="p">)</span>
-        <span class="n">net_file</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">res_path</span><span class="p">,</span> <span class="s2">&quot;prep_rada&quot;</span><span class="p">,</span> <span class="s2">&quot;Z_List.net&quot;</span><span class="p">)</span>
-        <span class="n">roles_file</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">res_path</span><span class="p">,</span> <span class="s2">&quot;node_roles&quot;</span><span class="p">,</span> <span class="s2">&quot;node_roles.txt&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">nf</span><span class="p">,</span> <span class="n">freq_band_name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">freq_band_names</span><span class="p">):</span>
 
+    <span class="n">res_path</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+        <span class="n">data_path</span><span class="p">,</span> <span class="n">graph_analysis_name</span><span class="p">,</span>
+        <span class="s2">&quot;graph_den_pipe_den_&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">con_den</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="s2">&quot;_&quot;</span><span class="p">),</span>
+        <span class="s2">&quot;_freq_band_name_&quot;</span><span class="o">+</span><span class="n">freq_band_name</span><span class="o">+</span><span class="s2">&quot;_subject_id_sub-0003&quot;</span><span class="p">)</span>
+
+    <span class="n">lol_file</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">res_path</span><span class="p">,</span> <span class="s2">&quot;community_rada&quot;</span><span class="p">,</span> <span class="s2">&quot;Z_List.lol&quot;</span><span class="p">)</span>
+    <span class="n">net_file</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">res_path</span><span class="p">,</span> <span class="s2">&quot;prep_rada&quot;</span><span class="p">,</span> <span class="s2">&quot;Z_List.net&quot;</span><span class="p">)</span>
+    <span class="n">roles_file</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">res_path</span><span class="p">,</span> <span class="s2">&quot;node_roles&quot;</span><span class="p">,</span> <span class="s2">&quot;node_roles.txt&quot;</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">i_v</span><span class="p">,</span><span class="n">view</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">views</span><span class="p">):</span>
         <span class="n">b_obj</span> <span class="o">=</span> <span class="n">BrainObj</span><span class="p">(</span><span class="s1">&#39;B1&#39;</span><span class="p">,</span> <span class="n">translucent</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
         <span class="n">sc</span><span class="o">.</span><span class="n">add_to_subplot</span><span class="p">(</span><span class="n">b_obj</span><span class="p">,</span> <span class="n">row</span><span class="o">=</span><span class="n">nf</span><span class="p">,</span> <span class="n">col</span> <span class="o">=</span> <span class="n">i_v</span><span class="p">,</span> <span class="n">use_this_cam</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">rotate</span><span class="o">=</span><span class="n">view</span><span class="p">,</span>
                         <span class="n">title</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;Modules and node roles for {} band&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">freq_band_name</span><span class="p">)),</span>
                         <span class="n">title_size</span><span class="o">=</span><span class="mi">14</span><span class="p">,</span> <span class="n">title_bold</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">title_color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">)</span>
@@ -384,7 +386,7 @@ main_workflow.run(plugin=’MultiProc’, plugin_args={‘n_procs’: 2})</p>
 </pre></div>
 </div>
 <img alt="../_images/sphx_glr_plot_inv_ts_to_graph_003.png" class="sphx-glr-single-img" src="../_images/sphx_glr_plot_inv_ts_to_graph_003.png" />
-<p><strong>Total running time of the script:</strong> ( 0 minutes  5.379 seconds)</p>
+<p><strong>Total running time of the script:</strong> ( 0 minutes  7.726 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-inv-ts-to-graph-py">
 <div class="sphx-glr-download docutils container">
 <a class="reference download internal" download="" href="../_downloads/c408898dc7b654b78c9005349545b8bd/plot_inv_ts_to_graph.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_inv_ts_to_graph.py</span></code></a></div>
@@ -406,7 +408,7 @@ main_workflow.run(plugin=’MultiProc’, plugin_args={‘n_procs’: 2})</p>
       
     </p>
     <p>
-        &copy; Copyright 2019, Neuropycon Developers. Last updated on 2019-09-26.<br/>
+        &copy; Copyright 2019, Neuropycon Developers. Last updated on 2019-11-28.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.2.<br/>
     </p>
   </div>

@@ -72,10 +72,12 @@ space) as the template used to define the nodes in the graph.
 
     data_path = load_test_data("data_nii")
 
-    ROI_mask_file = op.join(data_path,"ROI_HCP","indexed_mask-ROI_HCP.nii")
-    ROI_coords_file = op.join(data_path,"ROI_HCP","ROI_coords-ROI_HCP.txt")
-    ROI_MNI_coords_file =op.join(data_path,"ROI_HCP","ROI_MNI_coords-ROI_HCP.txt")
-    ROI_labels_file = op.join(data_path,"ROI_HCP","ROI_labels-ROI_HCP.txt")
+    data_path_mask = load_test_data("data_nii_HCP")
+
+    ROI_mask_file = op.join(data_path_mask, "indexed_mask-ROI_HCP.nii")
+    ROI_coords_file = op.join(data_path_mask, "ROI_coords-ROI_HCP.txt")
+    ROI_MNI_coords_file =op.join(data_path_mask, "ROI_MNI_coords-ROI_HCP.txt")
+    ROI_labels_file = op.join(data_path_mask, "ROI_labels-ROI_HCP.txt")
 
 
 
@@ -87,6 +89,7 @@ space) as the template used to define the nodes in the graph.
 
  .. code-block:: none
 
+    data_dirpath /home/INT/meunier.d/miniconda3/Packages/graphpype/graphpype/../data already exists
     data_dirpath /home/INT/meunier.d/miniconda3/Packages/graphpype/graphpype/../data already exists
 
 
@@ -281,7 +284,6 @@ here correspond to how we connected the nodes.
 .. code-block:: python
 
 
-    from scipy.misc import imread  # noqa
     import matplotlib.pyplot as plt  # noqa
     img = plt.imread(op.join(data_path, conmat_analysis_name, 'graph.png'))
     plt.figure(figsize=(8, 8))
@@ -318,6 +320,60 @@ Finally, we are now ready to execute our workflow.
 
 
 
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    (360, 3)
+    [  0   1   3   4   5   6   7   8   9  10  11  12  13  14  16  17  18  19
+      20  21  22  23  24  25  26  27  28  29  30  31  32  33  34  35  36  37
+      39  40  42  51  52  54  55  56  57  58  59  60  61  62  63  64  65  67
+      68  69  70  71  72  73  74  75  76  77  78  79  80  81  82  83  84  85
+      86  87  88  89  90  91  92  93  94  95  98  99 100 101 102 103 104 105
+     106 107 108 109 110 111 112 113 114 115 116 117 118 119 120 121 122 123
+     124 125 126 127 128 129 130 131 132 133 134 135 136 137 138 139 140 141
+     142 143 144 145 146 147 148 149 150 152 153 154 155 156 157 158 159 160
+     161 162 163 164 165 166 167 168 169 170 171 172 173 174 175 176 177 178
+     179 180 181 182 183 184 185 186 187 188 189 190 191 192 193 194 195 196
+     197 198 199 200 201 202 203 204 205 206 207 208 209 210 211 212 213 214
+     215 216 217 219 220 222 223 229 230 231 232 233 234 235 236 237 238 239
+     240 241 242 243 244 245 246 247 248 249 250 251 252 253 254 255 256 257
+     258 259 260 261 262 263 264 265 266 267 268 269 270 271 272 273 274 275
+     278 279 280 281 282 283 284 285 286 287 288 289 290 291 292 293 294 295
+     296 297 298 299 300 301 302 303 304 305 306 307 308 309 310 311 312 313
+     314 315 316 317 318 319 320 321 322 324 325 326 327 328 329 330 332 333
+     334 335 336 337 338 339 340 341 342 343 344 345 346 347 348 349 350 351
+     352 353 354 355 356 357 358 359]
+    Transposing data_matrix shape (332, 300) -> (300, 332)
+    Transposing data
+    Computing Pearson correlation
+    (332, 332)
+    (101954, 3)
+    Loading Pajek_net_file for reading node_corres
+    [[   0 1185 1177 ...    0    0    0]
+     [   0    0 1517 ...    0    0    0]
+     [   0    0    0 ...    0    0    0]
+     ...
+     [   0    0    0 ...    0    0    0]
+     [   0    0    0 ...    0    0    0]
+     [   0    0    0 ...    0    0    0]]
+    (190,) (190, 190)
+    Loading community belonging file /home/INT/meunier.d/miniconda3/Packages/graphpype/data/data_nii/conmat/graph_den_pipe_den_0_01/_session_rest_subject_id_01/community_rada/Z_List.lol
+    [ 1  1  1  1  1  1  3  3  0  1  0  7  3  3  4  3  3  3  4  4  4 10  4 10
+      6  6  6  6  6  6  5  5  5  4 11 11  4  7  2  2  2  2  2  2  2  2  4  4
+      0  0  0  1  0  7  0  0  0  5  5  0  0  0  0  0  0  5  5  4  4  4  1  8
+      3  5  3  1  1  0  1  0  3  1 12  2  2  2  0  2  7  0  0  6  6  1  1  1
+      1  1  1 13  1  3  3  1  0  1  0  0  0  8  3  3  4  3  3  3  4  4  4  4
+      4 14 14  6  6  6  6  6  6  2 15 15 16 16  3 13  9  2  9  9  2  2  0  2
+      2  2  0  0  1  0  9  5  0  0  5  5  0  0  0  0  0  0  0  0  5  5  3  4
+      3  1  8  8  3  3  1  1  0  0  0  1  1 12  2  2  2  0  2  5  0  2]
+    Computing node roles
+
+    Node roles:
+    *Hubs 29/non-hubs 143
+    *provincials 175/connectors 15
 
 
 # plotting
@@ -327,10 +383,10 @@ Finally, we are now ready to execute our workflow.
 .. code-block:: python
 
 
-    from graphpype.utils_visbrain import visu_graph_modules
+    from graphpype.utils_visbrain import visu_graph_modules, visu_graph_modules_roles
     from visbrain.objects import SceneObj, BrainObj # noqa
 
-    sc = SceneObj(size=(1000, 500), bgcolor=(1,1,1))
+    sc = SceneObj(size=(1000, 1000), bgcolor=(1,1,1))
 
     res_path = op.join(
         data_path, conmat_analysis_name,
@@ -339,6 +395,7 @@ Finally, we are now ready to execute our workflow.
 
     lol_file = op.join(res_path, "community_rada", "Z_List.lol")
     net_file = op.join(res_path, "prep_rada", "Z_List.net")
+    roles_file = op.join(res_path, "node_roles", "node_roles.txt")
 
     views = ["left",'top']
 
@@ -356,6 +413,23 @@ Finally, we are now ready to execute our workflow.
         sc.add_to_subplot(c_obj, row=0, col = i_v)
         sc.add_to_subplot(s_obj, row=0, col = i_v)
 
+        b_obj = BrainObj('B1', translucent=True)
+        sc.add_to_subplot(b_obj, row=1, col = i_v, use_this_cam=True, rotate=view,
+                        title=("Modules and node roles"),
+                        title_size=14, title_bold=True, title_color='black')
+
+        c_obj,list_sources = visu_graph_modules_roles(
+            lol_file=lol_file, net_file=net_file, roles_file=roles_file,
+            coords_file=ROI_MNI_coords_file, inter_modules=True, default_size=10,
+            hub_to_non_hub=3)
+
+        sc.add_to_subplot(c_obj, row=1, col = i_v)
+
+        for source in list_sources:
+            sc.add_to_subplot(source, row=1, col = i_v)
+
+
+
     sc.preview()
 
 
@@ -366,7 +440,7 @@ Finally, we are now ready to execute our workflow.
 
 
 
-**Total running time of the script:** ( 0 minutes  1.515 seconds)
+**Total running time of the script:** ( 1 minutes  1.375 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_nii_to_graph.py:

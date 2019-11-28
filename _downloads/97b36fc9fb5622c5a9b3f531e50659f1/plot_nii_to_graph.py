@@ -52,10 +52,12 @@ from graphpype.utils_tests import load_test_data
 
 data_path = load_test_data("data_nii")
 
-ROI_mask_file = op.join(data_path,"ROI_HCP","indexed_mask-ROI_HCP.nii")
-ROI_coords_file = op.join(data_path,"ROI_HCP","ROI_coords-ROI_HCP.txt")
-ROI_MNI_coords_file =op.join(data_path,"ROI_HCP","ROI_MNI_coords-ROI_HCP.txt")
-ROI_labels_file = op.join(data_path,"ROI_HCP","ROI_labels-ROI_HCP.txt")
+data_path_mask = load_test_data("data_nii_HCP")
+
+ROI_mask_file = op.join(data_path_mask, "indexed_mask-ROI_HCP.nii")
+ROI_coords_file = op.join(data_path_mask, "ROI_coords-ROI_HCP.txt")
+ROI_MNI_coords_file =op.join(data_path_mask, "ROI_MNI_coords-ROI_HCP.txt")
+ROI_labels_file = op.join(data_path_mask, "ROI_labels-ROI_HCP.txt")
 
 ###############################################################################
 # Then, we create our workflow and specify the `base_dir` which tells
@@ -166,7 +168,6 @@ main_workflow.write_graph(graph2use='colored')  # colored
 # and visualize it. Take a moment to pause and notice how the connections
 # here correspond to how we connected the nodes.
 
-from scipy.misc import imread  # noqa
 import matplotlib.pyplot as plt  # noqa
 img = plt.imread(op.join(data_path, conmat_analysis_name, 'graph.png'))
 plt.figure(figsize=(8, 8))
@@ -190,10 +191,10 @@ main_workflow.run()
 ################################################################################
 ## plotting
 
-from graphpype.utils_visbrain import visu_graph_modules
+from graphpype.utils_visbrain import visu_graph_modules, visu_graph_modules_roles
 from visbrain.objects import SceneObj, BrainObj # noqa
 
-sc = SceneObj(size=(1000, 500), bgcolor=(1,1,1))
+sc = SceneObj(size=(1000, 1000), bgcolor=(1,1,1))
 
 res_path = op.join(
     data_path, conmat_analysis_name,
@@ -202,6 +203,7 @@ res_path = op.join(
 
 lol_file = op.join(res_path, "community_rada", "Z_List.lol")
 net_file = op.join(res_path, "prep_rada", "Z_List.net")
+roles_file = op.join(res_path, "node_roles", "node_roles.txt")
 
 views = ["left",'top']
 
@@ -218,5 +220,22 @@ for i_v,view in enumerate(views):
 
     sc.add_to_subplot(c_obj, row=0, col = i_v)
     sc.add_to_subplot(s_obj, row=0, col = i_v)
+
+    b_obj = BrainObj('B1', translucent=True)
+    sc.add_to_subplot(b_obj, row=1, col = i_v, use_this_cam=True, rotate=view,
+                    title=("Modules and node roles"),
+                    title_size=14, title_bold=True, title_color='black')
+
+    c_obj,list_sources = visu_graph_modules_roles(
+        lol_file=lol_file, net_file=net_file, roles_file=roles_file,
+        coords_file=ROI_MNI_coords_file, inter_modules=True, default_size=10,
+        hub_to_non_hub=3)
+
+    sc.add_to_subplot(c_obj, row=1, col = i_v)
+
+    for source in list_sources:
+        sc.add_to_subplot(source, row=1, col = i_v)
+
+
 
 sc.preview()
