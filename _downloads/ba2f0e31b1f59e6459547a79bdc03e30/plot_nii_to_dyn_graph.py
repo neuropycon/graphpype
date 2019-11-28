@@ -1,9 +1,10 @@
 """
 .. _dyn_graph_to_graph:
 
-=========================================================
-Compute connecivity matrices and graph properties from nii files
-=========================================================
+=================================================================
+Compute connectivity matrices and graph properties from nii files
+=================================================================
+
 The nii_to_graph pipeline performs graph analysis from functional MRI file
 in NIFTI format.
 

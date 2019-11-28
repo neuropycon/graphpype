@@ -167,6 +167,12 @@ are present)
     con_den = data_graph['con_den']
 
 
+    from graphpype.pipelines import create_pipeline_bct_graph
+
+    graph_workflow = create_pipeline_bct_graph(
+        data_path, con_den=con_den)
+
+
 
 
 
@@ -178,54 +184,6 @@ are present)
  .. code-block:: none
 
     {'graph parameters': {'con_den': 0.05}}
-
-
-see http://deim.urv.cat/~sergio.gomez/download.php?f=radatools-5.0-README.txt
-for more details, but very briefly:
-
-* 1) WN for weighted unsigned (typically coherence, pli, etc.) and WS for signed (e.g. Pearson correlation)
-
-* 2) the optimisation sequence, can be used in different order. The sequence tfrf is proposed in radatools, and means: t = tabu search , f = fast algorithm, r = reposition algorithm and f = fast algorithm (again)
-
-* 3) the last number is the number of repetitions of the algorithm, out of which the best one is chosen. The higher the number of repetitions, the higher the chance to reach the global maximum, but also the longer the computation takes. For testing, 1 is admissible, but it is expected to have at least 100 is required for reliable results
-
-
-The graph pipeline contains several nodes, some are based on radatools
-In particular, the two nodes are:
-
-* :class:`ephypype.interfaces.mne.spectral.SpectralConn` computes spectral connectivity in a given frequency bands
-* :class:`ephypype.interfaces.mne.spectral.PlotSpectralConn` plot connectivity matrix using the |plot_connectivity_circle| function
-
-.. |plot_connectivity_circle| raw:: html
-
-  <a href="http://martinos.org/mne/stable/generated/mne.viz.plot_connectivity_circle .html#mne.viz.plot_connectivity_circle" target="_blank">spectral_connectivity function</a>
-
-
-
-.. code-block:: python
-
-
-    # In particular, the two nodes are:
-    #
-    # * :class:`ephypype.interfaces.mne.spectral.SpectralConn` computes spectral
-    # connectivity in a given frequency bands
-    # * :class:`ephypype.interfaces.mne.spectral.PlotSpectralConn` plot
-    # connectivity matrix using the |plot_connectivity_circle| function
-    # .. |plot_connectivity_circle| raw:: html
-    #  <a href="http://martinos.org/mne/stable/generated/mne.viz.
-    # plot_connectivity_circle .html#mne.viz.plot_connectivity_circle"
-    # target="_blank">spectral_connectivity function</a>
-
-    from graphpype.pipelines import create_pipeline_bct_graph
-
-    graph_workflow = create_pipeline_bct_graph(
-        data_path, con_den=con_den)
-
-
-
-
-
-
 
 
 We then connect the nodes two at a time. We connect the output
@@ -303,7 +261,7 @@ Finally, we are now ready to execute our workflow.
 
 
 
-**Total running time of the script:** ( 0 minutes  6.395 seconds)
+**Total running time of the script:** ( 0 minutes  6.373 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_conmat_to_bct_graph.py:

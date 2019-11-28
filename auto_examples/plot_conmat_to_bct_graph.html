@@ -187,49 +187,16 @@ are present)</p>
 
 <span class="c1"># density of the threshold</span>
 <span class="n">con_den</span> <span class="o">=</span> <span class="n">data_graph</span><span class="p">[</span><span class="s1">&#39;con_den&#39;</span><span class="p">]</span>
-</pre></div>
-</div>
-<p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>{&#39;graph parameters&#39;: {&#39;con_den&#39;: 0.05}}
-</pre></div>
-</div>
-<p>see <a class="reference external" href="http://deim.urv.cat/~sergio.gomez/download.php?f=radatools-5.0-README.txt">http://deim.urv.cat/~sergio.gomez/download.php?f=radatools-5.0-README.txt</a>
-for more details, but very briefly:</p>
-<ul class="simple">
-<li><ol class="first arabic">
-<li>WN for weighted unsigned (typically coherence, pli, etc.) and WS for signed (e.g. Pearson correlation)</li>
-</ol>
-</li>
-<li><ol class="first arabic" start="2">
-<li>the optimisation sequence, can be used in different order. The sequence tfrf is proposed in radatools, and means: t = tabu search , f = fast algorithm, r = reposition algorithm and f = fast algorithm (again)</li>
-</ol>
-</li>
-<li><ol class="first arabic" start="3">
-<li>the last number is the number of repetitions of the algorithm, out of which the best one is chosen. The higher the number of repetitions, the higher the chance to reach the global maximum, but also the longer the computation takes. For testing, 1 is admissible, but it is expected to have at least 100 is required for reliable results</li>
-</ol>
-</li>
-</ul>
-<p>The graph pipeline contains several nodes, some are based on radatools
-In particular, the two nodes are:</p>
-<ul class="simple">
-<li><code class="xref py py-class docutils literal notranslate"><span class="pre">ephypype.interfaces.mne.spectral.SpectralConn</span></code> computes spectral connectivity in a given frequency bands</li>
-<li><code class="xref py py-class docutils literal notranslate"><span class="pre">ephypype.interfaces.mne.spectral.PlotSpectralConn</span></code> plot connectivity matrix using the <a href="http://martinos.org/mne/stable/generated/mne.viz.plot_connectivity_circle .html#mne.viz.plot_connectivity_circle" target="_blank">spectral_connectivity function</a> function</li>
-</ul>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># In particular, the two nodes are:</span>
-<span class="c1">#</span>
-<span class="c1"># * :class:`ephypype.interfaces.mne.spectral.SpectralConn` computes spectral</span>
-<span class="c1"># connectivity in a given frequency bands</span>
-<span class="c1"># * :class:`ephypype.interfaces.mne.spectral.PlotSpectralConn` plot</span>
-<span class="c1"># connectivity matrix using the |plot_connectivity_circle| function</span>
-<span class="c1"># .. |plot_connectivity_circle| raw:: html</span>
-<span class="c1">#  &lt;a href=&quot;http://martinos.org/mne/stable/generated/mne.viz.</span>
-<span class="c1"># plot_connectivity_circle .html#mne.viz.plot_connectivity_circle&quot;</span>
-<span class="c1"># target=&quot;_blank&quot;&gt;spectral_connectivity function&lt;/a&gt;</span>
+
 
 <span class="kn">from</span> <span class="nn">graphpype.pipelines</span> <span class="kn">import</span> <span class="n">create_pipeline_bct_graph</span>
 
 <span class="n">graph_workflow</span> <span class="o">=</span> <span class="n">create_pipeline_bct_graph</span><span class="p">(</span>
     <span class="n">data_path</span><span class="p">,</span> <span class="n">con_den</span><span class="o">=</span><span class="n">con_den</span><span class="p">)</span>
+</pre></div>
+</div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>{&#39;graph parameters&#39;: {&#39;con_den&#39;: 0.05}}
 </pre></div>
 </div>
 <p>We then connect the nodes two at a time. We connect the output
@@ -264,7 +231,7 @@ here correspond to how we connected the nodes.</p>
 <span class="n">main_workflow</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">plugin</span><span class="o">=</span><span class="s1">&#39;MultiProc&#39;</span><span class="p">,</span> <span class="n">plugin_args</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;n_procs&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">})</span>
 </pre></div>
 </div>
-<p><strong>Total running time of the script:</strong> ( 0 minutes  6.395 seconds)</p>
+<p><strong>Total running time of the script:</strong> ( 0 minutes  6.373 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-conmat-to-bct-graph-py">
 <div class="sphx-glr-download docutils container">
 <a class="reference download internal" download="" href="../_downloads/ce49f462957c5027f97e93ab3658a9c0/plot_conmat_to_bct_graph.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_conmat_to_bct_graph.py</span></code></a></div>

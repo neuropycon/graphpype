@@ -74,7 +74,7 @@ Examples Gallery
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="The **input** data should be preprocessed (i.e. realigned, coregistered, and segmented), and no...">
+    <div class="sphx-glr-thumbcontainer" tooltip="The nii_to_graph pipeline performs graph analysis from functional MRI file in NIFTI format.">
 
 .. only:: html
 
