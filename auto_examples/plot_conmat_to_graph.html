@@ -129,10 +129,6 @@
 <span class="n">data_path</span> <span class="o">=</span> <span class="n">load_test_data</span><span class="p">(</span><span class="s2">&quot;data_con_meg&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>data_dirpath /home/INT/meunier.d/miniconda3/Packages/graphpype/graphpype/../data already exists
-</pre></div>
-</div>
 <p>This will be what we will loop on</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">freq_band_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;alpha&#39;</span><span class="p">,</span> <span class="s1">&#39;beta&#39;</span><span class="p">]</span>
 </pre></div>
@@ -226,9 +222,9 @@ In particular, the two nodes are:</p>
 <span class="c1"># plot_connectivity_circle .html#mne.viz.plot_connectivity_circle&quot;</span>
 <span class="c1"># target=&quot;_blank&quot;&gt;spectral_connectivity function&lt;/a&gt;</span>
 
-<span class="kn">from</span> <span class="nn">graphpype.pipelines</span> <span class="kn">import</span> <span class="n">create_pipeline_conmat_to_graph_density</span>
+<span class="kn">from</span> <span class="nn">graphpype.pipelines</span> <span class="kn">import</span> <a href="http://neuropycon.github.io/graphpype/generated/graphpype.pipelines.create_pipeline_conmat_to_graph_density.html#graphpype.pipelines.create_pipeline_conmat_to_graph_density" title="View documentation for graphpype.pipelines.create_pipeline_conmat_to_graph_density"><span class="n">create_pipeline_conmat_to_graph_density</span></a>
 
-<span class="n">graph_workflow</span> <span class="o">=</span> <span class="n">create_pipeline_conmat_to_graph_density</span><span class="p">(</span>
+<span class="n">graph_workflow</span> <span class="o">=</span> <a href="http://neuropycon.github.io/graphpype/generated/graphpype.pipelines.create_pipeline_conmat_to_graph_density.html#graphpype.pipelines.create_pipeline_conmat_to_graph_density" title="View documentation for graphpype.pipelines.create_pipeline_conmat_to_graph_density"><span class="n">create_pipeline_conmat_to_graph_density</span></a><span class="p">(</span>
     <span class="n">data_path</span><span class="p">,</span> <span class="n">con_den</span><span class="o">=</span><span class="n">con_den</span><span class="p">,</span> <span class="n">optim_seq</span><span class="o">=</span><span class="n">radatools_optim</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -304,7 +300,7 @@ here correspond to how we connected the nodes.</p>
 </pre></div>
 </div>
 <img alt="../_images/sphx_glr_plot_conmat_to_graph_002.png" class="sphx-glr-single-img" src="../_images/sphx_glr_plot_conmat_to_graph_002.png" />
-<p><strong>Total running time of the script:</strong> ( 6 minutes  27.524 seconds)</p>
+<p><strong>Total running time of the script:</strong> ( 0 minutes  14.415 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-conmat-to-graph-py">
 <div class="sphx-glr-download docutils container">
 <a class="reference download internal" download="" href="../_downloads/148019e1e7aad92d3808c5ede724a325/plot_conmat_to_graph.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_conmat_to_graph.py</span></code></a></div>

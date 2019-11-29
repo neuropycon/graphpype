@@ -52,13 +52,6 @@ Check if data are available
 
 
 
-.. rst-class:: sphx-glr-script-out
-
- Out:
-
- .. code-block:: none
-
-    data_dirpath /home/INT/meunier.d/miniconda3/Packages/graphpype/graphpype/../data already exists
 
 
 This will be what we will loop on
@@ -354,7 +347,7 @@ plotting
 
 
 
-**Total running time of the script:** ( 6 minutes  27.524 seconds)
+**Total running time of the script:** ( 0 minutes  14.415 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_conmat_to_graph.py:

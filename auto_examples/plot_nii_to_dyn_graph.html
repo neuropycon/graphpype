@@ -155,18 +155,13 @@ space) as the template used to define the nodes in the graph.</p>
 <span class="n">ROI_labels_file</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path_mask</span><span class="p">,</span> <span class="s2">&quot;ROI_labels-ROI_HCP.txt&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>data_dirpath /home/INT/meunier.d/miniconda3/Packages/graphpype/graphpype/../data already exists
-data_dirpath /home/INT/meunier.d/miniconda3/Packages/graphpype/graphpype/../data already exists
-</pre></div>
-</div>
 <p>Then, we create our workflow and specify the <cite>base_dir</cite> which tells
 nipype the directory in which to store the outputs.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># workflow directory within the `base_dir`</span>
 <span class="n">conmat_analysis_name</span> <span class="o">=</span> <span class="s1">&#39;nii_to_dyn_graph&#39;</span>
 
 <span class="c1">#from graphpype.pipelines import create_pipeline_nii_to_split_conmat # noqa</span>
-<span class="kn">from</span> <span class="nn">graphpype.pipelines</span> <span class="kn">import</span> <span class="n">create_pipeline_nii_to_conmat</span> <span class="c1"># noqa</span>
+<span class="kn">from</span> <span class="nn">graphpype.pipelines</span> <span class="kn">import</span> <a href="http://neuropycon.github.io/graphpype/generated/graphpype.pipelines.create_pipeline_nii_to_conmat.html#graphpype.pipelines.create_pipeline_nii_to_conmat" title="View documentation for graphpype.pipelines.create_pipeline_nii_to_conmat"><span class="n">create_pipeline_nii_to_conmat</span></a> <span class="c1"># noqa</span>
 
 <span class="n">main_workflow</span> <span class="o">=</span> <span class="n">pe</span><span class="o">.</span><span class="n">Workflow</span><span class="p">(</span><span class="n">name</span><span class="o">=</span> <span class="n">conmat_analysis_name</span><span class="p">)</span>
 <span class="n">main_workflow</span><span class="o">.</span><span class="n">base_dir</span> <span class="o">=</span> <span class="n">data_path</span>
@@ -228,7 +223,7 @@ the values in the infosource node</p>
                                        <span class="c1">#offset=offset,</span>
                                        <span class="c1">#resample=True, background_val=0.0)</span>
 
-<span class="n">cor_wf</span> <span class="o">=</span> <span class="n">create_pipeline_nii_to_conmat</span><span class="p">(</span><span class="n">main_path</span><span class="o">=</span><span class="n">data_path</span><span class="p">,</span>
+<span class="n">cor_wf</span> <span class="o">=</span> <a href="http://neuropycon.github.io/graphpype/generated/graphpype.pipelines.create_pipeline_nii_to_conmat.html#graphpype.pipelines.create_pipeline_nii_to_conmat" title="View documentation for graphpype.pipelines.create_pipeline_nii_to_conmat"><span class="n">create_pipeline_nii_to_conmat</span></a><span class="p">(</span><span class="n">main_path</span><span class="o">=</span><span class="n">data_path</span><span class="p">,</span>
                                        <span class="n">conf_interval_prob</span><span class="o">=</span><span class="n">conf_interval_prob</span><span class="p">,</span>
                                        <span class="n">resample</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">background_val</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
                                        <span class="n">split</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">win_length</span><span class="o">=</span><span class="n">win_length</span><span class="p">,</span>
@@ -267,9 +262,9 @@ So, these two nodes taken together can grab data.</p>
 <span class="c1"># The optimisation sequence</span>
 <span class="n">radatools_optim</span> <span class="o">=</span> <span class="n">data_dyn_graph</span><span class="p">[</span><span class="s1">&#39;radatools_optim&#39;</span><span class="p">]</span>
 
-<span class="kn">from</span> <span class="nn">graphpype.pipelines</span> <span class="kn">import</span> <span class="n">create_pipeline_conmat_to_graph_density</span> <span class="c1">## noqa</span>
+<span class="kn">from</span> <span class="nn">graphpype.pipelines</span> <span class="kn">import</span> <a href="http://neuropycon.github.io/graphpype/generated/graphpype.pipelines.create_pipeline_conmat_to_graph_density.html#graphpype.pipelines.create_pipeline_conmat_to_graph_density" title="View documentation for graphpype.pipelines.create_pipeline_conmat_to_graph_density"><span class="n">create_pipeline_conmat_to_graph_density</span></a> <span class="c1">## noqa</span>
 
-<span class="n">graph_workflow</span> <span class="o">=</span> <span class="n">create_pipeline_conmat_to_graph_density</span><span class="p">(</span>
+<span class="n">graph_workflow</span> <span class="o">=</span> <a href="http://neuropycon.github.io/graphpype/generated/graphpype.pipelines.create_pipeline_conmat_to_graph_density.html#graphpype.pipelines.create_pipeline_conmat_to_graph_density" title="View documentation for graphpype.pipelines.create_pipeline_conmat_to_graph_density"><span class="n">create_pipeline_conmat_to_graph_density</span></a><span class="p">(</span>
     <span class="n">data_path</span><span class="p">,</span> <span class="n">con_den</span><span class="o">=</span><span class="n">con_den</span><span class="p">,</span> <span class="n">optim_seq</span><span class="o">=</span><span class="n">radatools_optim</span><span class="p">,</span> <span class="n">multi</span> <span class="o">=</span> <span class="bp">True</span><span class="p">)</span>
 
 <span class="n">main_workflow</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">cor_wf</span><span class="p">,</span> <span class="s1">&#39;compute_conf_cor_mat.Z_conf_cor_mat_file&#39;</span><span class="p">,</span>
@@ -350,7 +345,7 @@ main_workflow.write_graph(graph2use=’colored’)  # colored</p>
 <span class="c1">#sc.preview()</span>
 </pre></div>
 </div>
-<p><strong>Total running time of the script:</strong> ( 0 minutes  0.386 seconds)</p>
+<p><strong>Total running time of the script:</strong> ( 0 minutes  0.156 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-nii-to-dyn-graph-py">
 <div class="sphx-glr-download docutils container">
 <a class="reference download internal" download="" href="../_downloads/ba2f0e31b1f59e6459547a79bdc03e30/plot_nii_to_dyn_graph.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_nii_to_dyn_graph.py</span></code></a></div>

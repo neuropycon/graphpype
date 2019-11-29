@@ -1,13 +1,13 @@
 .. note::
     :class: sphx-glr-download-link-note
 
-    Click :ref:`here <sphx_glr_download_auto_examples_plot_inv_ts_to_graph.py>` to download the full example code
+    Click :ref:`here <sphx_glr_download_auto_examples_plot_inv_ts_to_bct_graph.py>` to download the full example code
 .. rst-class:: sphx-glr-example-title
 
-.. _sphx_glr_auto_examples_plot_inv_ts_to_graph.py:
+.. _sphx_glr_auto_examples_plot_inv_ts_to_bct_graph.py:
 
 
-.. _inv_ts_to_graph:
+.. _inv_ts_to_bct_graph:
 
 =========================================================
 Compute Graph properties from a given connectivity matrix
@@ -199,17 +199,17 @@ from a json as a dictionnary
 
 
     data_graph = json.load(open(op.join(op.dirname("__file__"),
-                                      "params_graph.json")))
+                                      "params_bct_graph.json")))
     pprint.pprint({'graph parameters': data_graph})
 
-    # density of the threshold. This parameter corrdesponds to the percentage of
-    # highest connections retains for the analyses. con_den = 1.0 means a fully
-    # connected graphs (all edges are present)
-
+    # density of the threshold
     con_den = data_graph['con_den']
 
-    # The optimisation sequence
-    radatools_optim = data_graph['radatools_optim']
+
+    from graphpype.pipelines import create_pipeline_bct_graph
+
+    graph_workflow = create_pipeline_bct_graph(
+        data_path, con_den=con_den)
 
 
 
@@ -222,46 +222,7 @@ from a json as a dictionnary
 
  .. code-block:: none
 
-    {'graph parameters': {'con_den': 0.05, 'radatools_optim': 'WN tfrf 100'}}
-
-
-see http://deim.urv.cat/~sergio.gomez/download.php?f=radatools-5.0-README.txt
-for more details, but very briefly:
-
-* 1) WN for weighted unsigned (typically coherence, pli, etc.) and WS for signed (e.g. Pearson correlation)
-
-* 2) the optimisation sequence, can be used in different order. The sequence tfrf is proposed in radatools, and means: t = tabu search , f = fast algorithm, r = reposition algorithm and f = fast algorithm (again)
-
-* 3) the last number is the number of repetitions of the algorithm, out of which the best one is chosen. The higher the number of repetitions, the higher the chance to reach the global maximum, but also the longer the computation takes. For testing, 1 is admissible, but it is expected to have at least 100 is required for reliable results
-
-
-Graphpype creates for us a graph pipeline,
-implemented by the function :func: `graphpype.pipelines.conmat_to_graph.create_pipeline_conmat_to_graph_density`
-,thus to instantiate this graph pipeline node, we import it and pass
-our parameters to it.
-
-The graph pipeline contains several nodes, some are based on radatools
-
-Two nodes of particular interest are :
-
-* :class:`graphpype.interfaces.radatools.rada.CommRada` computes Community detection based on the previous radatools_optim parameters
-
-* :class:`graphpype.interfaces.radatools.rada.NetPropRada` computes most of the classical graph-based metrics (Small-World, Efficiency, Assortativity, etc.)
-
-
-
-.. code-block:: python
-
-
-    from graphpype.pipelines import create_pipeline_conmat_to_graph_density
-
-    graph_workflow = create_pipeline_conmat_to_graph_density(
-        data_path, con_den=con_den, optim_seq=radatools_optim)
-
-
-
-
-
+    {'graph parameters': {'con_den': 0.05}}
 
 
 We then connect the nodes two at a time. We connect the output
@@ -318,18 +279,15 @@ correspond to how we connected the nodes.
 .. code-block:: python
 
 
-    import matplotlib.pyplot as plt  # noqa
-    img = plt.imread(op.join(data_path, graph_analysis_name, 'graph.png'))
-    plt.figure(figsize=(8, 8))
-    plt.imshow(img)
-    plt.axis('off')
-    plt.show()
+    #import matplotlib.pyplot as plt  # noqa
+    #img = plt.imread(op.join(data_path, graph_analysis_name, 'graph.png'))
+    #plt.figure(figsize=(8, 8))
+    #plt.imshow(img)
+    #plt.axis('off')
+    #plt.show()
 
 
 
-
-.. image:: /auto_examples/images/sphx_glr_plot_inv_ts_to_graph_001.png
-    :class: sphx-glr-single-img
 
 
 
@@ -342,6 +300,7 @@ Finally, we are now ready to execute our workflow.
 
 
     main_workflow.config['execution'] = {'remove_unnecessary_outputs': 'false'}
+    main_workflow.run()
 
 
 
@@ -351,76 +310,25 @@ Finally, we are now ready to execute our workflow.
 
 Run workflow locally on 2 CPUs in parrallel
 main_workflow.run(plugin='MultiProc', plugin_args={'n_procs': 2})
-
-
-plotting modules
-
-
-
-.. code-block:: python
-
-
-    from graphpype.utils_visbrain import visu_graph_modules # noqa
-
-    labels_file = op.join(data_path, "label_names.txt")
-    coords_file = op.join(data_path, "label_centroid.txt")
-
-    from visbrain.objects import SceneObj, BrainObj # noqa
-
-    sc = SceneObj(size=(1000, 1000), bgcolor=(1,1,1))
-
-    views = ["left",'top']
-
-    for i_v,view in enumerate(views):
-        for nf, freq_band_name in enumerate(freq_band_names):
-            res_path = op.join(
-                data_path, graph_analysis_name,
-                "graph_den_pipe_den_"+str(con_den).replace(".", "_"),
-                "_freq_band_name_"+freq_band_name+"_subject_id_sub-0003")
-
-            lol_file = op.join(res_path, "community_rada", "Z_List.lol")
-            net_file = op.join(res_path, "prep_rada", "Z_List.net")
-
-            b_obj = BrainObj("B1", translucent=True)
-            sc.add_to_subplot(b_obj, row=nf, col = i_v, use_this_cam=True,
-                              rotate=view,
-                              title=("Modules for {} band".format(freq_band_name)),
-                              title_size=14, title_bold=True, title_color='black')
-
-
-            c_obj,s_obj = visu_graph_modules(lol_file=lol_file, net_file=net_file,
-                                    coords_file=coords_file,
-                                    inter_modules=False)
-
-            sc.add_to_subplot(c_obj, row=nf, col = i_v)
-            sc.add_to_subplot(s_obj, row=nf, col = i_v)
-
-    sc.preview()
-
-
-
-
-.. image:: /auto_examples/images/sphx_glr_plot_inv_ts_to_graph_002.png
-    :class: sphx-glr-single-img
-
-
-
-
-plotting modules and roles
+###############################################################################
+ plotting k_core values
 
 
 
 .. code-block:: python
 
 
-    from graphpype.utils_visbrain import visu_graph_modules_roles # noqa
+    from graphpype.utils_visbrain import visu_graph # noqa
 
     labels_file = op.join(data_path, "label_names.txt")
     coords_file = op.join(data_path, "label_centroid.txt")
 
+    #labels_file = op.join(data_path, "label_names.txt")
+    #coords_file = op.join(data_path, "label_centroid.txt")
+
     from visbrain.objects import SceneObj, BrainObj # noqa
 
-    sc = SceneObj(size=(1000, 1000), bgcolor=(1,1,1))
+    sc = SceneObj(size=(1500, 1500), bgcolor=(1,1,1))
 
     views = ["left",'top']
 
@@ -429,44 +337,124 @@ plotting modules and roles
 
         res_path = op.join(
             data_path, graph_analysis_name,
-            "graph_den_pipe_den_"+str(con_den).replace(".", "_"),
+            "graph_bct_pipe",
             "_freq_band_name_"+freq_band_name+"_subject_id_sub-0003")
 
-        lol_file = op.join(res_path, "community_rada", "Z_List.lol")
-        net_file = op.join(res_path, "prep_rada", "Z_List.net")
-        roles_file = op.join(res_path, "node_roles", "node_roles.txt")
+        node_k_file = op.join(res_path, "k_core", "coreness.npy")
+
+        bin_mat_file = op.join(res_path, "bin_mat", "bin_mat.npy")
 
         for i_v,view in enumerate(views):
             b_obj = BrainObj('B1', translucent=True)
 
             sc.add_to_subplot(b_obj, row=nf, col = i_v, use_this_cam=True, rotate=view,
-                            title=("Modules and node roles for {} band".format(freq_band_name)),
+                            title=("K-core nodes for {} band".format(freq_band_name)),
                             title_size=14, title_bold=True, title_color='black')
 
-            c_obj,list_sources = visu_graph_modules_roles(
-                lol_file=lol_file, net_file=net_file, roles_file=roles_file,
-                coords_file=coords_file, inter_modules=True, default_size=10,
-                hub_to_non_hub=3)
+            c_obj,s_obj = visu_graph(
+                labels_file = labels_file, coords_file = coords_file,
+                #net_file = bin_mat_file)
+                net_file = bin_mat_file, node_size_file=node_k_file)
 
             sc.add_to_subplot(c_obj, row=nf, col = i_v)
-
-            for source in list_sources:
-                sc.add_to_subplot(source, row=nf, col = i_v)
+            sc.add_to_subplot(s_obj, row=nf, col = i_v)
 
     sc.preview()
 
 
 
-.. image:: /auto_examples/images/sphx_glr_plot_inv_ts_to_graph_003.png
+.. image:: /auto_examples/images/sphx_glr_plot_inv_ts_to_bct_graph_001.png
     :class: sphx-glr-single-img
 
 
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    .npy
+    [[0 0 0 ... 0 1 0]
+     [0 0 0 ... 0 0 0]
+     [0 0 0 ... 0 0 0]
+     ...
+     [0 0 0 ... 0 0 0]
+     [0 0 0 ... 0 0 0]
+     [0 0 0 ... 0 0 0]]
+    [[-- -- -- ... -- 1 --]
+     [-- -- -- ... -- -- --]
+     [-- -- -- ... -- -- --]
+     ...
+     [-- -- -- ... -- -- --]
+     [-- -- -- ... -- -- --]
+     [-- -- -- ... -- -- --]]
+    (68, 68) (68, 3) (68,)
+    [1. 1. 2. 2. 1. 1. 1. 2. 2. 1. 1. 1. 0. 1. 1. 1. 2. 2. 0. 1. 1. 2. 1. 1.
+     1. 2. 0. 1. 1. 1. 2. 2. 1. 1. 0. 0. 0. 2. 1. 1. 0. 0. 1. 0. 0. 2. 2. 1.
+     1. 0. 1. 2. 1. 1. 1. 0. 1. 0. 0. 0. 1. 1. 1. 0. 1. 0. 0. 0.]
+    .npy
+    [[0 0 0 ... 0 1 0]
+     [0 0 0 ... 0 0 0]
+     [0 0 0 ... 0 0 0]
+     ...
+     [0 0 0 ... 0 0 0]
+     [0 0 0 ... 0 0 0]
+     [0 0 0 ... 0 0 0]]
+    [[-- -- -- ... -- 1 --]
+     [-- -- -- ... -- -- --]
+     [-- -- -- ... -- -- --]
+     ...
+     [-- -- -- ... -- -- --]
+     [-- -- -- ... -- -- --]
+     [-- -- -- ... -- -- --]]
+    (68, 68) (68, 3) (68,)
+    [1. 1. 2. 2. 1. 1. 1. 2. 2. 1. 1. 1. 0. 1. 1. 1. 2. 2. 0. 1. 1. 2. 1. 1.
+     1. 2. 0. 1. 1. 1. 2. 2. 1. 1. 0. 0. 0. 2. 1. 1. 0. 0. 1. 0. 0. 2. 2. 1.
+     1. 0. 1. 2. 1. 1. 1. 0. 1. 0. 0. 0. 1. 1. 1. 0. 1. 0. 0. 0.]
+    .npy
+    [[0 0 0 ... 0 1 0]
+     [0 0 0 ... 0 0 0]
+     [0 0 0 ... 0 0 0]
+     ...
+     [0 0 0 ... 0 0 0]
+     [0 0 0 ... 0 0 0]
+     [0 0 0 ... 0 0 0]]
+    [[-- -- -- ... -- 1 --]
+     [-- -- -- ... -- -- --]
+     [-- -- -- ... -- -- --]
+     ...
+     [-- -- -- ... -- -- --]
+     [-- -- -- ... -- -- --]
+     [-- -- -- ... -- -- --]]
+    (68, 68) (68, 3) (68,)
+    [2. 1. 2. 2. 1. 1. 3. 1. 1. 1. 2. 1. 1. 1. 1. 1. 2. 1. 0. 1. 1. 1. 2. 1.
+     2. 2. 1. 2. 2. 2. 2. 1. 1. 1. 0. 1. 2. 2. 1. 1. 0. 0. 0. 0. 0. 1. 1. 1.
+     1. 0. 1. 1. 1. 0. 1. 0. 1. 0. 0. 0. 1. 1. 1. 0. 0. 0. 0. 0.]
+    .npy
+    [[0 0 0 ... 0 1 0]
+     [0 0 0 ... 0 0 0]
+     [0 0 0 ... 0 0 0]
+     ...
+     [0 0 0 ... 0 0 0]
+     [0 0 0 ... 0 0 0]
+     [0 0 0 ... 0 0 0]]
+    [[-- -- -- ... -- 1 --]
+     [-- -- -- ... -- -- --]
+     [-- -- -- ... -- -- --]
+     ...
+     [-- -- -- ... -- -- --]
+     [-- -- -- ... -- -- --]
+     [-- -- -- ... -- -- --]]
+    (68, 68) (68, 3) (68,)
+    [2. 1. 2. 2. 1. 1. 3. 1. 1. 1. 2. 1. 1. 1. 1. 1. 2. 1. 0. 1. 1. 1. 2. 1.
+     2. 2. 1. 2. 2. 2. 2. 1. 1. 1. 0. 1. 2. 2. 1. 1. 0. 0. 0. 0. 0. 1. 1. 1.
+     1. 0. 1. 1. 1. 0. 1. 0. 1. 0. 0. 0. 1. 1. 1. 0. 0. 0. 0. 0.]
 
 
-**Total running time of the script:** ( 0 minutes  5.242 seconds)
+**Total running time of the script:** ( 0 minutes  4.098 seconds)
 
 
-.. _sphx_glr_download_auto_examples_plot_inv_ts_to_graph.py:
+.. _sphx_glr_download_auto_examples_plot_inv_ts_to_bct_graph.py:
 
 
 .. only :: html
@@ -478,13 +466,13 @@ plotting modules and roles
 
   .. container:: sphx-glr-download
 
-     :download:`Download Python source code: plot_inv_ts_to_graph.py <plot_inv_ts_to_graph.py>`
+     :download:`Download Python source code: plot_inv_ts_to_bct_graph.py <plot_inv_ts_to_bct_graph.py>`
 
 
 
   .. container:: sphx-glr-download
 
-     :download:`Download Jupyter notebook: plot_inv_ts_to_graph.ipynb <plot_inv_ts_to_graph.ipynb>`
+     :download:`Download Jupyter notebook: plot_inv_ts_to_bct_graph.ipynb <plot_inv_ts_to_bct_graph.ipynb>`
 
 
 .. only:: html

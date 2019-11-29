@@ -58,6 +58,26 @@ Examples Gallery
 
 .. only:: html
 
+    .. figure:: /auto_examples/images/thumb/sphx_glr_plot_inv_ts_to_bct_graph_thumb.png
+
+        :ref:`sphx_glr_auto_examples_plot_inv_ts_to_bct_graph.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/plot_inv_ts_to_bct_graph
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="The **input** data should be a time series matrix in **npy** format. ">
+
+.. only:: html
+
     .. figure:: /auto_examples/images/thumb/sphx_glr_plot_inv_ts_to_graph_thumb.png
 
         :ref:`sphx_glr_auto_examples_plot_inv_ts_to_graph.py`
