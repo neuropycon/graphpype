@@ -463,7 +463,7 @@ plotting modules and roles
 
 
 
-**Total running time of the script:** ( 0 minutes  5.242 seconds)
+**Total running time of the script:** ( 0 minutes  5.760 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_inv_ts_to_graph.py:

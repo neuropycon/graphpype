@@ -54,7 +54,7 @@ Examples Gallery
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="The **input** data should be a time series matrix in **npy** format. ">
+    <div class="sphx-glr-thumbcontainer" tooltip="This workflow makes use of two chained pipelines, and requires both graphpype AND ephypype to b...">
 
 .. only:: html
 
