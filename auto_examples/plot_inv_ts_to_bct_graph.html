@@ -268,7 +268,52 @@ main_workflow.run(plugin=’MultiProc’, plugin_args={‘n_procs’: 2})
 ###############################################################################</p>
 <blockquote>
 <div>plotting k_core values</div></blockquote>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">graphpype.utils_visbrain</span> <span class="kn">import</span> <span class="n">visu_graph</span> <span class="c1"># noqa</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#from graphpype.utils_visbrain import visu_graph # noqa</span>
+
+<span class="c1">#labels_file = op.join(data_path, &quot;label_names.txt&quot;)</span>
+<span class="c1">#coords_file = op.join(data_path, &quot;label_centroid.txt&quot;)</span>
+
+<span class="c1">##labels_file = op.join(data_path, &quot;label_names.txt&quot;)</span>
+<span class="c1">##coords_file = op.join(data_path, &quot;label_centroid.txt&quot;)</span>
+
+<span class="c1">#from visbrain.objects import SceneObj, BrainObj # noqa</span>
+
+<span class="c1">#sc = SceneObj(size=(1500, 1500), bgcolor=(1,1,1))</span>
+
+<span class="c1">#views = [&quot;left&quot;,&#39;top&#39;]</span>
+
+
+<span class="c1">#for nf, freq_band_name in enumerate(freq_band_names):</span>
+
+    <span class="c1">#res_path = op.join(</span>
+        <span class="c1">#data_path, graph_analysis_name,</span>
+        <span class="c1">#&quot;graph_bct_pipe&quot;,</span>
+        <span class="c1">#&quot;_freq_band_name_&quot;+freq_band_name+&quot;_subject_id_sub-0003&quot;)</span>
+
+    <span class="c1">#node_k_file = op.join(res_path, &quot;k_core&quot;, &quot;coreness.npy&quot;)</span>
+
+    <span class="c1">#bin_mat_file = op.join(res_path, &quot;bin_mat&quot;, &quot;bin_mat.npy&quot;)</span>
+
+    <span class="c1">#for i_v,view in enumerate(views):</span>
+        <span class="c1">#b_obj = BrainObj(&#39;B1&#39;, translucent=True)</span>
+
+        <span class="c1">#sc.add_to_subplot(b_obj, row=nf, col = i_v, use_this_cam=True, rotate=view,</span>
+                        <span class="c1">#title=(&quot;K-core nodes for {} band&quot;.format(freq_band_name)),</span>
+                        <span class="c1">#title_size=14, title_bold=True, title_color=&#39;black&#39;)</span>
+
+        <span class="c1">#c_obj,s_obj = visu_graph(</span>
+            <span class="c1">#labels_file = labels_file, coords_file = coords_file,</span>
+            <span class="c1">##net_file = bin_mat_file)</span>
+            <span class="c1">#net_file = bin_mat_file, node_size_file=node_k_file)</span>
+
+        <span class="c1">#sc.add_to_subplot(c_obj, row=nf, col = i_v)</span>
+        <span class="c1">#sc.add_to_subplot(s_obj, row=nf, col = i_v)</span>
+
+<span class="c1">#sc.preview()</span>
+</pre></div>
+</div>
+<p>plotting k_core only</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">graphpype.utils_visbrain</span> <span class="kn">import</span> <span class="n">visu_graph_kcore</span> <span class="c1"># noqa</span>
 
 <span class="n">labels_file</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="s2">&quot;label_names.txt&quot;</span><span class="p">)</span>
 <span class="n">coords_file</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="s2">&quot;label_centroid.txt&quot;</span><span class="p">)</span>
@@ -301,13 +346,19 @@ main_workflow.run(plugin=’MultiProc’, plugin_args={‘n_procs’: 2})
                         <span class="n">title</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;K-core nodes for {} band&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">freq_band_name</span><span class="p">)),</span>
                         <span class="n">title_size</span><span class="o">=</span><span class="mi">14</span><span class="p">,</span> <span class="n">title_bold</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">title_color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">)</span>
 
-        <span class="n">c_obj</span><span class="p">,</span><span class="n">s_obj</span> <span class="o">=</span> <span class="n">visu_graph</span><span class="p">(</span>
+        <span class="n">c_obj</span><span class="p">,</span><span class="n">s_obj</span><span class="p">,</span> <span class="n">c_obj2</span><span class="p">,</span> <span class="n">s_obj2</span><span class="p">,</span>  <span class="o">=</span> <span class="n">visu_graph_kcore</span><span class="p">(</span>
             <span class="n">labels_file</span> <span class="o">=</span> <span class="n">labels_file</span><span class="p">,</span> <span class="n">coords_file</span> <span class="o">=</span> <span class="n">coords_file</span><span class="p">,</span>
             <span class="c1">#net_file = bin_mat_file)</span>
             <span class="n">net_file</span> <span class="o">=</span> <span class="n">bin_mat_file</span><span class="p">,</span> <span class="n">node_size_file</span><span class="o">=</span><span class="n">node_k_file</span><span class="p">)</span>
 
         <span class="n">sc</span><span class="o">.</span><span class="n">add_to_subplot</span><span class="p">(</span><span class="n">c_obj</span><span class="p">,</span> <span class="n">row</span><span class="o">=</span><span class="n">nf</span><span class="p">,</span> <span class="n">col</span> <span class="o">=</span> <span class="n">i_v</span><span class="p">)</span>
         <span class="n">sc</span><span class="o">.</span><span class="n">add_to_subplot</span><span class="p">(</span><span class="n">s_obj</span><span class="p">,</span> <span class="n">row</span><span class="o">=</span><span class="n">nf</span><span class="p">,</span> <span class="n">col</span> <span class="o">=</span> <span class="n">i_v</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">c_obj2</span><span class="p">:</span>
+            <span class="n">sc</span><span class="o">.</span><span class="n">add_to_subplot</span><span class="p">(</span><span class="n">c_obj2</span><span class="p">,</span> <span class="n">row</span><span class="o">=</span><span class="n">nf</span><span class="p">,</span> <span class="n">col</span> <span class="o">=</span> <span class="n">i_v</span><span class="p">)</span>
+
+        <span class="n">sc</span><span class="o">.</span><span class="n">add_to_subplot</span><span class="p">(</span><span class="n">s_obj2</span><span class="p">,</span> <span class="n">row</span><span class="o">=</span><span class="n">nf</span><span class="p">,</span> <span class="n">col</span> <span class="o">=</span> <span class="n">i_v</span><span class="p">)</span>
+
 
 <span class="n">sc</span><span class="o">.</span><span class="n">preview</span><span class="p">()</span>
 </pre></div>
@@ -333,6 +384,41 @@ main_workflow.run(plugin=’MultiProc’, plugin_args={‘n_procs’: 2})
 [1. 1. 2. 2. 1. 1. 1. 2. 2. 1. 1. 1. 0. 1. 1. 1. 2. 2. 0. 1. 1. 2. 1. 1.
  1. 2. 0. 1. 1. 1. 2. 2. 1. 1. 0. 0. 0. 2. 1. 1. 0. 0. 1. 0. 0. 2. 2. 1.
  1. 0. 1. 2. 1. 1. 1. 0. 1. 0. 0. 0. 1. 1. 1. 0. 1. 0. 0. 0.]
+2.0
+[False False  True  True False False False  True  True False False False
+ False False False False  True  True False False False  True False False
+ False  True False False False False  True  True False False False False
+ False  True False False False False False False False  True  True False
+ False False False  True False False False False False False False False
+ False False False False False False False False]
+[[0 0 0 0 0 0 1 0 0 0 0 0 0 0]
+ [0 0 0 0 0 0 0 0 0 0 1 0 0 0]
+ [0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+ [0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+ [0 0 0 0 0 0 0 0 1 0 0 0 0 0]
+ [0 0 0 0 0 0 0 0 0 1 0 0 0 0]
+ [0 0 0 0 0 0 0 1 0 0 0 1 0 1]
+ [0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+ [0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+ [0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+ [0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+ [0 0 0 0 0 0 0 0 0 0 0 0 0 1]
+ [0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+ [0 0 0 0 0 0 0 0 0 0 0 0 0 0]]
+[[0 0 0 0 0 0 1 0 0 0 0 0 0 0]
+ [0 0 0 0 0 0 0 0 0 0 1 0 0 0]
+ [0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+ [0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+ [0 0 0 0 0 0 0 0 1 0 0 0 0 0]
+ [0 0 0 0 0 0 0 0 0 1 0 0 0 0]
+ [0 0 0 0 0 0 0 1 0 0 0 1 0 1]
+ [0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+ [0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+ [0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+ [0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+ [0 0 0 0 0 0 0 0 0 0 0 0 0 1]
+ [0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+ [0 0 0 0 0 0 0 0 0 0 0 0 0 0]]
 .npy
 [[0 0 0 ... 0 1 0]
  [0 0 0 ... 0 0 0]
@@ -352,6 +438,41 @@ main_workflow.run(plugin=’MultiProc’, plugin_args={‘n_procs’: 2})
 [1. 1. 2. 2. 1. 1. 1. 2. 2. 1. 1. 1. 0. 1. 1. 1. 2. 2. 0. 1. 1. 2. 1. 1.
  1. 2. 0. 1. 1. 1. 2. 2. 1. 1. 0. 0. 0. 2. 1. 1. 0. 0. 1. 0. 0. 2. 2. 1.
  1. 0. 1. 2. 1. 1. 1. 0. 1. 0. 0. 0. 1. 1. 1. 0. 1. 0. 0. 0.]
+2.0
+[False False  True  True False False False  True  True False False False
+ False False False False  True  True False False False  True False False
+ False  True False False False False  True  True False False False False
+ False  True False False False False False False False  True  True False
+ False False False  True False False False False False False False False
+ False False False False False False False False]
+[[0 0 0 0 0 0 1 0 0 0 0 0 0 0]
+ [0 0 0 0 0 0 0 0 0 0 1 0 0 0]
+ [0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+ [0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+ [0 0 0 0 0 0 0 0 1 0 0 0 0 0]
+ [0 0 0 0 0 0 0 0 0 1 0 0 0 0]
+ [0 0 0 0 0 0 0 1 0 0 0 1 0 1]
+ [0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+ [0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+ [0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+ [0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+ [0 0 0 0 0 0 0 0 0 0 0 0 0 1]
+ [0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+ [0 0 0 0 0 0 0 0 0 0 0 0 0 0]]
+[[0 0 0 0 0 0 1 0 0 0 0 0 0 0]
+ [0 0 0 0 0 0 0 0 0 0 1 0 0 0]
+ [0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+ [0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+ [0 0 0 0 0 0 0 0 1 0 0 0 0 0]
+ [0 0 0 0 0 0 0 0 0 1 0 0 0 0]
+ [0 0 0 0 0 0 0 1 0 0 0 1 0 1]
+ [0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+ [0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+ [0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+ [0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+ [0 0 0 0 0 0 0 0 0 0 0 0 0 1]
+ [0 0 0 0 0 0 0 0 0 0 0 0 0 0]
+ [0 0 0 0 0 0 0 0 0 0 0 0 0 0]]
 .npy
 [[0 0 0 ... 0 1 0]
  [0 0 0 ... 0 0 0]
@@ -371,6 +492,15 @@ main_workflow.run(plugin=’MultiProc’, plugin_args={‘n_procs’: 2})
 [2. 1. 2. 2. 1. 1. 3. 1. 1. 1. 2. 1. 1. 1. 1. 1. 2. 1. 0. 1. 1. 1. 2. 1.
  2. 2. 1. 2. 2. 2. 2. 1. 1. 1. 0. 1. 2. 2. 1. 1. 0. 0. 0. 0. 0. 1. 1. 1.
  1. 0. 1. 1. 1. 0. 1. 0. 1. 0. 0. 0. 1. 1. 1. 0. 0. 0. 0. 0.]
+3.0
+[False False False False False False  True False False False False False
+ False False False False False False False False False False False False
+ False False False False False False False False False False False False
+ False False False False False False False False False False False False
+ False False False False False False False False False False False False
+ False False False False False False False False]
+[[0]]
+[[0]]
 .npy
 [[0 0 0 ... 0 1 0]
  [0 0 0 ... 0 0 0]
@@ -390,9 +520,18 @@ main_workflow.run(plugin=’MultiProc’, plugin_args={‘n_procs’: 2})
 [2. 1. 2. 2. 1. 1. 3. 1. 1. 1. 2. 1. 1. 1. 1. 1. 2. 1. 0. 1. 1. 1. 2. 1.
  2. 2. 1. 2. 2. 2. 2. 1. 1. 1. 0. 1. 2. 2. 1. 1. 0. 0. 0. 0. 0. 1. 1. 1.
  1. 0. 1. 1. 1. 0. 1. 0. 1. 0. 0. 0. 1. 1. 1. 0. 0. 0. 0. 0.]
+3.0
+[False False False False False False  True False False False False False
+ False False False False False False False False False False False False
+ False False False False False False False False False False False False
+ False False False False False False False False False False False False
+ False False False False False False False False False False False False
+ False False False False False False False False]
+[[0]]
+[[0]]
 </pre></div>
 </div>
-<p><strong>Total running time of the script:</strong> ( 0 minutes  4.098 seconds)</p>
+<p><strong>Total running time of the script:</strong> ( 0 minutes  6.344 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-inv-ts-to-bct-graph-py">
 <div class="sphx-glr-download docutils container">
 <a class="reference download internal" download="" href="../_downloads/60dd06e5b1767ce56e031b5f941ccbed/plot_inv_ts_to_bct_graph.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_inv_ts_to_bct_graph.py</span></code></a></div>

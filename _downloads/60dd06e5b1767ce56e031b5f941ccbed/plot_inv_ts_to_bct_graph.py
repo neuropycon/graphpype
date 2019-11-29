@@ -161,7 +161,54 @@ main_workflow.run()
 ################################################################################
 # plotting k_core values
 
-from graphpype.utils_visbrain import visu_graph # noqa
+#from graphpype.utils_visbrain import visu_graph # noqa
+
+#labels_file = op.join(data_path, "label_names.txt")
+#coords_file = op.join(data_path, "label_centroid.txt")
+
+##labels_file = op.join(data_path, "label_names.txt")
+##coords_file = op.join(data_path, "label_centroid.txt")
+
+#from visbrain.objects import SceneObj, BrainObj # noqa
+
+#sc = SceneObj(size=(1500, 1500), bgcolor=(1,1,1))
+
+#views = ["left",'top']
+
+
+#for nf, freq_band_name in enumerate(freq_band_names):
+
+    #res_path = op.join(
+        #data_path, graph_analysis_name,
+        #"graph_bct_pipe",
+        #"_freq_band_name_"+freq_band_name+"_subject_id_sub-0003")
+
+    #node_k_file = op.join(res_path, "k_core", "coreness.npy")
+
+    #bin_mat_file = op.join(res_path, "bin_mat", "bin_mat.npy")
+
+    #for i_v,view in enumerate(views):
+        #b_obj = BrainObj('B1', translucent=True)
+
+        #sc.add_to_subplot(b_obj, row=nf, col = i_v, use_this_cam=True, rotate=view,
+                        #title=("K-core nodes for {} band".format(freq_band_name)),
+                        #title_size=14, title_bold=True, title_color='black')
+
+        #c_obj,s_obj = visu_graph(
+            #labels_file = labels_file, coords_file = coords_file,
+            ##net_file = bin_mat_file)
+            #net_file = bin_mat_file, node_size_file=node_k_file)
+
+        #sc.add_to_subplot(c_obj, row=nf, col = i_v)
+        #sc.add_to_subplot(s_obj, row=nf, col = i_v)
+
+#sc.preview()
+
+
+################################################################################
+# plotting k_core only
+
+from graphpype.utils_visbrain import visu_graph_kcore # noqa
 
 labels_file = op.join(data_path, "label_names.txt")
 coords_file = op.join(data_path, "label_centroid.txt")
@@ -194,12 +241,18 @@ for nf, freq_band_name in enumerate(freq_band_names):
                         title=("K-core nodes for {} band".format(freq_band_name)),
                         title_size=14, title_bold=True, title_color='black')
 
-        c_obj,s_obj = visu_graph(
+        c_obj,s_obj, c_obj2, s_obj2,  = visu_graph_kcore(
             labels_file = labels_file, coords_file = coords_file,
             #net_file = bin_mat_file)
             net_file = bin_mat_file, node_size_file=node_k_file)
 
         sc.add_to_subplot(c_obj, row=nf, col = i_v)
         sc.add_to_subplot(s_obj, row=nf, col = i_v)
+
+        if c_obj2:
+            sc.add_to_subplot(c_obj2, row=nf, col = i_v)
+
+        sc.add_to_subplot(s_obj2, row=nf, col = i_v)
+
 
 sc.preview()
