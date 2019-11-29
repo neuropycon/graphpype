@@ -65,7 +65,7 @@ The graphpype package provides the following **pipelines**:
 
 * the :ref:`nii_to_graph <nii_to_graph>` pipeline provide a script to compute connectivity matrices and graphs computations from prepocessed functional MRI.
 
-* the :ref:`conmat_to_bct_graph  <conmat_to_bct_graph>` and :ref:`_inv_ts_to_bct_graph <_inv_ts_to_bct_graph>` pipelines provide example scripts to compute graph metrics (so far, KCore) using bctpy (Brain Connectivity Toolbox).
+* the :ref:`conmat_to_bct_graph  <conmat_to_bct_graph>` and :ref:`inv_ts_to_bct_graph <inv_ts_to_bct_graph>` pipelines provide example scripts to compute graph metrics (so far, KCore) using bctpy (Brain Connectivity Toolbox).
 
 Installation
 ============
