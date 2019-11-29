@@ -56,13 +56,6 @@ Check if data are available
 
 
 
-.. rst-class:: sphx-glr-script-out
-
- Out:
-
- .. code-block:: none
-
-    data_dirpath /home/INT/meunier.d/miniconda3/Packages/graphpype/graphpype/../data already exists
 
 
 This will be what we will loop on
@@ -229,18 +222,15 @@ here correspond to how we connected the nodes.
 .. code-block:: python
 
 
-    import matplotlib.pyplot as plt  # noqa
-    img = plt.imread(op.join(data_path, graph_analysis_name, 'graph.png'))
-    plt.figure(figsize=(8, 8))
-    plt.imshow(img)
-    plt.axis('off')
-    plt.show()
+    #import matplotlib.pyplot as plt  # noqa
+    #img = plt.imread(op.join(data_path, graph_analysis_name, 'graph.png'))
+    #plt.figure(figsize=(8, 8))
+    #plt.imshow(img)
+    #plt.axis('off')
+    #plt.show()
 
 
 
-
-.. image:: /auto_examples/images/sphx_glr_plot_conmat_to_bct_graph_001.png
-    :class: sphx-glr-single-img
 
 
 
@@ -261,7 +251,186 @@ Finally, we are now ready to execute our workflow.
 
 
 
-**Total running time of the script:** ( 0 minutes  6.373 seconds)
+
+
+
+plotting modules and roles
+
+
+
+.. code-block:: python
+
+
+    from graphpype.utils_visbrain import visu_graph # noqa
+
+    labels_file = op.join(data_path, "correct_channel_names.txt")
+    coords_file = op.join(data_path, "MNI_coords.txt")
+
+    #labels_file = op.join(data_path, "label_names.txt")
+    #coords_file = op.join(data_path, "label_centroid.txt")
+
+    from visbrain.objects import SceneObj, BrainObj # noqa
+
+    sc = SceneObj(size=(1500, 1500), bgcolor=(1,1,1))
+
+    views = ["left",'top']
+
+
+    for nf, freq_band_name in enumerate(freq_band_names):
+
+        res_path = op.join(
+            data_path, graph_analysis_name,
+            "graph_bct_pipe",
+            "_freq_band_name_"+freq_band_name)
+
+        node_k_file = op.join(res_path, "k_core", "coreness.npy")
+
+        bin_mat_file = op.join(res_path, "bin_mat", "bin_mat.npy")
+
+        for i_v,view in enumerate(views):
+            b_obj = BrainObj('B1', translucent=True)
+
+            sc.add_to_subplot(b_obj, row=nf, col = i_v, use_this_cam=True, rotate=view,
+                            title=("K-core nodes for {} band".format(freq_band_name)),
+                            title_size=14, title_bold=True, title_color='black')
+
+            c_obj,s_obj = visu_graph(
+                labels_file = labels_file, coords_file = coords_file,
+                #net_file = bin_mat_file)
+                net_file = bin_mat_file, node_size_file=node_k_file)
+
+            sc.add_to_subplot(c_obj, row=nf, col = i_v)
+            sc.add_to_subplot(s_obj, row=nf, col = i_v)
+
+    sc.preview()
+
+
+
+.. image:: /auto_examples/images/sphx_glr_plot_conmat_to_bct_graph_001.png
+    :class: sphx-glr-single-img
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    .npy
+    [[0 1 1 ... 0 0 0]
+     [0 0 1 ... 0 0 0]
+     [0 0 0 ... 0 0 0]
+     ...
+     [0 0 0 ... 0 0 0]
+     [0 0 0 ... 0 0 0]
+     [0 0 0 ... 0 0 0]]
+    [[-- 1 1 ... -- -- --]
+     [-- -- 1 ... -- -- --]
+     [-- -- -- ... -- -- --]
+     ...
+     [-- -- -- ... -- -- --]
+     [-- -- -- ... -- -- --]
+     [-- -- -- ... -- -- --]]
+    (270, 270) (270, 3) (270,)
+    [3. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2.
+     2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2.
+     2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 1. 2. 2. 2. 1. 2. 2. 2. 2.
+     2. 2. 1. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 1. 1. 1. 2. 2.
+     2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 1. 1. 1. 1. 1. 2. 1. 2. 1. 1. 1. 1.
+     1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 0. 3. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2.
+     2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2.
+     2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2.
+     2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 1. 2. 2. 2. 2. 2. 2. 2. 2. 2.
+     2. 1. 1. 2. 2. 2. 1. 1. 1. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2.
+     1. 2. 2. 2. 2. 1. 1. 1. 1. 1. 1. 1. 1. 1. 0. 1. 1. 1. 0. 0. 0. 1. 1. 0.
+     1. 0. 1. 0. 0. 0.]
+    .npy
+    [[0 1 1 ... 0 0 0]
+     [0 0 1 ... 0 0 0]
+     [0 0 0 ... 0 0 0]
+     ...
+     [0 0 0 ... 0 0 0]
+     [0 0 0 ... 0 0 0]
+     [0 0 0 ... 0 0 0]]
+    [[-- 1 1 ... -- -- --]
+     [-- -- 1 ... -- -- --]
+     [-- -- -- ... -- -- --]
+     ...
+     [-- -- -- ... -- -- --]
+     [-- -- -- ... -- -- --]
+     [-- -- -- ... -- -- --]]
+    (270, 270) (270, 3) (270,)
+    [3. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2.
+     2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2.
+     2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 1. 2. 2. 2. 1. 2. 2. 2. 2.
+     2. 2. 1. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 1. 1. 1. 2. 2.
+     2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 1. 1. 1. 1. 1. 2. 1. 2. 1. 1. 1. 1.
+     1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 0. 3. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2.
+     2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2.
+     2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2.
+     2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 1. 2. 2. 2. 2. 2. 2. 2. 2. 2.
+     2. 1. 1. 2. 2. 2. 1. 1. 1. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2.
+     1. 2. 2. 2. 2. 1. 1. 1. 1. 1. 1. 1. 1. 1. 0. 1. 1. 1. 0. 0. 0. 1. 1. 0.
+     1. 0. 1. 0. 0. 0.]
+    .npy
+    [[0 1 1 ... 0 0 0]
+     [0 0 1 ... 0 0 0]
+     [0 0 0 ... 0 0 0]
+     ...
+     [0 0 0 ... 0 0 0]
+     [0 0 0 ... 0 0 0]
+     [0 0 0 ... 0 0 0]]
+    [[-- 1 1 ... -- -- --]
+     [-- -- 1 ... -- -- --]
+     [-- -- -- ... -- -- --]
+     ...
+     [-- -- -- ... -- -- --]
+     [-- -- -- ... -- -- --]
+     [-- -- -- ... -- -- --]]
+    (270, 270) (270, 3) (270,)
+    [2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2.
+     2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2.
+     2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2.
+     1. 1. 1. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 1. 1. 1. 2. 2.
+     2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 1. 2. 2. 2.
+     1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 0. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2.
+     2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2.
+     2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2.
+     2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 1. 2. 2. 2. 2. 2. 2. 2. 2. 2.
+     2. 2. 2. 2. 2. 2. 1. 1. 1. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2.
+     1. 2. 2. 2. 2. 1. 1. 2. 2. 1. 1. 1. 1. 1. 0. 1. 1. 1. 0. 1. 0. 1. 1. 0.
+     1. 0. 1. 0. 0. 0.]
+    .npy
+    [[0 1 1 ... 0 0 0]
+     [0 0 1 ... 0 0 0]
+     [0 0 0 ... 0 0 0]
+     ...
+     [0 0 0 ... 0 0 0]
+     [0 0 0 ... 0 0 0]
+     [0 0 0 ... 0 0 0]]
+    [[-- 1 1 ... -- -- --]
+     [-- -- 1 ... -- -- --]
+     [-- -- -- ... -- -- --]
+     ...
+     [-- -- -- ... -- -- --]
+     [-- -- -- ... -- -- --]
+     [-- -- -- ... -- -- --]]
+    (270, 270) (270, 3) (270,)
+    [2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2.
+     2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2.
+     2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2.
+     1. 1. 1. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 1. 1. 1. 2. 2.
+     2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 1. 2. 2. 2.
+     1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 0. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2.
+     2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2.
+     2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2.
+     2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 1. 2. 2. 2. 2. 2. 2. 2. 2. 2.
+     2. 2. 2. 2. 2. 2. 1. 1. 1. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2. 2.
+     1. 2. 2. 2. 2. 1. 1. 2. 2. 1. 1. 1. 1. 1. 0. 1. 1. 1. 0. 1. 0. 1. 1. 0.
+     1. 0. 1. 0. 0. 0.]
+
+
+**Total running time of the script:** ( 0 minutes  10.915 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_conmat_to_bct_graph.py:

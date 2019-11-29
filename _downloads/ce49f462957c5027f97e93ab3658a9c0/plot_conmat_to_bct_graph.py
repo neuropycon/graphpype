@@ -113,12 +113,12 @@ main_workflow.write_graph(graph2use='colored')  # colored
 # and visualize it. Take a moment to pause and notice how the connections
 # here correspond to how we connected the nodes.
 
-import matplotlib.pyplot as plt  # noqa
-img = plt.imread(op.join(data_path, graph_analysis_name, 'graph.png'))
-plt.figure(figsize=(8, 8))
-plt.imshow(img)
-plt.axis('off')
-plt.show()
+#import matplotlib.pyplot as plt  # noqa
+#img = plt.imread(op.join(data_path, graph_analysis_name, 'graph.png'))
+#plt.figure(figsize=(8, 8))
+#plt.imshow(img)
+#plt.axis('off')
+#plt.show()
 
 ###############################################################################
 # Finally, we are now ready to execute our workflow.
@@ -126,3 +126,51 @@ main_workflow.config['execution'] = {'remove_unnecessary_outputs': 'false'}
 
 # Run workflow locally on 2 CPUs
 main_workflow.run(plugin='MultiProc', plugin_args={'n_procs': 2})
+
+
+
+################################################################################
+# plotting modules and roles
+
+from graphpype.utils_visbrain import visu_graph # noqa
+
+labels_file = op.join(data_path, "correct_channel_names.txt")
+coords_file = op.join(data_path, "MNI_coords.txt")
+
+#labels_file = op.join(data_path, "label_names.txt")
+#coords_file = op.join(data_path, "label_centroid.txt")
+
+from visbrain.objects import SceneObj, BrainObj # noqa
+
+sc = SceneObj(size=(1500, 1500), bgcolor=(1,1,1))
+
+views = ["left",'top']
+
+
+for nf, freq_band_name in enumerate(freq_band_names):
+
+    res_path = op.join(
+        data_path, graph_analysis_name,
+        "graph_bct_pipe",
+        "_freq_band_name_"+freq_band_name)
+
+    node_k_file = op.join(res_path, "k_core", "coreness.npy")
+
+    bin_mat_file = op.join(res_path, "bin_mat", "bin_mat.npy")
+
+    for i_v,view in enumerate(views):
+        b_obj = BrainObj('B1', translucent=True)
+
+        sc.add_to_subplot(b_obj, row=nf, col = i_v, use_this_cam=True, rotate=view,
+                        title=("K-core nodes for {} band".format(freq_band_name)),
+                        title_size=14, title_bold=True, title_color='black')
+
+        c_obj,s_obj = visu_graph(
+            labels_file = labels_file, coords_file = coords_file,
+            #net_file = bin_mat_file)
+            net_file = bin_mat_file, node_size_file=node_k_file)
+
+        sc.add_to_subplot(c_obj, row=nf, col = i_v)
+        sc.add_to_subplot(s_obj, row=nf, col = i_v)
+
+sc.preview()
