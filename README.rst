@@ -4,7 +4,9 @@
 
 .. image:: https://codecov.io/gh/neuropycon/graphpype/branch/master/graph/badge.svg #noqa
     :target: https://codecov.io/gh/neuropycon/graphpype
-    
+
+.. image:: https://zenodo.org/badge/92525686.svg
+   :target: https://zenodo.org/badge/latestdoi/92525686
 graphpype
 =========
 
