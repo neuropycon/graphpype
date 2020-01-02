@@ -132,7 +132,7 @@ def _make_tmp_dir():
     tmp_dir = "/tmp/test_graphpype"
     if os.path.exists(tmp_dir):
         shutil.rmtree(tmp_dir)
-
     os.makedirs(tmp_dir)
     os.chdir(tmp_dir)
+
     return tmp_dir

@@ -1,9 +1,10 @@
 """
 .. _dyn_graph_to_graph:
 
-=========================================================
-Compute connecivity matrices and graph properties from nii files
-=========================================================
+=================================================================
+Compute connectivity matrices and graph properties from nii files
+=================================================================
+
 The nii_to_graph pipeline performs graph analysis from functional MRI file
 in NIFTI format.
 
@@ -52,7 +53,7 @@ from graphpype.utils_tests import load_test_data
 
 data_path = load_test_data("data_nii")
 
-data_path_mask = load_test_data("data_nii_HPC")
+data_path_mask = load_test_data("data_nii_HCP")
 
 ROI_mask_file = op.join(data_path_mask, "indexed_mask-ROI_HCP.nii")
 ROI_coords_file = op.join(data_path_mask, "ROI_coords-ROI_HCP.txt")

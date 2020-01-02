@@ -1,4 +1,3 @@
-
 """
 From nifti file to conmat
 """

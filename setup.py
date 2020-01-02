@@ -19,5 +19,6 @@ setup(
                       "pandas==0.23.4",
                       "xlwt",
                       'networkx==1.9',
-                      "matplotlib==2.2.3"]
+                      "matplotlib==2.2.3",
+                      "bctpy"]
 )
