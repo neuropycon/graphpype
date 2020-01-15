@@ -112,6 +112,97 @@
 <p>Here we provide an example of a wrap on one single fuction, incorporated in a <a class="reference external" href="https://neuropycon.github.io/graphpype/auto_examples/plot_inv_ts_to_bct_graph.html#inv-ts-to-bct-graph">new pipeline</a>
 in order check how long it took to wrap one function. By itself, the wrapping of a single function (Kcore computation of the BCT, one of the measures available in BCT and not in Radatools) took less than half an hour. The incorporation in a functional pipeline (after the matrix computation and thresholding) took another hour. And adding it to the documentation, and the extension of the visualisation for this purpose took another half day (~4 hour). A rough estimate of the wrap of the K-core function of bctpy package leads to a count of ~50 lines of code (see interfaces/bct/bct.py on github graphype project).</p>
 <p>The source code of the corresponding wrapped node can be found <a class="reference external" href="https://github.com/neuropycon/graphpype/blob/master/graphpype/interfaces/bct/bct.py">here</a></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">nipype.interfaces.base</span> <span class="k">import</span> <span class="n">BaseInterface</span><span class="p">,</span> \
+    <span class="n">BaseInterfaceInputSpec</span><span class="p">,</span> <span class="n">traits</span><span class="p">,</span> <span class="n">File</span><span class="p">,</span> <span class="n">TraitedSpec</span>
+
+<span class="kn">from</span> <span class="nn">bct</span> <span class="k">import</span> <span class="p">(</span><span class="n">kcoreness_centrality_bu</span><span class="p">,</span> <span class="n">kcoreness_centrality_bd</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">KCoreInputSpec</span><span class="p">(</span><span class="n">BaseInterfaceInputSpec</span><span class="p">):</span>
+
+    <span class="n">np_mat_file</span> <span class="o">=</span> <span class="n">File</span><span class="p">(</span>
+        <span class="n">exists</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">desc</span><span class="o">=</span><span class="s1">&#39;numpy matrix N*N to apply the data to&#39;</span><span class="p">,</span>
+        <span class="n">mandatory</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">is_directed</span> <span class="o">=</span> <span class="n">traits</span><span class="o">.</span><span class="n">Bool</span><span class="p">(</span>
+        <span class="kc">False</span><span class="p">,</span> <span class="n">usedefault</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Is the matrix directed ?&quot;</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">KCoreOutputSpec</span><span class="p">(</span><span class="n">TraitedSpec</span><span class="p">):</span>
+
+    <span class="n">coreness_file</span> <span class="o">=</span> <span class="n">File</span><span class="p">(</span>
+        <span class="n">exists</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;coreness vector file&quot;</span><span class="p">)</span>
+
+    <span class="n">distrib_k_file</span> <span class="o">=</span> <span class="n">File</span><span class="p">(</span>
+        <span class="n">exists</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;distrib_k vector file&quot;</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">KCore</span><span class="p">(</span><span class="n">BaseInterface</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Description:</span>
+<span class="sd">        Compute K core</span>
+<span class="sd">        wraps of kcoreness_centrality_bu and kcoreness_centrality_bd in bctpy</span>
+
+<span class="sd">    Inputs:</span>
+<span class="sd">        np_mat_file:</span>
+<span class="sd">            type = File,</span>
+<span class="sd">            exists=True,</span>
+<span class="sd">            desc=&#39;numpy matrix N*N to apply the data to&#39;,</span>
+<span class="sd">            mandatory=True)</span>
+
+<span class="sd">        is_directed = traits.Bool(</span>
+<span class="sd">            False, usedefault = True, desc=&quot;Is the matrix directed ?&quot;)</span>
+
+
+<span class="sd">    Outputs:</span>
+<span class="sd">        coreness_file:</span>
+<span class="sd">            type = File,</span>
+<span class="sd">            exists=True,</span>
+<span class="sd">            desc=&quot;coreness vector file&quot;</span>
+
+
+<span class="sd">        distrib_k_file =</span>
+<span class="sd">            type = File</span>
+<span class="sd">            exists=True,</span>
+<span class="sd">            desc=&quot;distrib_k vector file&quot;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">input_spec</span> <span class="o">=</span> <span class="n">KCoreInputSpec</span>
+    <span class="n">output_spec</span> <span class="o">=</span> <span class="n">KCoreOutputSpec</span>
+
+    <span class="k">def</span> <span class="nf">_run_interface</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">runtime</span><span class="p">):</span>
+        <span class="n">np_mat_file</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">np_mat_file</span>
+        <span class="n">is_directed</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">is_directed</span>
+
+        <span class="c1"># loading data</span>
+        <span class="n">np_mat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">np_mat_file</span><span class="p">)</span>
+
+        <span class="c1"># running bctpy</span>
+        <span class="k">if</span> <span class="n">is_directed</span><span class="p">:</span>
+            <span class="n">coreness</span><span class="p">,</span> <span class="n">distrib_k</span> <span class="o">=</span> <span class="n">kcoreness_centrality_bd</span><span class="p">(</span><span class="n">np_mat</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">coreness</span><span class="p">,</span> <span class="n">distrib_k</span> <span class="o">=</span> <span class="n">kcoreness_centrality_bu</span><span class="p">(</span><span class="n">np_mat</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">coreness</span><span class="p">)</span>
+
+        <span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="s2">&quot;coreness.npy&quot;</span><span class="p">),</span> <span class="n">coreness</span><span class="p">)</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="s2">&quot;distrib_k.npy&quot;</span><span class="p">),</span> <span class="n">distrib_k</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">runtime</span>
+
+    <span class="k">def</span> <span class="nf">_list_outputs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">outputs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_outputs</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+        <span class="n">outputs</span><span class="p">[</span><span class="s2">&quot;coreness_file&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="s2">&quot;coreness.npy&quot;</span><span class="p">)</span>
+        <span class="n">outputs</span><span class="p">[</span><span class="s2">&quot;distrib_k_file&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="s2">&quot;distrib_k.npy&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">outputs</span>
+</pre></div>
+</div>
 </div>
 
 

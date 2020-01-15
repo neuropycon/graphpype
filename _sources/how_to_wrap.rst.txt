@@ -18,3 +18,5 @@ in order check how long it took to wrap one function. By itself, the wrapping of
 
 The source code of the corresponding wrapped node can be found `here <https://github.com/neuropycon/graphpype/blob/master/graphpype/interfaces/bct/bct.py>`_
 
+.. include:: ../graphpype/interfaces/bct/bct.py
+   :literal:
