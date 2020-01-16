@@ -8,3 +8,5 @@ Tutorial
 The following sections are a brief introduction on how to add new functionalities to graphpype package.
 
 * :ref:`How to wrap a node <how_to_wrap>`
+
+Other informations are available on `ephypype tutorial <https://neuropycon.github.io/ephypype/tutorial/index.html>`_
