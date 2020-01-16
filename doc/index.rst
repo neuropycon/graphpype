@@ -50,6 +50,7 @@ Each pipeline based on nipype engine is defined by **nodes** connected together,
 where each node maybe wrapping of existing software (as MNE-python modules or radatools functions)
 as well as providing easy ways to implement function defined by the user.
 
+
 .. _graphpype:
 
 graphpype

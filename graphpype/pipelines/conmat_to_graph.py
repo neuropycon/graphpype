@@ -373,6 +373,7 @@ def create_pipeline_net_list_to_graph(
     return pipeline
 
 
+# create_pipeline_bct_graph
 def create_pipeline_bct_graph(
         main_path, pipeline_name="graph_bct_pipe", con_den=1.0):
     """
@@ -417,6 +418,7 @@ def create_pipeline_bct_graph(
     return pipeline
 
 
+# create_pipeline_graph_module_properties
 def create_pipeline_graph_module_properties(
         main_path, pipeline_name="graph_mod_pipe", con_den=1.0, multi=False,
         plot=True, export_excel=False):
