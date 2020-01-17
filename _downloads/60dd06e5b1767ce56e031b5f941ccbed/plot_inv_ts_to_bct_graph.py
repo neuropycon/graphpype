@@ -6,12 +6,11 @@ Compute Graph properties from a given connectivity matrix with BCT toolbox
 ==========================================================================
 The _inv_ts_to_bct_graph pipeline performs spectral connectivity over time
 series, and an example wrap of a function from the bctpy toolbox
-(Brain Connectivity Toolbox) <https://sites.google.com/site/bctnet/> as an
+<(Brain Connectivity Toolbox) https://sites.google.com/site/bctnet/>_ as an
 alternative to the Radatools toolbox for graph metric computation.
 
 This workflow makes use of two chained pipelines, and
 requires both graphpype AND ephypype to be installed.
-The conmat_to_graph pipeline provide
 
 The **input** data should be a time series matrix in **npy** format.
 """
