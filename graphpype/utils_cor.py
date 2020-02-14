@@ -32,7 +32,7 @@ def mean_select_mask_data(data_img, data_mask):
     try:
         mean_mask_data_matrix = np.nanmean(masked_data_matrix, axis=0)
 
-    except AttributeError:
+    except AttributeError:  # pragma: no cover
 
         print("no nanmean (version of numpy is too old), using mean only")
         mean_mask_data_matrix = np.mean(masked_data_matrix, axis=0)
@@ -85,7 +85,7 @@ def mean_select_indexed_mask_data(data_img, data_indexed_mask,
             try:
                 mean_all_voxel_roi_ts = np.nanmean(all_voxel_roi_ts, axis=0)
 
-            except AttributeError:
+            except AttributeError:  # pragma: no cover
                 print("Warning, no nanmean (version of numpy is too old),\
                       using mean only")
                 mean_all_voxel_roi_ts = np.mean(all_voxel_roi_ts, axis=0)
@@ -140,7 +140,8 @@ def normalize_data(data_matrix):
     return z_score_data_matrix
 
 
-def return_conf_cor_mat(ts_mat, weight_vect, conf_interval_prob=0.01, normalize = False):
+def return_conf_cor_mat(ts_mat, weight_vect, conf_interval_prob=0.01,
+                        normalize=False):
 
     """
     Compute correlation matrices over a time series and weight vector,
@@ -159,11 +160,9 @@ def return_conf_cor_mat(ts_mat, weight_vect, conf_interval_prob=0.01, normalize 
         ("Error, incompatible regressor length {} {}".format(ts_mat.shape[0],
                                                              len(weight_vect)))
 
-    if normalize:
+    if normalize:  # pragma: no cover
         print("Normalising data before computing Correlation")
-        #ts_mat = stats.zscore(ts_mat, axis = 1, nan_policy = "omit")
-        ts_mat = stats.zscore(ts_mat, axis = 0, nan_policy = "omit")
-
+        ts_mat = stats.zscore(ts_mat, axis=0, nan_policy="omit")
 
     keep = weight_vect > 0.0
     w = weight_vect[keep]
@@ -239,7 +238,6 @@ def return_corres_correl_mat(mat, coords, corres_coords):
     print(corres_mat.shape)
 
     for i, j in it.combinations(range(coords.shape[0]), 2):
-
         corres_mat[where_in_corres[i], where_in_corres[j]] = mat[i, j]
         corres_mat[where_in_corres[j], where_in_corres[i]] = mat[i, j]
 

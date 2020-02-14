@@ -12,7 +12,8 @@ def return_net_list(Z_cor_mat, int_factor=1000):
     """
     print(Z_cor_mat.shape)
 
-    x_sig, y_sig = np.where(Z_cor_mat != 0.0)
+    x_sig, y_sig = np.where(
+        np.logical_and(Z_cor_mat != 0.0, np.logical_not(np.isnan(Z_cor_mat))))
 
     net_list = np.array(np.column_stack(
         (x_sig + 1, y_sig + 1, Z_cor_mat[x_sig, y_sig]*int_factor)), dtype=int)

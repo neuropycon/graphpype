@@ -45,6 +45,9 @@ def compute_rada_df(iter_path, df, radatools_version="3.2", mapflow=[],
     elif radatools_version == "5.0":
         net_prop_dir = "net_prop"
 
+    elif radatools_version == "run":
+        net_prop_dir = ""
+
     else:
         print("Warning, could not find radatools_version {}"
               .format(radatools_version))
