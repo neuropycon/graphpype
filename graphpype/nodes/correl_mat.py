@@ -24,7 +24,8 @@ from graphpype.utils_cor import (return_corres_correl_mat,
                                  return_conf_cor_mat, regress_parameters,
                                  filter_data, normalize_data,
                                  mean_select_mask_data,
-                                 mean_select_indexed_mask_data)
+                                 mean_select_indexed_mask_data,
+                                 spearmanr_by_hand)
 
 
 from graphpype.utils import check_np_dimension
@@ -153,17 +154,17 @@ class ExtractTS(BaseInterface):
 
         # loading ROI indexed mask
         indexed_rois_img = nib.load(indexed_rois_file)
-        indexed_mask_rois_data = indexed_rois_img.get_data()
+        indexed_mask_rois_data = indexed_rois_img.get_fdata()
 
         # loading time series
-        orig_ts = nib.load(file_4D).get_data()
+        orig_ts = nib.load(file_4D).get_fdata()
 
         mean_masked_ts, keep_rois = mean_select_indexed_mask_data(
             orig_ts, indexed_mask_rois_data, min_BOLD_intensity,
             percent_signal=percent_signal, background_val=background_val)
 
         # loading ROI coordinates
-        if isdefined(self.inputs.MNI_coord_rois_file):
+        if isdefined(self.inputs.MNI_coord_rois_file):  # pragma: no cover
 
             MNI_coord_rois = np.loadtxt(self.inputs.MNI_coord_rois_file)
 
@@ -175,7 +176,7 @@ class ExtractTS(BaseInterface):
             np.savetxt(subj_MNI_coord_rois_file,
                        subj_MNI_coord_rois, fmt='%.3f')
 
-        if isdefined(self.inputs.coord_rois_file):
+        if isdefined(self.inputs.coord_rois_file):  # pragma: no cover
 
             coord_rois = np.loadtxt(self.inputs.coord_rois_file)
             subj_coord_rois = coord_rois[keep_rois, :]
@@ -184,7 +185,7 @@ class ExtractTS(BaseInterface):
             subj_coord_rois_file = os.path.abspath("subj_coord_rois.txt")
             np.savetxt(subj_coord_rois_file, subj_coord_rois, fmt='%.3f')
 
-        if isdefined(self.inputs.label_rois_file):
+        if isdefined(self.inputs.label_rois_file):  # pragma: no cover
 
             labels_rois = np.array([line.strip() for line in open(
                 self.inputs.label_rois_file)], dtype='str')
@@ -214,15 +215,15 @@ class ExtractTS(BaseInterface):
 
         outputs["mean_masked_ts_file"] = os.path.abspath("mean_masked_ts.txt")
 
-        if isdefined(self.inputs.MNI_coord_rois_file):
+        if isdefined(self.inputs.MNI_coord_rois_file):  # pragma: no cover
             outputs["subj_MNI_coord_rois_file"] = os.path.abspath(
                 "subj_MNI_coord_rois.txt")
 
-        if isdefined(self.inputs.coord_rois_file):
+        if isdefined(self.inputs.coord_rois_file):  # pragma: no cover
             outputs["subj_coord_rois_file"] = os.path.abspath(
                 "subj_coord_rois.txt")
 
-        if isdefined(self.inputs.label_rois_file):
+        if isdefined(self.inputs.label_rois_file):  # pragma: no cover
             outputs["subj_label_rois_file"] = os.path.abspath(
                 "subj_label_rois.txt")
 
@@ -346,11 +347,11 @@ class IntersectMask(BaseInterface):
 
         # loading ROI indexed mask
         indexed_rois_img = nib.load(indexed_rois_file)
-        indexed_rois_data = indexed_rois_img.get_data()
+        indexed_rois_data = indexed_rois_img.get_fdata()
         indexed_rois_data[np.isnan(indexed_rois_data)] = background_val
 
         # loading time series
-        filter_mask_data = nib.load(filter_mask_file).get_data()
+        filter_mask_data = nib.load(filter_mask_file).get_fdata()
 
         assert filter_mask_data.shape == indexed_rois_data.shape, \
             ("error, filter_mask {} and indexed_rois {} should have the \
@@ -433,15 +434,15 @@ class IntersectMask(BaseInterface):
         outputs["filtered_indexed_rois_file"] = os.path.abspath(
             "reorder_filtered_indexed_rois.nii")
 
-        if isdefined(self.inputs.coords_rois_file):
+        if isdefined(self.inputs.coords_rois_file):  # pragma: no cover
             outputs["filtered_coords_rois_file"] = os.path.abspath(
                 "filtered_coords_rois.txt")
 
-        if isdefined(self.inputs.MNI_coords_rois_file):
+        if isdefined(self.inputs.MNI_coords_rois_file):  # pragma: no cover
             outputs["filtered_MNI_coords_rois_file"] = os.path.abspath(
                 "filtered_MNI_coords_rois.txt")
 
-        if isdefined(self.inputs.labels_rois_file):
+        if isdefined(self.inputs.labels_rois_file):  # pragma: no cover
             outputs["filtered_labels_rois_file"] = os.path.abspath(
                 "filtered_labels_rois.txt")
 
@@ -552,14 +553,14 @@ class ExtractMeanTS(BaseInterface):
 
         # Reading 4D volume file to extract time series
         img = nib.load(file_4D)
-        img_data = img.get_data()
+        img_data = img.get_fdata()
 
         # Reading 3D mask file
         if isdefined(mask_file):
-            mask_data = nib.load(mask_file).get_data()
+            mask_data = nib.load(mask_file).get_fdata()
 
         elif isdefined(filter_mask_file) and isdefined(filter_thr):
-            filter_mask_data = nib.load(filter_mask_file).get_data()
+            filter_mask_data = nib.load(filter_mask_file).get_fdata()
             mask_data = np.zeros(shape=filter_mask_data.shape, dtype='int')
             mask_data[filter_mask_data > filter_thr] = 1
 
@@ -1414,25 +1415,36 @@ class ComputeConfCorMatInputSpec(BaseInterfaceInputSpec):
         usedefault=True,
         desc='Method used for computing correlation -default Pearson')
 
+    normalize = traits.Bool(False, usedefault=True,
+                            desc='Normalize in function?', mandatory=False)
+
 
 class ComputeConfCorMatOutputSpec(TraitedSpec):
 
     cor_mat_file = File(
-        exists=True, desc="npy file containing the R values of correlation")
+        exists=True, desc="npy file containing the R of Pearson correlation")
 
     Z_cor_mat_file = File(
         exists=True,
         desc="npy file containing the Z-values (after Fisher's R-to-Z \
-            trasformation) of correlation")
+            trasformation) of Pearson correlation")
 
     conf_cor_mat_file = File(
         exists=True,
-        desc="npy file containing the confidence interval around R values")
+        desc="npy file with the confidence interval around Pearson R values")
 
     Z_conf_cor_mat_file = File(
         exists=True,
         desc="npy file containing the Z-values (after Fisher's R-to-Z \
-            trasformation) of correlation")
+            transformation) of Pearson correlation")
+
+    rho_mat_file = File(
+        exists=True,
+        desc="npy file containing Rho values of Spearman correlation")
+
+    pval_mat_file = File(
+        exists=True,
+        desc="npy file containing the p values of Spearman correlation")
 
 
 class ComputeConfCorMat(BaseInterface):
@@ -1471,6 +1483,17 @@ class ComputeConfCorMat(BaseInterface):
             desc='Name of the nodes (used only if plot = true)',
             mandatory=False
 
+        method = traits.Enum(
+            "Pearson",
+            "Spearman",
+            usedefault=True,
+            desc='Method used for computing correlation -default Pearson')
+
+        normalize = traits.Bool(False, usedefault = True,
+                                desc='Normalize in function?',
+                                mandatory=False))
+
+
     Outputs:
 
         cor_mat_file:
@@ -1500,9 +1523,9 @@ class ComputeConfCorMat(BaseInterface):
         plot_mat = self.inputs.plot_mat
         labels_file = self.inputs.labels_file
         method = self.inputs.method
+        normalize = self.inputs.normalize
 
         # load time series
-
         path, fname, ext = split_f(ts_file)
 
         data_matrix = np.load(ts_file)
@@ -1521,7 +1544,7 @@ class ComputeConfCorMat(BaseInterface):
             print("Computing Pearson correlation")
             cor_mat, Z_cor_mat, conf_cor_mat, Z_conf_cor_mat = \
                 return_conf_cor_mat(data_matrix, weight_vect,
-                                    conf_interval_prob)
+                                    conf_interval_prob, normalize)
 
             # Z_cor_mat
             cor_mat = cor_mat + np.transpose(cor_mat)
@@ -1548,7 +1571,20 @@ class ComputeConfCorMat(BaseInterface):
 
         elif method == "Spearman":
             print("Computing Spearman correlation")
-            rho_mat, pval_mat = scipy.stats.spearmanr(data_matrix)
+            # rho_mat, pval_mat = scipy.stats.spearmanr(data_matrix)
+            # for graph, it is better to remove the possible self-loops in rho,
+            # hence setting 0
+            # np.fill_diagonal(rho_mat, 0)
+
+            rho_mat, pval_mat = spearmanr_by_hand(data_matrix)
+
+            # saving rho values
+            rho_mat_file = os.path.abspath('rho_mat_' + fname + '.npy')
+            np.save(rho_mat_file, rho_mat)
+
+            # saving pval_mat as npy
+            pval_mat_file = os.path.abspath('pval_mat_' + fname + '.npy')
+            np.save(pval_mat_file, pval_mat)
 
         if plot_mat:
 
@@ -1634,16 +1670,26 @@ class ComputeConfCorMat(BaseInterface):
 
         path, fname, ext = split_f(self.inputs.ts_file)
 
-        outputs["cor_mat_file"] = os.path.abspath('cor_mat_' + fname + '.npy')
+        if self.inputs.method == "Pearson":
+            outputs["cor_mat_file"] = os.path.abspath(
+                'cor_mat_' + fname + '.npy')
 
-        outputs["conf_cor_mat_file"] = os.path.abspath(
-            'conf_cor_mat_' + fname + '.npy')
+            outputs["conf_cor_mat_file"] = os.path.abspath(
+                'conf_cor_mat_' + fname + '.npy')
 
-        outputs["Z_cor_mat_file"] = os.path.abspath(
-            'Z_cor_mat_' + fname + '.npy')
+            outputs["Z_cor_mat_file"] = os.path.abspath(
+                'Z_cor_mat_' + fname + '.npy')
 
-        outputs["Z_conf_cor_mat_file"] = os.path.abspath(
-            'Z_conf_cor_mat_' + fname + '.npy')
+            outputs["Z_conf_cor_mat_file"] = os.path.abspath(
+                'Z_conf_cor_mat_' + fname + '.npy')
+
+        elif self.inputs.method == "Spearman":
+
+            outputs["rho_mat_file"] = os.path.abspath(
+                 'rho_mat_' + fname + '.npy')
+
+            outputs["pval_mat_file"] = os.path.abspath(
+                'pval_mat_' + fname + '.npy')
 
         return outputs
 

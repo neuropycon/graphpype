@@ -32,7 +32,7 @@ def mean_select_mask_data(data_img, data_mask):
     try:
         mean_mask_data_matrix = np.nanmean(masked_data_matrix, axis=0)
 
-    except AttributeError:
+    except AttributeError:  # pragma: no cover
 
         print("no nanmean (version of numpy is too old), using mean only")
         mean_mask_data_matrix = np.mean(masked_data_matrix, axis=0)
@@ -85,7 +85,7 @@ def mean_select_indexed_mask_data(data_img, data_indexed_mask,
             try:
                 mean_all_voxel_roi_ts = np.nanmean(all_voxel_roi_ts, axis=0)
 
-            except AttributeError:
+            except AttributeError:  # pragma: no cover
                 print("Warning, no nanmean (version of numpy is too old),\
                       using mean only")
                 mean_all_voxel_roi_ts = np.mean(all_voxel_roi_ts, axis=0)
@@ -140,7 +140,8 @@ def normalize_data(data_matrix):
     return z_score_data_matrix
 
 
-def return_conf_cor_mat(ts_mat, weight_vect, conf_interval_prob=0.01):
+def return_conf_cor_mat(ts_mat, weight_vect, conf_interval_prob=0.01,
+                        normalize=False):
 
     """
     Compute correlation matrices over a time series and weight vector,
@@ -158,6 +159,10 @@ def return_conf_cor_mat(ts_mat, weight_vect, conf_interval_prob=0.01):
     assert ts_mat.shape[0] == len(weight_vect), \
         ("Error, incompatible regressor length {} {}".format(ts_mat.shape[0],
                                                              len(weight_vect)))
+
+    if normalize:  # pragma: no cover
+        print("Normalising data before computing Correlation")
+        ts_mat = stats.zscore(ts_mat, axis=0, nan_policy="omit")
 
     keep = weight_vect > 0.0
     w = weight_vect[keep]
@@ -187,10 +192,10 @@ def return_conf_cor_mat(ts_mat, weight_vect, conf_interval_prob=0.01):
         Z_cor_mat[i, j] = np.arctanh(cor_mat[i, j])
 
         assert not np.isnan(Z_cor_mat[i, j]), \
-            ("Error Z_cor_mat {}{} should not be NAN value".format(i, j))
+            ("Error Z_cor_mat {} {} should not be NAN value".format(i, j))
 
         assert not np.isinf(Z_cor_mat[i, j]), \
-            ("Error Z_cor_mat {}{} should not be infinite value".format(i, j))
+            ("Error Z_cor_mat {} {} should not be infinite value".format(i, j))
 
     pos_Z = (np.sign(Z_cor_mat) == +1.0)
     neg_Z = (np.sign(Z_cor_mat) == -1.0)
@@ -233,7 +238,6 @@ def return_corres_correl_mat(mat, coords, corres_coords):
     print(corres_mat.shape)
 
     for i, j in it.combinations(range(coords.shape[0]), 2):
-
         corres_mat[where_in_corres[i], where_in_corres[j]] = mat[i, j]
         corres_mat[where_in_corres[j], where_in_corres[i]] = mat[i, j]
 
@@ -266,3 +270,26 @@ def return_corres_correl_mat_labels(mat, labels, corres_labels):
     print(corres_mat.shape)
 
     return corres_mat, possible_edge_mat
+
+
+def spearmanr_by_hand(ts_mat, nan_policy="omit"):
+    """
+    Overwrite of scipy.stats.spearmanr, with unclear nan behaviour when
+    applied on a set of time series
+    """
+    nb_col = ts_mat.shape[1]
+    rho_mat = np.zeros((nb_col, nb_col))
+    pval_mat = np.ones((nb_col, nb_col))
+
+    for i, j in it.combinations(range(nb_col), r=2):
+        if i != j:
+            rho, p = stats.spearmanr(ts_mat[:, i], ts_mat[:, j],
+                                     nan_policy=nan_policy)
+
+            rho_mat[i, j] = rho
+            rho_mat[j, i] = rho
+
+            pval_mat[i, j] = p
+            pval_mat[j, i] = p
+
+    return rho_mat, pval_mat
