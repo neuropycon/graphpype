@@ -1414,6 +1414,9 @@ class ComputeConfCorMatInputSpec(BaseInterfaceInputSpec):
         usedefault=True,
         desc='Method used for computing correlation -default Pearson')
 
+    normalize = traits.Bool(False, usedefault = True,
+                            desc='Normalize in function?', mandatory=False)
+
 
 class ComputeConfCorMatOutputSpec(TraitedSpec):
 
@@ -1471,6 +1474,16 @@ class ComputeConfCorMat(BaseInterface):
             desc='Name of the nodes (used only if plot = true)',
             mandatory=False
 
+        method = traits.Enum(
+            "Pearson",
+            "Spearman",
+            usedefault=True,
+            desc='Method used for computing correlation -default Pearson')
+
+        normalize = traits.Bool(False, usedefault = True,
+                                desc='Normalize in function?', mandatory=False))
+
+
     Outputs:
 
         cor_mat_file:
@@ -1500,6 +1513,7 @@ class ComputeConfCorMat(BaseInterface):
         plot_mat = self.inputs.plot_mat
         labels_file = self.inputs.labels_file
         method = self.inputs.method
+        normalize = self.inputs.normalize
 
         # load time series
 
@@ -1521,7 +1535,7 @@ class ComputeConfCorMat(BaseInterface):
             print("Computing Pearson correlation")
             cor_mat, Z_cor_mat, conf_cor_mat, Z_conf_cor_mat = \
                 return_conf_cor_mat(data_matrix, weight_vect,
-                                    conf_interval_prob)
+                                    conf_interval_prob, normalize)
 
             # Z_cor_mat
             cor_mat = cor_mat + np.transpose(cor_mat)

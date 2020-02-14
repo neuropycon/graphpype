@@ -140,7 +140,7 @@ def normalize_data(data_matrix):
     return z_score_data_matrix
 
 
-def return_conf_cor_mat(ts_mat, weight_vect, conf_interval_prob=0.01):
+def return_conf_cor_mat(ts_mat, weight_vect, conf_interval_prob=0.01, normalize = False):
 
     """
     Compute correlation matrices over a time series and weight vector,
@@ -158,6 +158,12 @@ def return_conf_cor_mat(ts_mat, weight_vect, conf_interval_prob=0.01):
     assert ts_mat.shape[0] == len(weight_vect), \
         ("Error, incompatible regressor length {} {}".format(ts_mat.shape[0],
                                                              len(weight_vect)))
+
+    if normalize:
+        print("Normalising data before computing Correlation")
+        #ts_mat = stats.zscore(ts_mat, axis = 1, nan_policy = "omit")
+        ts_mat = stats.zscore(ts_mat, axis = 0, nan_policy = "omit")
+
 
     keep = weight_vect > 0.0
     w = weight_vect[keep]
@@ -187,10 +193,10 @@ def return_conf_cor_mat(ts_mat, weight_vect, conf_interval_prob=0.01):
         Z_cor_mat[i, j] = np.arctanh(cor_mat[i, j])
 
         assert not np.isnan(Z_cor_mat[i, j]), \
-            ("Error Z_cor_mat {}{} should not be NAN value".format(i, j))
+            ("Error Z_cor_mat {} {} should not be NAN value".format(i, j))
 
         assert not np.isinf(Z_cor_mat[i, j]), \
-            ("Error Z_cor_mat {}{} should not be infinite value".format(i, j))
+            ("Error Z_cor_mat {} {} should not be infinite value".format(i, j))
 
     pos_Z = (np.sign(Z_cor_mat) == +1.0)
     neg_Z = (np.sign(Z_cor_mat) == -1.0)
