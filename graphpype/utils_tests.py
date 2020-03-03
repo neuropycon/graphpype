@@ -24,7 +24,7 @@ def load_test_data(name):
                 "data_con_meg": "yAbqiq5WqAzSRkC",
                 "data_inv_ts": "HT85yik8iR5W5rF"}
     """
-    data_dirpath = op.join(op.split(__file__)[0], "..", "data")
+    data_dirpath = op.join(op.expanduser("~"), "data")
 
     try:
         os.makedirs(data_dirpath)
