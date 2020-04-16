@@ -20,5 +20,6 @@ setup(
                       "xlwt",
                       'networkx==1.9',
                       "matplotlib==2.2.3",
-                      "bctpy"]
+                      "bctpy",
+                      "traits==5.2.0"]
 )

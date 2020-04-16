@@ -9,7 +9,8 @@ from graphpype.utils_cor import (mean_select_mask_data,
                                  filter_data, normalize_data,
                                  return_corres_correl_mat,
                                  where_in_labels,
-                                 return_corres_correl_mat_labels)
+                                 return_corres_correl_mat_labels,
+                                 spearmanr_by_hand)
 
 from graphpype.utils_tests import load_test_data
 
@@ -56,6 +57,7 @@ def test_mean_select_indexed_mask_data():
     assert keep_rois.shape[0] == len(np.unique(data_indexed_mask))-1
 
 
+###############################################################################
 # test regressing out signals
 time_length = 100
 nb_ROI = 10
@@ -96,6 +98,20 @@ def test_return_conf_cor_mat():
     print(res)
 
 
+def test_spearmanr_by_hand():
+    """test corres matrix based on coords"""
+    # TODO find a real assert test...
+    """compute weighted correlation matrices"""
+    # TODO find a real assert test...
+    resid_mat = regress_parameters(ts_mat, ts_covar)
+    filt_mat = filter_data(resid_mat)
+    norm_mat = normalize_data(filt_mat)
+
+    rho_mat, pval_mat = spearmanr_by_hand(norm_mat)
+    print(rho_mat, pval_mat)
+
+
+###############################################################################
 mat = np.random.rand(nb_ROI, nb_ROI)
 nb_ref_ROI = nb_ROI + 5
 coords = np.random.randint(low=-70, high=70, size=(nb_ROI, 3))
