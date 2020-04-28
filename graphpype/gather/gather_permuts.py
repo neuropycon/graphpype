@@ -10,6 +10,7 @@ from collections import Counter
 
 from graphpype.utils_net import read_Pajek_corres_nodes
 from graphpype.utils_dtype_coord import where_in_coords
+from graphpype.utils_cor import where_in_labels
 
 from graphpype.utils_mod import read_lol_file
 from graphpype.utils_mod import get_modularity_value_from_lol_file
@@ -156,7 +157,7 @@ def compute_rada_df(iter_path, df, radatools_version="3.2", mapflow=[],
 
 
 def compute_nodes_rada_df(
-        local_dir, gm_coords, coords_file, labels_file,
+        local_dir, gm_coords=[], coords_file="", gm_labels=[], labels_file="",
         radatools_version="3.2", mapflow=[], mapflow_name=""):
 
     """node properties df"""
@@ -169,6 +170,9 @@ def compute_nodes_rada_df(
     elif radatools_version == "5.0":
         net_prop_dir = "net_prop"
 
+    elif radatools_version == "run":
+        net_prop_dir = ""
+
     else:
         print("Warning, could not find radatools_version {}"
               .format(radatools_version))
@@ -178,48 +182,97 @@ def compute_nodes_rada_df(
 
     if len(mapflow) == 0:
 
-        Pajek_file = os.path.join(local_dir, "prep_rada", "Z_List.net")
+        Pajek_file = os.path.join(local_dir, net_prop_dir, "Z_List.net")
 
-        if os.path.exists(coords_file) and os.path.exists(Pajek_file) and \
-                os.path.exists(labels_file):
+        if os.path.exists(Pajek_file):
 
-            # labels
-            labels = np.array([line.strip() for line in open(labels_file)],
-                              dtype=str)
-
-            # MNI coordinates
-            coords = np.array(np.loadtxt(coords_file), dtype=int)
+            columns = []
+            columns_names = []
 
             # nodes in the connected graph
             node_corres = read_Pajek_corres_nodes(Pajek_file)
 
-            # node_coords
-            node_coords = coords[node_corres, :]
-            node_labels = labels[node_corres].reshape(-1, 1)
+            print(os.path.exists(coords_file))
 
-            # where_in_gm_mask
-            where_in_gm_mask = where_in_coords(node_coords, gm_coords)
+            if os.path.exists(coords_file) and len(gm_coords):
 
-            where_in_gm_mask = where_in_gm_mask.reshape(
-                where_in_gm_mask.shape[0], 1)
+                # MNI coordinates
+                coords = np.array(np.loadtxt(coords_file), dtype=int)
 
-            # print where_in_gm_mask
-            print(where_in_gm_mask.shape)
+                # node_coords
+                node_coords = coords[node_corres, :]
+
+                # where_in_gm_mask
+                where_in_gm_mask = where_in_coords(node_coords, gm_coords)
+
+                where_in_gm_mask = where_in_gm_mask.reshape(
+                    where_in_gm_mask.shape[0], 1)
+
+                columns.append(where_in_gm_mask)
+                columns_names.append('Where_in_GM_mask')
+
+                if os.path.exists(labels_file):
+
+                    labels = np.array(
+                        [line.strip() for line in open(labels_file)],
+                        dtype=str)
+
+                    node_labels = labels[node_corres].reshape(-1, 1)
+
+                    columns.append(node_coords)
+                    columns_names.append('labels')
+
+                columns.append(node_coords)
+                columns_names.expend(['MNI_x', 'MNI_y', 'MNI_z'])
+
+            elif os.path.exists(labels_file) and len(gm_labels):
+
+                # TODO
+                labels = np.array([line.strip() for line in open(labels_file)],
+                                  dtype=str)
+
+                node_labels = labels[node_corres].reshape(-1, 1)
+
+                where_in_gm_mask = where_in_labels(node_labels, labels)
+
+                columns.append(where_in_gm_mask)
+                columns_names.append('Where_in_GM_mask')
+
+                columns.append(node_labels)
+                columns_names.append('labels')
+                0/0
+
+            elif len(gm_labels):
+
+                node_labels = np.array(gm_labels)[node_corres].reshape(-1, 1)
+
+                where_in_gm_mask = where_in_labels(node_labels,
+                                                   gm_labels).reshape(-1, 1)
+
+                print(node_labels)
+                print(where_in_gm_mask)
+
+                columns.append(where_in_gm_mask)
+                columns_names.append('Where_in_GM_mask')
+
+                columns.append(node_labels)
+                columns_names.append('labels')
+
+            else:
+                print("No labels, no coords")
+
+                columns.append(node_corres)
+                columns_names.append('node_corres')
+
+            print(columns)
+            print(columns_names)
 
             list_df.append(pd.DataFrame(
-                np.concatenate((where_in_gm_mask, node_labels, node_coords),
-                               axis=1),
-                columns=['Where_in_GM_mask', 'labels', 'MNI_x', 'MNI_y',
-                         'MNI_z']))
+                np.concatenate(tuple(columns), axis=1),
+                columns=columns_names))
+
         else:
-            if not os.path.exists(coords_file):
-                print("Missing {}".format(coords_file))
-
-            if not os.path.exists(Pajek_file):
-                print("Missing {}".format(Pajek_file))
-
-            if not os.path.exists(labels_file):
-                print("Missing {}".format(labels_file))
+            print("Missing {}".format(Pajek_file))
 
         info_nodes_file = os.path.join(
             local_dir, net_prop_dir, "Z_List-info_nodes.txt")
