@@ -199,7 +199,7 @@ def compute_pairwise_oneway_ttest_fdr(X, cor_alpha, uncor_alpha,
         X = np.moveaxis(X, 2, 0)
 
     # number of nodes
-    assert X.shape[1] == X.shape[2],  ("Error, X {}{} and/or Y {}{} are not \
+    assert X.shape[1] == X.shape[2],  ("Error, X {}{} is not \
         squared".format(X.shape[1], X.shape[2]))
 
     N = X.shape[1]

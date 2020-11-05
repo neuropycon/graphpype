@@ -94,7 +94,7 @@ def compute_rada_df(iter_path, df, radatools_version="3.2", mapflow=[],
             df['Global_efficiency'] = str(global_efficiency)
 
         else:
-            print ("Could not find file {}".format(path_length_file))
+            print("Could not find file {}".format(path_length_file))
 
     else:
 
@@ -487,8 +487,6 @@ def compute_signif_permuts(permut_df, permut_col="Seed",
         print("Error, permut_col {} should start with -1".format(permut_col))
         return pd.DataFrame()
 
-
-
     expected_permut_indexes = list(range(len(seed_index)-1))
 
     nb_permuts = len(expected_permut_indexes)
@@ -526,17 +524,17 @@ def compute_signif_permuts(permut_df, permut_col="Seed",
 
         for index_col, col in enumerate(data_cols):
 
-            #print(index_col, col)
-
             sum_higher[index_col] = np.sum(
                 (permut_df[col].iloc[1:] >= permut_df[col].iloc[0])
                 .values.astype(int))
+
             all_p_higher[index_col] = (
                 sum_higher[index_col]+1)/float(permut_df[col].shape[0])
 
             sum_lower[index_col] = np.sum(
                 (permut_df[col].iloc[1:] <= permut_df[col].iloc[0])
                 .values.astype(int))
+
             all_p_lower[index_col] = (sum_lower[index_col]+1) / \
                 float(permut_df[col].shape[0])
 
@@ -595,16 +593,19 @@ def compute_signif_permuts(permut_df, permut_col="Seed",
                 sum_lower[index_col] = np.sum(
                     np.array(diff_col[1:] <= diff_col[0], dtype=int))
                 print(col, "sum_lower:", sum_lower[index_col])
-                all_p_lower[index_col] = (sum_lower[index_col]+1)/float(diff_col.shape[0])
+                all_p_lower[index_col] = \
+                    (sum_lower[index_col]+1)/float(diff_col.shape[0])
             else:
                 print("not able to do diff")
 
             count_case[index_col] = diff_col.shape[0]
             cols.append(col)
 
-    df_res = pd.DataFrame([sum_higher, sum_lower, all_p_higher, all_p_lower, count_case],
+    df_res = pd.DataFrame([sum_higher, sum_lower, all_p_higher,
+                           all_p_lower, count_case],
                           columns=cols)
-    df_res.index = ["Sum Higher", "Sum Lower", "Pval Higher", "Pval Lower", "Count"]
+    df_res.index = ["Sum Higher", "Sum Lower", "Pval Higher",
+                    "Pval Lower", "Count"]
 
     return df_res
 

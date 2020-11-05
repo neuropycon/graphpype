@@ -899,7 +899,7 @@ class SplitTS(BaseInterface):
         assert ts.shape[0] > win_length, "Error, win_length longer than ts"
         assert offset < win_length,\
             "Error, offset {} longer than win_length {}".format(
-                offset < win_length)
+                offset, win_length)
 
         ts_length = ts.shape[1]
 
@@ -2039,7 +2039,7 @@ class PrepareMeanCorrel(BaseInterface):
 
             assert len(cor_mat_files) == len(labels_files), \
                 ("warning, length of cor_mat_files, labels_files are \
-                    imcompatible {} {} {}".format(len(cor_mat_files),
+                    imcompatible {} {}".format(len(cor_mat_files),
                                                   len(labels_files)))
 
             for i in range(len(cor_mat_files)):
@@ -2196,7 +2196,7 @@ class PreparePermutMeanCorrel(BaseInterface):
                    for cor_mat_file in self.inputs.cor_mat_files]
 
         assert len(cormats) == sum(self.inputs.permut_group_sizes), ("Error,\
-            len(cormats) {} != sum permut_group_sizes {1}".format(
+            len(cormats) {} != sum permut_group_sizes {}".format(
             len(cormats), sum(self.inputs.permut_group_sizes)))
 
         subj_indexes = np.arange(len(cormats))

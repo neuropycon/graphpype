@@ -109,7 +109,7 @@ def check_np_dimension(np_shape, np_coords):
         if np_shape[dim] <= np_coords[dim]:
 
             print("Warning nb elements for nd array {} and coord {} do not \
-                  match (dimension %d)".format(np_shape[dim], np_coords[dim],
+                  match (dimension {})".format(np_shape[dim], np_coords[dim],
                                                dim))
             return False
 
