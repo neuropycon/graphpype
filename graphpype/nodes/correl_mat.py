@@ -2042,7 +2042,6 @@ class PrepareMeanCorrel(BaseInterface):
                     imcompatible {} {}".format(len(cor_mat_files),
                                                len(labels_files)))
 
-
             for i in range(len(cor_mat_files)):
 
                 if os.path.exists(cor_mat_files[i]) and \
