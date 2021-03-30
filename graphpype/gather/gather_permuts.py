@@ -510,17 +510,17 @@ def compute_signif_permuts(permut_df, permut_col="Seed",
 
     # looping over selected columns
 
-    sum_higher = np.zeros(shape=(len(data_cols)), dtype='float64') - 1
-    sum_lower = np.zeros(shape=(len(data_cols)), dtype='float64') - 1
-
-    all_p_higher = np.zeros(shape=(len(data_cols)), dtype='float64') - 1
-    all_p_lower = np.zeros(shape=(len(data_cols)), dtype='float64') - 1
-    count_case = np.zeros(shape=(len(data_cols)), dtype='float64')
-
-    cols = []
-
     if session_col == -1 or len(permut_df[session_col].unique()) == 1:
         print("Compairing one session with itself")
+
+        sum_higher = np.zeros(shape=(len(data_cols)), dtype='float64') - 1
+        sum_lower = np.zeros(shape=(len(data_cols)), dtype='float64') - 1
+
+        all_p_higher = np.zeros(shape=(len(data_cols)), dtype='float64') - 1
+        all_p_lower = np.zeros(shape=(len(data_cols)), dtype='float64') - 1
+        count_case = np.zeros(shape=(len(data_cols)), dtype='float64')
+
+        cols = []
 
         for index_col, col in enumerate(data_cols):
 
@@ -541,6 +541,14 @@ def compute_signif_permuts(permut_df, permut_col="Seed",
             count_case[index_col] = permut_df[col].shape[0]
 
             cols.append(str(col))
+
+
+        df_res = pd.DataFrame([sum_higher, sum_lower, all_p_higher,
+                            all_p_lower, count_case],
+                            columns=cols)
+        df_res.index = ["Sum Higher", "Sum Lower", "Pval Higher",
+                        "Pval Lower", "Count"]
+
     else:
 
         # should start at 0 and have all values in between
@@ -550,6 +558,16 @@ def compute_signif_permuts(permut_df, permut_col="Seed",
             return pd.DataFrame()
 
         print("Compairing diffences between two sessions")
+
+
+        sum_more = np.zeros(shape=(len(data_cols)), dtype='float64') - 1
+
+        all_p_more = np.zeros(shape=(len(data_cols)), dtype='float64') - 1
+        count_case = np.zeros(shape=(len(data_cols)), dtype='float64')
+
+        cols = []
+
+
         # all unique values should have 2 different samples
         count_elements = Counter(permut_df[permut_col].values)
 
@@ -564,48 +582,87 @@ def compute_signif_permuts(permut_df, permut_col="Seed",
                   .format(count_elements))
 
         # computing diff df
+
+        #data_cols = pd.Index(["Global_efficiency"])
         for index_col, col in enumerate(data_cols):
 
             df_col = permut_df.pivot(
                 index=permut_col, columns=session_col, values=col)
 
-            df_col["Diff"] = pd.to_numeric(
-                df_col.iloc[:, 0]) - pd.to_numeric(df_col.iloc[:, 1])
+            #df_col["Sign"] = pd.to_numeric(df_col.iloc[:, 0]) - pd.to_numeric(df_col.iloc[:, 1])
 
-            diff_col = df_col["Diff"].dropna().reset_index(drop=True)
+            #print (df_col.iloc[:, 0])
+
+            df_col["Diff"] = pd.to_numeric(df_col.iloc[:, 0]) - pd.to_numeric(df_col.iloc[:, 1])
+
+            print (df_col["Diff"])
+
+            sign_diff = np.sign(df_col["Diff"][0])
+            diff_col = df_col["Diff"].abs().dropna().reset_index(drop=True)
+
+            print (diff_col)
 
             if diff_col.shape[0] == 0:
-                sum_higher[index_col] = np.nan
-                sum_lower[index_col] = np.nan
-                all_p_higher[index_col] = np.nan
-                all_p_lower[index_col] = np.nan
+                sum_more[index_col] = np.nan
+                all_p_more[index_col] = np.nan
                 cols.append(col)
                 continue
 
-            if diff_col[0] > 0:
-                sum_higher[index_col] = np.sum(
-                    np.array(diff_col[1:] >= diff_col[0], dtype=int))
-                print(col, "sum_higher:", sum_higher[index_col])
-                all_p_higher[index_col] = \
-                    (sum_higher[index_col]+1)/float(diff_col.shape[0])
+            print ("***", diff_col[0], sign_diff)
 
-            elif diff_col[0] < 0:
-                sum_lower[index_col] = np.sum(
-                    np.array(diff_col[1:] <= diff_col[0], dtype=int))
-                print(col, "sum_lower:", sum_lower[index_col])
-                all_p_lower[index_col] = \
-                    (sum_lower[index_col]+1)/float(diff_col.shape[0])
-            else:
-                print("not able to do diff")
+
+            sum_more[index_col] = np.sum(
+                np.array(diff_col[1:] > diff_col[0], dtype=int))*sign_diff
+            print(col, "sum_more:", sum_more[index_col])
+            all_p_more[index_col] = \
+                (sum_more[index_col]+1)/float(diff_col.shape[0])*sign_diff
 
             count_case[index_col] = diff_col.shape[0]
             cols.append(col)
 
-    df_res = pd.DataFrame([sum_higher, sum_lower, all_p_higher,
-                           all_p_lower, count_case],
-                          columns=cols)
-    df_res.index = ["Sum Higher", "Sum Lower", "Pval Higher",
-                    "Pval Lower", "Count"]
+        df_res = pd.DataFrame([sum_more, all_p_more,count_case],
+                            columns=cols)
+        df_res.index = ["Sum More", "Pval More",
+                         "Count"]
+
+
+        ## computing diff df
+        #for index_col, col in enumerate(data_cols):
+
+            #df_col = permut_df.pivot(
+                #index=permut_col, columns=session_col, values=col)
+
+            #df_col["Diff"] = pd.to_numeric(
+                #df_col.iloc[:, 0]) - pd.to_numeric(df_col.iloc[:, 1])
+
+            #diff_col = df_col["Diff"].dropna().reset_index(drop=True)
+
+            #if diff_col.shape[0] == 0:
+                #sum_higher[index_col] = np.nan
+                #sum_lower[index_col] = np.nan
+                #all_p_higher[index_col] = np.nan
+                #all_p_lower[index_col] = np.nan
+                #cols.append(col)
+                #continue
+
+            #if diff_col[0] > 0:
+                #sum_higher[index_col] = np.sum(
+                    #np.array(diff_col[1:] >= diff_col[0], dtype=int))
+                #print(col, "sum_higher:", sum_higher[index_col])
+                #all_p_higher[index_col] = \
+                    #(sum_higher[index_col]+1)/float(diff_col.shape[0])
+
+            #elif diff_col[0] < 0:
+                #sum_lower[index_col] = np.sum(
+                    #np.array(diff_col[1:] <= diff_col[0], dtype=int))
+                #print(col, "sum_lower:", sum_lower[index_col])
+                #all_p_lower[index_col] = \
+                    #(sum_lower[index_col]+1)/float(diff_col.shape[0])
+            #else:
+                #print("not able to do diff")
+
+            #count_case[index_col] = diff_col.shape[0]
+            #cols.append(col)
 
     return df_res
 
