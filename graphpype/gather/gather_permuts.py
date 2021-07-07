@@ -589,9 +589,7 @@ def compute_signif_permuts(permut_df, permut_col="Seed",
             df_col = permut_df.pivot(
                 index=permut_col, columns=session_col, values=col)
 
-            #df_col["Sign"] = pd.to_numeric(df_col.iloc[:, 0]) - pd.to_numeric(df_col.iloc[:, 1])
-
-            #print (df_col.iloc[:, 0])
+            print(df_col)
 
             df_col["Diff"] = pd.to_numeric(df_col.iloc[:, 0]) - pd.to_numeric(df_col.iloc[:, 1])
 
@@ -612,7 +610,7 @@ def compute_signif_permuts(permut_df, permut_col="Seed",
 
 
             sum_more[index_col] = np.sum(
-                np.array(diff_col[1:] > diff_col[0], dtype=int))*sign_diff
+                np.array(diff_col[1:] > diff_col[0], dtype=int))
             print(col, "sum_more:", sum_more[index_col])
             all_p_more[index_col] = \
                 (sum_more[index_col]+1)/float(diff_col.shape[0])*sign_diff
