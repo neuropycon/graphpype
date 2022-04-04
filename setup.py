@@ -16,7 +16,7 @@ setup(
                       'patsy',
                       'nipype',
                       'configparser',
-                      "pandas==0.23.4",
+                      "pandas",
                       "xlwt",
                       'networkx',
                       "matplotlib==2.2.3",
