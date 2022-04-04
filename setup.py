@@ -18,7 +18,7 @@ setup(
                       'configparser',
                       "pandas==0.23.4",
                       "xlwt",
-                      'networkx==1.9',
+                      'networkx',
                       "matplotlib==2.2.3",
                       "bctpy",
                       "traits==5.2.0"]
