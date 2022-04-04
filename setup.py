@@ -10,7 +10,7 @@ setup(
     packages=find_packages(),
     author="David Meunier",
     description="Graph analysis for neuropycon (using nipype, and ephypype); based on previous packages dmgraphanalysis and then dmgraphanalysis_nodes and graphpype",
-    lisence='BSD 3',
+    license='BSD 3',
     install_requires=['numpy>=1.3.0',
                       'statsmodels',
                       'patsy==0.5.1',
