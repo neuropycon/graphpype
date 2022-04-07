@@ -7,7 +7,7 @@ import os.path as op
 
 def _download_data_zip(data_zip, name):
 
-    json_data = op.join(op.dirname(op.abspath(__file__)),"utils",
+    json_data = op.join(op.dirname(op.abspath(__file__)),
                         "data_test_servers.json")
 
     data_dict = json.load(open(json_data))
