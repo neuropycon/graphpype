@@ -11,7 +11,6 @@ conmat_file = os.path.join(data_path, "Z_cor_mat_resid_ts.npy")
 labels_file = os.path.join(data_path, "ROI_labels-Atlas.txt")
 coords_file = os.path.join(data_path, "ROI_MNI_coords-Atlas.txt")
 
-"""
 def test_conmat_to_graph_simple():
 
     wf = create_pipeline_conmat_to_graph_density(
@@ -22,6 +21,7 @@ def test_conmat_to_graph_simple():
     wf.run()
 
 
+"""
 def test_conmat_to_graph_params():
 
     wf = create_pipeline_conmat_to_graph_density(
