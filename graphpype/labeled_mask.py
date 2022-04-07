@@ -83,8 +83,8 @@ def create_indexed_mask(ref_img_file, MNI_coords_list, ROI_dir,
 
         dist = cdist(np_coord, np_coord, metric='euclidean')
 
-        #assert np.all(dist[np.triu_indices(dist.shape[0], k=1)]
-        #              > ROI_size), "Error, distance < {}".format(ROI_size)
+        assert np.all(dist[np.triu_indices(dist.shape[0], k=1)] > ROI_size), \
+            "Error, distance < {}".format(ROI_size)
 
     ref_img = nib.load(ref_img_file)
 

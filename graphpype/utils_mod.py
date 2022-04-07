@@ -369,9 +369,10 @@ def compute_node_dissociation_index(community_vect, sparse_mat):
 
         if degree_vect[i]:
             ndi_values[i] = val2/float(degree_vect[i])
+
         else:
             print("Warning, degree is null for node {}".format(i))
-            print (bin_dense_mat)
+            print(bin_dense_mat)
 
             ndi_values[i] = 0.0
 
