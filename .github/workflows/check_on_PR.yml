@@ -1,0 +1,43 @@
+
+name: Running test pipeline from github version
+
+on:
+
+  pull_request:
+    branches:
+      - master
+
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.8
+
+      - name: Install dependencies
+        run: |
+            pip install codecov pytest pytest-cov
+            pip install -e .
+            pip install flake8
+            sudo apt-get install graphviz libgraphviz-dev
+            pip install --upgrade pygraphviz graphviz
+      - name: Intall radatools
+        run: |
+            wget https://deim.urv.cat/~sergio.gomez/download.php?f=radatools-5.0-linux64.tar.gz -O /tmp/radatools-5.0-linux64.tar.gz
+            tar -xvf /tmp/radatools-5.0-linux64.tar.gz -C /tmp
+            export PATH="$PATH:/tmp/radatools-5.0-linux64/Network_Tools"
+            export PATH="$PATH:/tmp/radatools-5.0-linux64/Network_Properties"
+            export PATH="$PATH:/tmp/radatools-5.0-linux64/Communities_Detection"
+            export PATH="$PATH:/tmp/radatools-5.0-linux64/Communities_Tools"
+
+      - name: Test with pytest
+        run:
+            py.test --cov graphpype
+
+      - name: Flake8
+        run:
+            flake8 --count graphpype
