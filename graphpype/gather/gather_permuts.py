@@ -509,7 +509,6 @@ def compute_signif_permuts(permut_df, permut_col="Seed",
     print(data_cols)
 
     # looping over selected columns
-
     if session_col == -1 or len(permut_df[session_col].unique()) == 1:
         print("Compairing one session with itself")
 
@@ -618,6 +617,7 @@ def compute_signif_permuts(permut_df, permut_col="Seed",
 
         df_res = pd.DataFrame([sum_more, all_p_more, count_case],
                               columns=cols)
+
         df_res.index = ["Sum More", "Pval More", "Count"]
 
     return df_res
