@@ -4,7 +4,7 @@ from graphpype.pipelines.conmat_to_graph import (
     create_pipeline_conmat_to_graph_density)
 
 data_path = os.path.join(os.path.dirname(
-    os.path.realpath(__file__)), "..", "..", "tests", "data", "data_con")
+    os.path.realpath(__file__)), "..", "..", "data", "data_con")
 
 conmat_file = os.path.join(data_path, "Z_cor_mat_resid_ts.npy")
 
