@@ -1,8 +1,8 @@
 import os
-"""
+
 from graphpype.pipelines.conmat_to_graph import (
     create_pipeline_conmat_to_graph_density)
-"""
+
 data_path = os.path.join(os.path.dirname(
     os.path.realpath(__file__)), "..", "..", "tests", "data", "data_con")
 
