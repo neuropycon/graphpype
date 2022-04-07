@@ -3,15 +3,15 @@ import os
 from graphpype.pipelines.conmat_to_graph import (
     create_pipeline_conmat_to_graph_density)
 
-data_path = os.path.join(os.path.dirname(
-    os.path.realpath(__file__)), "..", "..", "data", "data_con")
-
-conmat_file = os.path.join(data_path, "Z_cor_mat_resid_ts.npy")
-
-labels_file = os.path.join(data_path, "ROI_labels-Atlas.txt")
-coords_file = os.path.join(data_path, "ROI_MNI_coords-Atlas.txt")
+from graphpype.utils_tests import load_test_data
 
 def test_conmat_to_graph_simple():
+    data_path = load_test_data("data_nii_min")
+
+    conmat_file = os.path.join(data_path, "Z_cor_mat_resid_ts.npy")
+
+    labels_file = os.path.join(data_path, "ROI_labels-Atlas.txt")
+    coords_file = os.path.join(data_path, "ROI_MNI_coords-Atlas.txt")
 
     wf = create_pipeline_conmat_to_graph_density(
         main_path=data_path, pipeline_name="conmat_to_graph_simple")
