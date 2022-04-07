@@ -6,7 +6,7 @@ from graphpype.pipelines.conmat_to_graph import (
 from graphpype.utils_tests import load_test_data
 
 def test_conmat_to_graph_simple():
-    data_path = load_test_data("data_nii_min")
+    data_path = load_test_data("data_con")
 
     conmat_file = os.path.join(data_path, "Z_cor_mat_resid_ts.npy")
 
