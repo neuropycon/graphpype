@@ -4,6 +4,9 @@ Support function for loading test datasets
 import os
 import os.path as op
 
+import shutil
+import json
+import subprocess
 
 def _download_data_zip(data_zip, name):
 
