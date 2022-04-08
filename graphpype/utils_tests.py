@@ -56,7 +56,7 @@ def _download_data_zip(data_zip, name):
     return False
 
 
-def load_test_data(name, path_to=""):
+def load_test_data(name, path_to="", verbose = False):
     """ Load test data, template and needed scripts """
 
     if path_to == "":
@@ -65,6 +65,9 @@ def load_test_data(name, path_to=""):
     assert op.exists(path_to), "Breaking, {} do not exist".format(path_to)
 
     data_dirpath = op.join(path_to, "data_graphpype")
+
+    if verbose:
+        print(data_dirpath)
 
     try:
         os.makedirs(data_dirpath)
@@ -78,6 +81,10 @@ def load_test_data(name, path_to=""):
         return data_path
 
     data_zip = op.join(data_dirpath, "{}.zip".format(name))
+
+    if verbose:
+        print(data_zip)
+
 
     if not op.exists(data_zip):
 
