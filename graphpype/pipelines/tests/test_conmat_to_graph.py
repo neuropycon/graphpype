@@ -40,8 +40,12 @@ def test_conmat_to_graph_simple():
 
     wf.run()
 
-    assert os.path.exists(os.path.join(data_path, "conmat_to_graph_simple_den_1_0", "graph.json"))
+    assert os.path.exists(os.path.join(data_path, "conmat_to_graph_simple_den_1_0", "compute_net_List", "Z_List.txt"))
+    assert os.path.exists(os.path.join(data_path, "conmat_to_graph_simple_den_1_0", "prep_rada", "Z_List.net"))
     assert os.path.exists(os.path.join(data_path, "conmat_to_graph_simple_den_1_0", "community_rada", "Z_List.lol"))
+    assert os.path.exists(os.path.join(data_path, "conmat_to_graph_simple_den_1_0", "node_roles", "node_roles.txt"))
+
+
 
 
 
