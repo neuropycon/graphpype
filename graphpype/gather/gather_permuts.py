@@ -17,7 +17,6 @@ from graphpype.utils_mod import get_modularity_value_from_lol_file
 from graphpype.utils_mod import get_values_from_global_info_file
 from graphpype.utils_mod import get_path_length_from_info_dists_file
 
-
 def glob_natural_sorted(reg_exp):
     # TODO -> utils.py
     """sort reg_exp filenames in natural way (for numbers)"""

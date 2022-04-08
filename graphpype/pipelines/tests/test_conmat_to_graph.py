@@ -5,16 +5,16 @@ from graphpype.pipelines.conmat_to_graph import (
 
 from graphpype.utils_tests import load_test_data, make_tmp_dir
 
-data_path = load_test_data("data_con")
-
-conmat_file = os.path.join(data_path, "Z_cor_mat_resid_ts.npy")
-
-labels_file = os.path.join(data_path, "ROI_labels-Atlas.txt")
-coords_file = os.path.join(data_path, "ROI_MNI_coords-Atlas.txt")
-
-tmp_dir = make_tmp_dir()
-
 def test_conmat_to_graph_simple():
+
+    data_path = load_test_data("data_con")
+
+    conmat_file = os.path.join(data_path, "Z_cor_mat_resid_ts.npy")
+
+    labels_file = os.path.join(data_path, "ROI_labels-Atlas.txt")
+    coords_file = os.path.join(data_path, "ROI_MNI_coords-Atlas.txt")
+
+    tmp_dir = make_tmp_dir()
 
     wf = create_pipeline_conmat_to_graph_density(
         main_path=tmp_dir, pipeline_name="conmat_to_graph_simple")
