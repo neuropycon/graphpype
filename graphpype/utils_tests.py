@@ -8,6 +8,7 @@ import shutil
 import json
 import subprocess
 
+
 def _download_data_zip(data_zip, name):
 
     json_data = op.join(op.dirname(op.abspath(__file__)),
@@ -56,7 +57,7 @@ def _download_data_zip(data_zip, name):
     return False
 
 
-def load_test_data(name, path_to="", verbose = False):
+def load_test_data(name, path_to="", verbose=False):
     """ Load test data, template and needed scripts """
 
     if path_to == "":
@@ -85,9 +86,7 @@ def load_test_data(name, path_to="", verbose = False):
     if verbose:
         print(data_zip)
 
-
     if not op.exists(data_zip):
-
         print("Download {}".format(data_zip))
 
         val = _download_data_zip(data_zip, name)
@@ -106,7 +105,7 @@ def load_test_data(name, path_to="", verbose = False):
 
 
 def make_tmp_dir():
-    import shutil
+
     tmp_dir = "/tmp/test_graphpype"
     if op.exists(tmp_dir):
         shutil.rmtree(tmp_dir)

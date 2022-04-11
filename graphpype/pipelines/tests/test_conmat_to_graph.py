@@ -5,14 +5,12 @@ from graphpype.pipelines.conmat_to_graph import (
 
 from graphpype.utils_tests import load_test_data
 
+
 def test_conmat_to_graph_simple():
 
     data_path = load_test_data("data_con")
 
     conmat_file = os.path.join(data_path, "Z_cor_mat_resid_ts.npy")
-
-    labels_file = os.path.join(data_path, "ROI_labels-Atlas.txt")
-    coords_file = os.path.join(data_path, "ROI_MNI_coords-Atlas.txt")
 
     wf = create_pipeline_conmat_to_graph_density(
         main_path=data_path, pipeline_name="conmat_to_graph_simple")
@@ -23,13 +21,19 @@ def test_conmat_to_graph_simple():
 
     wf.run()
 
-    assert os.path.exists(os.path.join(data_path, "conmat_to_graph_simple_den_1_0", "graph.json"))
-    assert os.path.exists(os.path.join(data_path, "conmat_to_graph_simple_den_1_0", "graph.png"))
+    assert os.path.exists(os.path.join(data_path, "conmat_to_graph_simple_den_1_0",
+                                       "graph.json"))
+    assert os.path.exists(os.path.join(data_path, "conmat_to_graph_simple_den_1_0",
+                                       "graph.png"))
 
-    assert os.path.exists(os.path.join(data_path, "conmat_to_graph_simple_den_1_0", "compute_net_List", "Z_List.txt"))
-    assert os.path.exists(os.path.join(data_path, "conmat_to_graph_simple_den_1_0", "prep_rada", "Z_List.net"))
-    assert os.path.exists(os.path.join(data_path, "conmat_to_graph_simple_den_1_0", "community_rada", "Z_List.lol"))
-    assert os.path.exists(os.path.join(data_path, "conmat_to_graph_simple_den_1_0", "node_roles", "node_roles.txt"))
+    assert os.path.exists(os.path.join(data_path, "conmat_to_graph_simple_den_1_0",
+                                       "compute_net_List", "Z_List.txt"))
+    assert os.path.exists(os.path.join(data_path, "conmat_to_graph_simple_den_1_0",
+                                       "prep_rada", "Z_List.net"))
+    assert os.path.exists(os.path.join(data_path, "conmat_to_graph_simple_den_1_0",
+                                       "community_rada", "Z_List.lol"))
+    assert os.path.exists(os.path.join(data_path, "conmat_to_graph_simple_den_1_0",
+                                       "node_roles", "node_roles.txt"))
 
 
 
