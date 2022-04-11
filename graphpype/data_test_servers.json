@@ -1,0 +1,23 @@
+{
+    "ZENODO": {
+        "server": "https://zenodo.org",
+        "data_dir": {},
+        "cloud_format_3": "{}/record/{}/files/{}.zip?download=1"
+    },
+    "INT": {
+        "server": "cloud.int.univ-amu.fr",
+        "data_dir": {},
+        "cloud_format": "https://{}/index.php/s/{}/download"
+            },
+    "AMUBOX": {
+        "server": "https://amubox.univ-amu.fr",
+        "data_dir": {
+            "data_nii": "RCjt2KioMBmHRxj",
+            "data_nii_mask": "BsjCfxSrXXGEaRD",
+            "data_con": "8mofHzzWAiTZCw8",
+            "data_nii_HCP": "sEPCRnQbs3RFFmw",
+            "data_nii_min": "ypWHfE2kocQ7zq6"
+                    },
+        "cloud_format": "{}/public.php?service=files&t={}&download"
+            }
+}
