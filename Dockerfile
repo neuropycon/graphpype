@@ -6,8 +6,7 @@ RUN apt-get install -y git python3-pip libpng-dev libfreetype6-dev libxft-dev li
 
 #RUN apt-get install libx11-6 libxext6 libxt6 # matlab
 RUN pip3 install xvfbwrapper psutil numpy scipy matplotlib statsmodels pandas networkx==1.9 
-RUN pip3 install mock prov click funcsigs pydotplus pydot rdflib pbr nibabel packaging pytest
-#nipype==0.12
+RUN pip3 install mock prov click funcsigs pydotplus pydot rdflib pbr nibabel packaging pytest nipype
 RUN mkdir -p /opt/packages/
 
 ########## radatools
@@ -40,28 +39,36 @@ ENV NIFTYREG_INSTALL=/opt/packages/NiftyReg-1.3.9-Linux-x86_64-Release
 ENV PATH=${PATH}:${NIFTYREG_INSTALL}/bin
 ENV LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${NIFTYREG_INSTALL}/lib
 
-
-########## nipype
-RUN mkdir -p /opt/packages/
-
-WORKDIR /opt/packages/
-RUN git clone https://github.com/davidmeunier79/nipype.git
-
-WORKDIR /opt/packages/nipype
-RUN python3 setup.py develop
-
+#
+# ########## nipype
+# RUN mkdir -p /opt/packages/
+#
+# WORKDIR /opt/packages/
+# RUN git clone https://github.com/davidmeunier79/nipype.git
+#
+# WORKDIR /opt/packages/nipype
+# RUN python3 setup.py develop
+#
 
 ########### graphpype
 WORKDIR /opt/packages/
 RUN git clone https://github.com/davidmeunier79/graphpype.git
 
 WORKDIR /opt/packages/graphpype
+RUN git checkout Dockerhub_version_0.0.8 # to be modified
+
 RUN python3 setup.py develop
+
 
 RUN echo $(which python) && \
     echo $(which python3) && \
-    ln -s /usr/bin/python3 /usr/bin/python && \
-    ln -s /usr/bin/pip3 /usr/bin/pip
+    ln -s /usr/bin/python3 /usr/bin/python
+
+RUN python -c "import sys; print(sys.version)"
+
+RUN python -c "import graphpype; print(graphpype.__path__)"
+
+RUN python -c "import graphpype; print(graphpype.__version__)"
 
 ################################################## Finishing
 RUN apt-get clean \
