@@ -62,6 +62,9 @@ class ExtractTSInputSpec(BaseInterfaceInputSpec):
         -1.0, desc='value for background (i.e. outside brain)',
         usedefault=True)
 
+    save_npy = traits.Bool(
+        False, desc="Saving as npy (if False, as txt)", usedefault=True)
+
 
 class ExtractTSOutputSpec(TraitedSpec):
 
@@ -151,6 +154,7 @@ class ExtractTS(BaseInterface):
         percent_signal = self.inputs.percent_signal
         background_val = self.inputs.background_val
         plot_fig = self.inputs.plot_fig
+        save_npy = self.inputs.save_npy
 
         # loading ROI indexed mask
         indexed_rois_img = nib.load(indexed_rois_file)
@@ -198,9 +202,15 @@ class ExtractTS(BaseInterface):
 
         mean_masked_ts = np.array(mean_masked_ts, dtype='f')
 
-        # saving time series
-        mean_masked_ts_file = os.path.abspath("mean_masked_ts.txt")
-        np.savetxt(mean_masked_ts_file, mean_masked_ts, fmt='%.3f')
+        if save_npy:
+            # saving time series
+            self.mean_masked_ts_file = os.path.abspath("mean_masked_ts.npy")
+            np.save(self.mean_masked_ts_file, mean_masked_ts)
+
+        else:
+            # saving time series
+            self.mean_masked_ts_file = os.path.abspath("mean_masked_ts.txt")
+            np.savetxt(self.mean_masked_ts_file, mean_masked_ts, fmt='%.3f')
 
         if plot_fig:
             # plotting mean_masked_ts
@@ -213,7 +223,7 @@ class ExtractTS(BaseInterface):
 
         outputs = self._outputs().get()
 
-        outputs["mean_masked_ts_file"] = os.path.abspath("mean_masked_ts.txt")
+        outputs["mean_masked_ts_file"] = self.mean_masked_ts_file
 
         if isdefined(self.inputs.MNI_coord_rois_file):  # pragma: no cover
             outputs["subj_MNI_coord_rois_file"] = os.path.abspath(

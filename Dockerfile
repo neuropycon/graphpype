@@ -9,37 +9,38 @@ RUN pip3 install xvfbwrapper psutil numpy scipy matplotlib statsmodels pandas ne
 RUN pip3 install mock prov click funcsigs pydotplus pydot rdflib pbr nibabel packaging pytest nipype
 RUN mkdir -p /opt/packages/
 
-########## radatools
-WORKDIR /opt/packages/
-RUN wget https://webs-deim.urv.cat/~sergio.gomez/download.php?f=radatools-4.0-linux64.tar.gz
-#https://webs-deim.urv.cat/~sergio.gomez/download.php?f=radatools-5.2-linux64.tar.gz
-RUN tar -xvf download.php\?f\=radatools-4.0-linux64.tar.gz
-
 #ENV DISPLAY :0
-# 
+#
 # ######### ephypype
 # WORKDIR /opt/packages/
 # RUN git clone https://github.com/davidmeunier79/ephypype.git
 # WORKDIR /opt/packages/ephypype
 # RUN python setup.py develop
 
-
-################### NiftiReg
-RUN wget https://sourceforge.net/projects/niftyreg/files/nifty_reg-1.3.9/NiftyReg-1.3.9-Linux-x86_64-Release.tar.gz/download
-RUN tar -xvf download
-
 ################### Radatools
+WORKDIR /opt/packages/
+RUN wget https://webs-deim.urv.cat/~sergio.gomez/download.php?f=radatools-4.0-linux64.tar.gz
+#https://webs-deim.urv.cat/~sergio.gomez/download.php?f=radatools-5.2-linux64.tar.gz
+RUN tar -xvf download.php\?f\=radatools-4.0-linux64.tar.gz
+
 ENV RADA_PATH=/opt/packages/radatools-4.0-linux64
 ENV PATH=$PATH:$RADA_PATH/Network_Tools
 ENV PATH=$PATH:$RADA_PATH/Network_Properties
 ENV PATH=$PATH:$RADA_PATH/Communities_Detection
 ENV PATH=$PATH:$RADA_PATH/Communities_Tools
 
-ENV NIFTYREG_INSTALL=/opt/packages/NiftyReg-1.3.9-Linux-x86_64-Release
-ENV PATH=${PATH}:${NIFTYREG_INSTALL}/bin
-ENV LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${NIFTYREG_INSTALL}/lib
 
-#
+################### NiftiReg
+
+RUN apt-get install --yes --no-install-recommends \
+        ca-certificates cmake gcc g++ git make \
+    && git clone https://github.com/KCL-BMEIS/niftyreg.git /tmp/niftyreg-src \
+    && mkdir /tmp/niftyreg-build \
+    && cd /tmp/niftyreg-build \
+    && cmake -DCMAKE_INSTALL_PREFIX=/opt/niftyreg /tmp/niftyreg-src \
+    && make \
+    && make install
+
 # ########## nipype
 # RUN mkdir -p /opt/packages/
 #
