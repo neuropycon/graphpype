@@ -1,5 +1,5 @@
 import numpy as np
-
+import os
 
 def plot_cormat(plot_file, cor_mat, list_labels=[], fix_full_range=[],
                 label_size=2, cmap='rainbow'):
@@ -103,6 +103,8 @@ def plot_signals(plot_signals_file, signals_matrix, colors=[],
     """ plot signals"""
     import matplotlib.pyplot as plt
 
+    print(plot_signals_file)
+
     assert len(signals_matrix.shape) <= 2, ("Error, signals_matrix should be \
         at most 2D")
     fig2 = plt.figure()
@@ -139,7 +141,9 @@ def plot_signals(plot_signals_file, signals_matrix, colors=[],
                     color='black', linestyle='--')
 
     fig2.savefig(plot_signals_file)
-    plt.close(fig2)
+    assert os.path.exists(plot_signals_file), \
+        "Error with plotting {}".format(plot_signals_file)
+    #plt.close(fig2)
 
 
 def plot_sep_signals(plot_signals_file, signals_matrix, colors=[], labels=[],
