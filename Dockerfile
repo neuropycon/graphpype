@@ -7,6 +7,9 @@ RUN apt-get install -y git python3-pip libpng-dev libfreetype6-dev libxft-dev li
 #RUN apt-get install libx11-6 libxext6 libxt6 # matlab
 RUN pip3 install xvfbwrapper psutil numpy scipy matplotlib statsmodels pandas networkx==1.9 
 RUN pip3 install mock prov click funcsigs pydotplus pydot rdflib pbr nibabel packaging pytest nipype
+
+RUN pip3 scikit-image
+
 RUN mkdir -p /opt/packages/
 
 #ENV DISPLAY :0
@@ -41,6 +44,8 @@ RUN apt-get install --yes --no-install-recommends \
     && make \
     && make install
 
+ENV PATH=/opt/niftyreg/bin:$PATH
+
 # ########## nipype
 # RUN mkdir -p /opt/packages/
 #
@@ -53,6 +58,9 @@ RUN apt-get install --yes --no-install-recommends \
 
 ########### graphpype
 WORKDIR /opt/packages/
+
+ADD https://api.github.com/repos/davidmeunier79/graphpype/git/refs/heads/Dockerhub_version_0.0.8 version.json
+
 RUN git clone https://github.com/davidmeunier79/graphpype.git
 
 WORKDIR /opt/packages/graphpype
