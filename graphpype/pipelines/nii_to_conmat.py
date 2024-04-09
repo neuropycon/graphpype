@@ -113,7 +113,7 @@ def create_pipeline_nii_to_conmat_simple(
     # Nodes version: use min_BOLD_intensity and
     # return coords where signal is strong enough
     extract_mean_ROI_ts = pe.Node(interface=ExtractTS(
-        plot_fig=False), name='extract_mean_ROI_ts')
+        plot_fig=plot), name='extract_mean_ROI_ts')
 
     extract_mean_ROI_ts.inputs.background_val = background_val
 

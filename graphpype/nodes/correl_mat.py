@@ -220,7 +220,6 @@ class ExtractTS(BaseInterface):
             plot_signals(plot_mean_masked_ts_file, mean_masked_ts)
         else:
             print("**** Skipping Plotting figure")
-            0/0
 
         return runtime
 
