@@ -615,7 +615,7 @@ def create_pipeline_nii_to_weighted_conmat(
                 only_positive_values=True), iterfield=['regressor_name'],
                 name='extract_cond')
 
-            pipeline.connect(inputnode, ('spm_mat_file', show_files),
+            pipeline.connect(inputnode, 'spm_mat_file',
                              extract_cond, 'spm_mat_file')
             pipeline.connect(inputnode, 'regress_names',
                              extract_cond, 'regressor_name')
