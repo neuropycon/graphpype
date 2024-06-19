@@ -387,7 +387,9 @@ def compute_nodes_rada_df(
                     print("Missing {}".format(labels_file))
 
             info_nodes_file = os.path.join(
-                local_dir, net_prop_dir, "Z_List-info_nodes.txt")
+                local_dir, net_prop_dir,
+                "mapflow", "_" + net_prop_dir + str(i),
+                "Z_List-info_nodes.txt")
 
             print(info_nodes_file)
 
