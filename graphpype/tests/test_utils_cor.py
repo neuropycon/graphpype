@@ -39,8 +39,8 @@ def test_mean_select_mask_data():
     test reading 4D functional and indexed_mask and extract time series
     given a percent of voxels having strong enough BOLD signal
     """
-    data_img = nib.load(img_file).get_data()
-    data_mask = nib.load(mask_file).get_data()
+    data_img = nib.load(img_file).get_fdata()
+    data_mask = nib.load(mask_file).get_fdata()
     val = mean_select_mask_data(data_img, data_mask)
 
     assert val.shape[0] == data_img.shape[3]
@@ -48,8 +48,8 @@ def test_mean_select_mask_data():
 
 def test_mean_select_indexed_mask_data():
     """test reading 4D functional and mask and extract time serie"""
-    data_img = nib.load(img_file).get_data()
-    data_indexed_mask = nib.load(indexed_mask_file).get_data()
+    data_img = nib.load(img_file).get_fdata()
+    data_indexed_mask = nib.load(indexed_mask_file).get_fdata()
     mean_masked_ts, keep_rois = mean_select_indexed_mask_data(
         data_img, data_indexed_mask, background_val=0.0)
 

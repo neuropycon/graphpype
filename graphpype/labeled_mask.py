@@ -89,7 +89,7 @@ def create_indexed_mask(ref_img_file, MNI_coords_list, ROI_dir,
     ref_img = nib.load(ref_img_file)
 
     # data (shape)
-    ref_img_shape = ref_img.get_data().shape
+    ref_img_shape = ref_img.get_fdata().shape
 
     if len(ref_img_shape) == 4:
 
@@ -259,7 +259,7 @@ def compute_ROI_nii_from_ROI_coords_files(
     Export single file VOI binary nii image
     """
     ref_image = nib.load(ref_img_file)
-    ref_image_data = ref_image.get_data()
+    ref_image_data = ref_image.get_fdata()
     ref_image_data_shape = ref_image_data.shape
     ref_image_data_sform = ref_image.get_sform()
 
@@ -321,7 +321,7 @@ def compute_labelled_mask_from_anat_ROIs(
 
     ref_image = nib.load(ref_img_file)
 
-    ref_image_data = ref_image.get_data()
+    ref_image_data = ref_image.get_fdata()
 
     ref_image_data_shape = ref_image_data.shape
 
@@ -338,7 +338,7 @@ def compute_labelled_mask_from_anat_ROIs(
         # reloading mean_file as ref_file
         ref_image = nib.load(mean_ref_img_file)
 
-        ref_image_data = ref_image.get_data()
+        ref_image_data = ref_image.get_fdata()
 
         ref_image_data_shape = ref_image_data.shape
 
@@ -354,7 +354,7 @@ def compute_labelled_mask_from_anat_ROIs(
 
                 ROI_image = nib.load(ROI_file)
 
-                ROI_data = ROI_image.get_data()
+                ROI_data = ROI_image.get_fdata()
 
                 print("Original ROI template {} shape: {}".
                       format(i, ROI_data.shape))
@@ -391,7 +391,7 @@ def compute_labelled_mask_from_anat_ROIs(
 
                 ROI_image = nib.load(ROI_file)
 
-                ROI_data = ROI_image.get_data()
+                ROI_data = ROI_image.get_fdata()
 
                 print("Original ROI template {} shape: {}".
                       format(i, ROI_data.shape))
@@ -425,7 +425,7 @@ def compute_labelled_mask_from_anat_ROIs(
 
         resliced_ROI_img = nib.load(resliced_ROI_file)
 
-        resliced_ROI_data = resliced_ROI_img.get_data()
+        resliced_ROI_data = resliced_ROI_img.get_fdata()
 
         print(resliced_ROI_data.shape)
 
@@ -468,7 +468,7 @@ def compute_MNI_coords_from_indexed_template(indexed_template_file):
 
     ref_image = nib.load(indexed_template_file)
 
-    ref_image_data = ref_image.get_data()
+    ref_image_data = ref_image.get_fdata()
 
     print(ref_image_data.shape)
 
@@ -528,7 +528,7 @@ def segment_mask_in_ROI(
 
     # load mask
     mask = nib.load(mask_file)
-    mask_data = mask.get_data()
+    mask_data = mask.get_fdata()
     mask_header = mask.header
     mask_affine = mask.affine
 

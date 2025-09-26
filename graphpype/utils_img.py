@@ -11,7 +11,7 @@ def return_data_img_from_roi_mask(roi_mask_file, data_vect):
     data_vect = np.array(data_vect)
 
     roi_mask = nib.load(roi_mask_file)
-    roi_mask_data = roi_mask.get_data()
+    roi_mask_data = roi_mask.get_fdata()
 
     # skipping background and transforming to integer indexes
     unique_vals = np.unique(roi_mask_data)[1:].astype(int)
