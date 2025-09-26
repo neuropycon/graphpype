@@ -77,8 +77,7 @@ def create_pipeline_nii_to_conmat_nocovar(
     return pipeline
 
 
-def create_pipeline_nii_to_conmat_simple(
-        main_path, pipeline_name="nii_to_conmat", conf_interval_prob=0.05,
+def create_pipeline_nii_to_conmat_simple( pipeline_name="nii_to_conmat", conf_interval_prob=0.05,
         background_val=-1.0, plot=True):
     """
     Pipeline from nifti 4D (after preprocessing) to connectivity matrices,
@@ -104,7 +103,6 @@ def create_pipeline_nii_to_conmat_simple(
     """
 
     pipeline = pe.Workflow(name=pipeline_name)
-    pipeline.base_dir = main_path
 
     inputnode = pe.Node(niu.IdentityInterface(fields=[
         'nii_4D_file', 'ROI_mask_file', 'rp_file', 'ROI_coords_file',
