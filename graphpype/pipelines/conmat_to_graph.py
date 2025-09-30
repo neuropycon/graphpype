@@ -12,8 +12,7 @@ from graphpype.nodes.modularity import (ComputeNetList, ComputeNodeRoles,
                                         ComputeModuleMatProp)
 
 
-def create_pipeline_conmat_to_graph_density(
-        main_path, pipeline_name="graph_den_pipe", con_den=1.0, multi=False,
+def create_pipeline_conmat_to_graph_density(pipeline_name="graph_den_pipe", con_den=1.0, multi=False,
         mod=True, plot=False, optim_seq="WS trfr 100", compute_ndi=False):
     """
     Pipeline from connectivity matrices to graph analysis
@@ -29,7 +28,6 @@ def create_pipeline_conmat_to_graph_density(
     # TODO plot=True is kept for sake of clarity but is now unused
     pipeline = pe.Workflow(name=pipeline_name + "_den_" +
                            str(con_den).replace(".", "_"))
-    pipeline.base_dir = main_path
 
     inputnode = pe.Node(niu.IdentityInterface(
         fields=['conmat_file', 'coords_file', 'labels_file']),
@@ -138,8 +136,7 @@ def create_pipeline_conmat_to_graph_density(
     return pipeline
 
 
-def create_pipeline_conmat_to_graph_threshold(
-        main_path, pipeline_name="graph_thr_pipe", con_thr=1.0, multi=False,
+def create_pipeline_conmat_to_graph_threshold(pipeline_name="graph_thr_pipe", con_thr=1.0, multi=False,
         mod=True, plot=True, optim_seq="WS trfr 100", compute_ndi=False):
     """
     Pipeline from connectivity matrices to graph analysis
@@ -158,7 +155,6 @@ def create_pipeline_conmat_to_graph_threshold(
 
     # TODO plot=True is kept for sake of clarity but is now unused
     pipeline = pe.Workflow(name=pipeline_name)
-    pipeline.base_dir = main_path
 
     inputnode = pe.Node(niu.IdentityInterface(
         fields=['conmat_file', 'coords_file', 'labels_file']),
@@ -265,8 +261,7 @@ def create_pipeline_conmat_to_graph_threshold(
     return pipeline
 
 
-def create_pipeline_net_list_to_graph(
-        main_path, pipeline_name="graph_net_pipe", multi=False, mod=True,
+def create_pipeline_net_list_to_graph(pipeline_name="graph_net_pipe", multi=False, mod=True,
         plot=False, optim_seq="WS trfr 100", compute_ndi=False):
     """
     Pipeline from net_List (txt file) to graph analysis
@@ -283,7 +278,6 @@ def create_pipeline_net_list_to_graph(
     """
     # TODO plot=True is kept for sake of clarity but is now unused
     pipeline = pe.Workflow(name=pipeline_name)
-    pipeline.base_dir = main_path
 
     inputnode = pe.Node(niu.IdentityInterface(
         fields=['net_List_file', 'coords_file', 'labels_file']),
@@ -374,8 +368,7 @@ def create_pipeline_net_list_to_graph(
 
 
 # create_pipeline_bct_graph
-def create_pipeline_bct_graph(
-        main_path, pipeline_name="graph_bct_pipe", con_den=1.0):
+def create_pipeline_bct_graph(pipeline_name="graph_bct_pipe", con_den=1.0):
     """
     Description:
 
@@ -390,7 +383,6 @@ def create_pipeline_bct_graph(
     """
     # TODO plot=True is kept for sake of clarity but is now unused
     pipeline = pe.Workflow(name=pipeline_name)
-    pipeline.base_dir = main_path
 
     # input node
     inputnode = pe.Node(niu.IdentityInterface(
@@ -419,8 +411,7 @@ def create_pipeline_bct_graph(
 
 
 # create_pipeline_graph_module_properties
-def create_pipeline_graph_module_properties(
-        main_path, pipeline_name="graph_mod_pipe", con_den=1.0, multi=False,
+def create_pipeline_graph_module_properties(pipeline_name="graph_mod_pipe", con_den=1.0, multi=False,
         plot=True, export_excel=False):
     """
     Description:
@@ -437,7 +428,6 @@ def create_pipeline_graph_module_properties(
     """
     # TODO plot=True is kept for sake of clarity but is now unused
     pipeline = pe.Workflow(name=pipeline_name)
-    pipeline.base_dir = main_path
 
     # input node
     inputnode = pe.Node(niu.IdentityInterface(
