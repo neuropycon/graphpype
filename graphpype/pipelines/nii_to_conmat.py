@@ -16,8 +16,9 @@ from graphpype.utils import show_files
 
 
 def create_pipeline_nii_to_conmat_nocovar(
-        main_path, pipeline_name="nii_to_conmat", conf_interval_prob=0.05,
+        pipeline_name="nii_to_conmat", conf_interval_prob=0.05,
         background_val=-1.0, plot=True):
+
     """
     Pipeline from nifti 4D (after preprocessing) to connectivity matrices,
     no segmentation in tissues given, but coords for wm and csf are available
@@ -41,7 +42,6 @@ def create_pipeline_nii_to_conmat_nocovar(
     """
 
     pipeline = pe.Workflow(name=pipeline_name)
-    pipeline.base_dir = main_path
 
     inputnode = pe.Node(niu.IdentityInterface(fields=[
         'nii_4D_file', 'ROI_mask_file', 'ROI_coords_file',
@@ -148,7 +148,9 @@ def create_pipeline_nii_to_conmat_simple( pipeline_name="nii_to_conmat", conf_in
 
 
 def create_pipeline_nii_to_conmat_seg_template(
-        main_path, pipeline_name="nii_to_conmat", conf_interval_prob=0.05):
+        pipeline_name="nii_to_conmat",
+        conf_interval_prob=0.05):
+
     """
     Pipeline from nifti 4D (after preprocessing) to connectivity matrices
 
@@ -173,7 +175,6 @@ def create_pipeline_nii_to_conmat_seg_template(
     """
 
     pipeline = pe.Workflow(name=pipeline_name)
-    pipeline.base_dir = main_path
 
     inputnode = pe.Node(niu.IdentityInterface(fields=[
         'nii_4D_file', 'rp_file', 'wm_anat_file', 'csf_anat_file',
@@ -238,7 +239,7 @@ def create_pipeline_nii_to_conmat_seg_template(
 
 
 def create_pipeline_nii_to_subj_ROI(
-        main_path, filter_gm_threshold=0.9, pipeline_name="nii_to_subj_ROI",
+        filter_gm_threshold=0.9, pipeline_name="nii_to_subj_ROI",
         background_val=-1.0, plot=True, reslice=False, resample=False,
         min_BOLD_intensity=50, percent_signal=0.5):
     """
@@ -265,7 +266,6 @@ def create_pipeline_nii_to_subj_ROI(
         reslice = False
 
     pipeline = pe.Workflow(name=pipeline_name)
-    pipeline.base_dir = main_path
 
     inputnode = pe.Node(niu.IdentityInterface(fields=[
         'nii_4D_file', 'ROI_mask_file', 'gm_anat_file', 'ROI_coords_file',
@@ -335,10 +335,11 @@ def create_pipeline_nii_to_subj_ROI(
 
 
 def create_pipeline_nii_to_conmat(
-        main_path, filter_gm_threshold=0.9, pipeline_name="nii_to_conmat",
+        filter_gm_threshold=0.9, pipeline_name="nii_to_conmat",
         conf_interval_prob=0.05, background_val=-1.0, plot=True,
         reslice=False, resample=False, min_BOLD_intensity=50,
         percent_signal=0.5, split=False, win_length=None, offset=None):
+
     """
     Pipeline from nifti 4D (after preprocessing) to connectivity matrices
 
@@ -365,7 +366,6 @@ def create_pipeline_nii_to_conmat(
         reslice = False
 
     pipeline = pe.Workflow(name=pipeline_name)
-    pipeline.base_dir = main_path
 
     inputnode = pe.Node(niu.IdentityInterface(fields=[
         'nii_4D_file', 'ROI_mask_file', 'rp_file', 'gm_anat_file',
@@ -560,7 +560,7 @@ def create_pipeline_nii_to_conmat(
 
 
 def create_pipeline_nii_to_weighted_conmat(
-        main_path, pipeline_name="nii_to_weighted_conmat",
+        pipeline_name="nii_to_weighted_conmat",
         concatenated_runs=True, conf_interval_prob=0.05, mult_regnames=True,
         spm_reg=True):
     """
@@ -569,8 +569,6 @@ def create_pipeline_nii_to_weighted_conmat(
     Involves a regressor file as wiehgt for computing weighted correlations
 
     Parameters:
-        * main_path: path where the analysis will be located
-        (base_dir of workflow)
         * pipeline_name (default = "nii_to_weighted_conmat"):
         name of the workflow that will be created for this analysis
         * concatenated_runs (default = True):
@@ -600,7 +598,6 @@ def create_pipeline_nii_to_weighted_conmat(
 
     """
     pipeline = pe.Workflow(name=pipeline_name)
-    pipeline.base_dir = main_path
 
     inputnode = pe.Node(niu.IdentityInterface(fields=[
         'resid_ts_file', 'spm_mat_file', 'regress_names', 'run_index',

@@ -12,7 +12,7 @@ from graphpype.interfaces.radatools.rada import PrepRada, CommRada, NetPropRada
 
 
 def create_pipeline_intmat_to_graph_threshold(
-        main_path, analysis_name="int_graph_thr_pipe", threshold=50,
+        analysis_name="int_graph_thr_pipe", threshold=50,
         mod=False, plot=False, radatools_optim=""):
     """
     Pipeline from integer matrices (normally coclassification matrices)
@@ -37,7 +37,6 @@ def create_pipeline_intmat_to_graph_threshold(
     # conmat_to_graph
 
     pipeline = pe.Workflow(name=analysis_name)
-    pipeline.base_dir = main_path
 
     inputnode = pe.Node(niu.IdentityInterface(
         fields=['int_mat_file', 'coords_file', 'labels_file']),
