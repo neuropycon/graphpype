@@ -660,7 +660,7 @@ def compute_labels_from_coords(coords_file):
         print(map(str, coord))
         print ("-".join(map(str, coord)))
 
-        labels.append("-".join(map(str, coord)))
+        labels.append("_".join(map(str, coord)))
 
     print(labels)
 
