@@ -523,8 +523,7 @@ def compute_MNI_coords_from_indexed_template(indexed_template_file):
 
     np.savetxt(ROI_coords_file, ROI_coords, fmt="%d %d %d")
 
-    ROI_MNI_coords_file = os.path.join(
-        path, "ROI_MNI_coords-" + base_name + ".txt")
+    ROI_MNI_coords_file = os.path.abspath("ROI_MNI_coords-" + base_name + ".txt")
 
     np.savetxt(ROI_MNI_coords_file, ROI_MNI_coords, fmt="%d %d %d")
 
