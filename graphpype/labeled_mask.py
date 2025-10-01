@@ -667,7 +667,7 @@ def compute_labels_from_coords(coords_file):
     print(labels)
 
 
-    labels_file = os.path.abspath("labels.txt")
-    np.savetxt(labels_file, labels, fmt = "%s")
+    ROI_labels_file = os.path.abspath("labels.txt")
+    np.savetxt(ROI_labels_file, labels, fmt = "%s")
 
-    return labels_file
+    return ROI_labels_file
