@@ -630,3 +630,14 @@ def segment_mask_in_ROI(
         compute_MNI_coords_from_indexed_template(indexed_mask_rois_file)
 
     return indexed_mask_rois_file, ROI_coords_file, ROI_MNI_coords_file
+
+
+def compute_labels_from_coords(coords_file)
+
+    ROI_MNI_coords = np.loadtxt(coords_file)
+    print(ROI_MNI_coords)
+
+    0/0
+    labels_file = ""
+
+    return labels_file
