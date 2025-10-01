@@ -493,23 +493,15 @@ def compute_MNI_coords_from_indexed_template(indexed_template_file):
 
         mean_coord_ijk = np.mean(np.array((i, j, k)), axis=1)
 
-        print(mean_coord_ijk)
-
         ROI_coords.append(mean_coord_ijk)
 
         MNI_coord = np.dot(ref_image_affine, np.append(mean_coord_ijk, 1))
-
-        print(MNI_coord)
 
         ROI_MNI_coords.append(MNI_coord[:3])
 
     ROI_coords = np.array(ROI_coords, dtype=float)
 
-    print(ROI_coords)
-
     ROI_MNI_coords = np.array(ROI_MNI_coords, dtype=float)
-
-    print(ROI_MNI_coords)
 
     ROI_coords_file = os.path.abspath("ROI_coords-" + base_name + ".txt")
     #
@@ -653,19 +645,11 @@ def compute_labels_from_coords(coords_file):
 
 
     ROI_MNI_coords = np.loadtxt(coords_file, dtype = int)
-    print(ROI_MNI_coords)
 
     labels = []
     for coord in ROI_MNI_coords:
-        print(coord)
-        #print(str(coord))
-        print(map(str, coord))
-        print ("-".join(map(str, coord)))
 
         labels.append("_".join(map(str, coord)))
-
-    print(labels)
-
 
     ROI_labels_file = os.path.abspath("labels.txt")
     np.savetxt(ROI_labels_file, labels, fmt = "%s")
