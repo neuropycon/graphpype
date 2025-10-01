@@ -457,6 +457,13 @@ def compute_MNI_coords_from_indexed_template(indexed_template_file):
     """
     compute MNI coords from an indexed template
     """
+
+    from nipype.utils.filemanip import split_filename as split_f
+
+    import numpy as np
+    import nibabel as nib
+    import os
+
     path, base, ext = split_f(indexed_template_file)
 
     print(base)
@@ -504,7 +511,7 @@ def compute_MNI_coords_from_indexed_template(indexed_template_file):
 
     print(ROI_MNI_coords)
 
-    ROI_coords_file = os.path.join(path, "ROI_coords-" + base_name + ".txt")
+    ROI_coords_file = os.path.abspath("ROI_coords-" + base_name + ".txt")
 
     np.savetxt(ROI_coords_file, ROI_coords, fmt="%.3f %.3f %.3f")
 
