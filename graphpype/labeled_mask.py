@@ -656,10 +656,11 @@ def compute_labels_from_coords(coords_file):
     labels = []
     for coord in ROI_MNI_coords:
         print(coord)
-        print(coord.tostring())
-        print ("-".join(coord.tostring()))
+        #print(str(coord))
+        print(map(str, coord)
+        print ("-".join(map(str, coord)
 
-        labels.append("-".join(coord.tostring()))
+        labels.append("-".join(map(str, coord)
 
     print(labels)
     0/0
