@@ -650,7 +650,7 @@ def segment_mask_in_ROI(
 def compute_labels_from_coords(coords_file):
 
     import numpy as np
-    ROI_MNI_coords = np.loadtxt(coords_file)
+    ROI_MNI_coords = np.loadtxt(coords_file, dtype = int)
     print(ROI_MNI_coords)
 
     labels = []
@@ -663,7 +663,8 @@ def compute_labels_from_coords(coords_file):
         labels.append("-".join(map(str, coord)))
 
     print(labels)
-    0/0
+
+
     labels_file = os.path.abspath("labels.txt")
     np.savetxt(labels_file, labels, fmt = "%s")
 
