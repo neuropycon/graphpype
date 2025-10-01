@@ -512,13 +512,21 @@ def compute_MNI_coords_from_indexed_template(indexed_template_file):
     print(ROI_MNI_coords)
 
     ROI_coords_file = os.path.abspath("ROI_coords-" + base_name + ".txt")
+    #
+    # np.savetxt(ROI_coords_file, ROI_coords, fmt="%.3f %.3f %.3f")
+    #
+    # ROI_MNI_coords_file = os.path.join(
+    #     path, "ROI_MNI_coords-" + base_name + ".txt")
+    #
+    # np.savetxt(ROI_MNI_coords_file, ROI_MNI_coords, fmt="%.3f %.3f %.3f")
+    #
 
-    np.savetxt(ROI_coords_file, ROI_coords, fmt="%.3f %.3f %.3f")
+    np.savetxt(ROI_coords_file, ROI_coords, fmt="%d %d %d")
 
     ROI_MNI_coords_file = os.path.join(
         path, "ROI_MNI_coords-" + base_name + ".txt")
 
-    np.savetxt(ROI_MNI_coords_file, ROI_MNI_coords, fmt="%.3f %.3f %.3f")
+    np.savetxt(ROI_MNI_coords_file, ROI_MNI_coords, fmt="%d %d %d")
 
     return ROI_coords_file, ROI_MNI_coords_file
     # nib.load(ref_img_file)
@@ -645,7 +653,14 @@ def compute_labels_from_coords(coords_file):
     ROI_MNI_coords = np.loadtxt(coords_file)
     print(ROI_MNI_coords)
 
-    labels = ["-".join(coord) for coord in ROI_MNI_coords]
+    labels = []
+    for coord in ROI_MNI_coords:
+        print(coord)
+        print(coord.tostring())
+        print ("-".join(coord.tostring()))
+
+        labels.append("-".join(coord.tostring()))
+
     print(labels)
     0/0
     labels_file = os.path.abspath("labels.txt")
